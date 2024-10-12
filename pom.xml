@@ -10,9 +10,10 @@
 
     <name>${project.artifactId}</name>
     <description>地瓜泡项目基础脚手架</description>
-    <url>https://gitee.com/lipiaoplus/diguapao-cloud</url>
+    <url>https://gitee.com/diguapao/diguapao-cloud</url>
 
     <modules>
+        <module>examples-collection</module>
         <module>diguapao-center-gateway</module>
         <module>diguapao-center-product</module>
         <module>diguapao-center-inventory</module>
