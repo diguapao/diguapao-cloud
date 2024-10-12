@@ -1,0 +1,45 @@
+server:
+  port: 12460
+
+spring:
+  application:
+    name: ${app_name:diguapao-center-gateway}
+  profiles:
+    active: ${profiles_active:local}
+  cloud:
+    nacos:
+      username: ${nacos_user:nacos}
+      password: ${nacos_pass:nacos}
+      discovery:
+        server-addr: ${register_host:127.0.0.1}:${REGISTER_PORT:8848}
+        namespace: ${register_namespace:diguapao}
+        group: DEFAULT_GROUP
+        ip: ${register_ip:127.0.0.1}
+        username: ${spring.cloud.nacos.username}
+        password: ${spring.cloud.nacos.password}
+      config:
+        server-addr: ${nacos_host:127.0.0.1}:${nacos_port:8848}
+        namespace: ${nacos_namespace:diguapao}
+        group: DEFAULT_GROUP
+        file-extension: yml
+        username: ${spring.cloud.nacos.username}
+        password: ${spring.cloud.nacos.password}
+    gateway:
+      routes:
+        - id: diguapao-center-product
+          uri: lb://diguapao-center-product
+          predicates:
+            - Path=/products/**
+        - id: diguapao-center-inventory
+          uri: lb://diguapao-center-inventory
+          predicates:
+            - Path=/stocks/**
+        - id: diguapao-center-trade
+          uri: lb://diguapao-center-trade
+          predicates:
+            - Path=/trade/**
+          filters:
+            - StripPrefix=1  # 去掉前缀 /trade/
+  config:
+    import:
+#      - optional:nacos:application.yaml # 加载其他配置文件

@@ -1,0 +1,7 @@
+org\diguapao\cloud\inventory\service\package-info.class
+org\diguapao\cloud\inventory\controller\package-info.class
+org\diguapao\cloud\inventory\InventoryApplication.class
+org\diguapao\cloud\inventory\das\mysql\po\StockPO.class
+org\diguapao\cloud\inventory\service\stock\InventoryService.class
+org\diguapao\cloud\inventory\das\package-info.class
+org\diguapao\cloud\inventory\service\stock\InventoryServiceImpl.class
