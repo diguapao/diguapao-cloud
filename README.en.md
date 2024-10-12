@@ -9,8 +9,8 @@
 #### Software Architecture
 
     Microservice architecture based on Nacos, Dubbo and Spring Cloud Gateway
-
-    Including: commodity service (diguapao-center-product), inventory service (diguapao-center-inventory), trade service (diguapao-center-trade)
+    These include: API  diguapao-center-gateway, diguapao-center-product, diguapao-center-inventory, and diguapao-center-trade
+    The Web front-end accesses these services through Spring Cloud Gateway, and the internal services communicate through Dubbo for RPC
 
 #### Installation
 
