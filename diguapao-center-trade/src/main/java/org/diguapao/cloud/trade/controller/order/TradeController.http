@@ -1,0 +1,19 @@
+### 创建订单并扣减库存
+POST http://localhost:12463/orders
+Content-Type: application/json
+
+{
+  "productId": "PRODUCT_001",
+  "quantity": 5,
+  "customerName": "John Doe"
+}
+
+### 创建订单并扣减库存（走Gateway）
+POST http://localhost:12460/trade/orders
+Content-Type: application/json
+
+{
+  "productId": "PRODUCT_001",
+  "quantity": 5,
+  "customerName": "John Doe"
+}
