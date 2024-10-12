@@ -6,16 +6,17 @@
         <groupId>org.diguapao.cloud</groupId>
         <artifactId>diguapao-cloud</artifactId>
         <version>${revision}</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.diguapao.cloud</groupId>
-    <artifactId>examples-collection</artifactId>
+    <groupId>org.diguapao.cloud.ec</groupId>
+    <artifactId>examples-collection-java</artifactId>
     <version>${revision}</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
-    <description>例子大集合</description>
+    <description>例子集合</description>
     <url>https://gitee.com/diguapao/diguapao-cloud</url>
 
 </project>

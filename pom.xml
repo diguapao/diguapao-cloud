@@ -13,7 +13,7 @@
     <url>https://gitee.com/diguapao/diguapao-cloud</url>
 
     <modules>
-        <module>examples-collection</module>
+        <module>examples-collection/examples-collection-java</module>
         <module>diguapao-center-gateway</module>
         <module>diguapao-center-product</module>
         <module>diguapao-center-inventory</module>
