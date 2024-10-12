@@ -10,7 +10,7 @@
 
     <name>${project.artifactId}</name>
     <description>地瓜泡项目基础脚手架</description>
-    <url>https://gitee.com/diguapao/diguapao-cloud</url>
+    <url>https://github.com/diguapao/diguapao-cloud</url>
 
     <modules>
         <module>examples-collection/examples-collection-java</module>
