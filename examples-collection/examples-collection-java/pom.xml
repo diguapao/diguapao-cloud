@@ -17,6 +17,10 @@
 
     <name>${project.artifactId}</name>
     <description>例子集合</description>
-    <url>https://gitee.com/diguapao/diguapao-cloud</url>
+    <url>https://github.com/diguapao/diguapao-cloud/tree/master/examples-collection/examples-collection-java</url>
+
+    <dependencies>
+    </dependencies>
+
 
 </project>

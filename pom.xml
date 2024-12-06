@@ -9,21 +9,25 @@
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
-    <description>地瓜泡项目基础脚手架</description>
-    <url>https://gitee.com/diguapao/diguapao-cloud</url>
+    <description>地瓜泡云项目</description>
+    <url>https://github.com/diguapao/diguapao-cloud</url>
 
     <modules>
-        <module>examples-collection/examples-collection-java</module>
         <module>diguapao-center-gateway</module>
         <module>diguapao-center-product</module>
         <module>diguapao-center-inventory</module>
         <module>diguapao-center-trade</module>
+        <module>examples-collection/examples-collection-java</module>
+        <module>examples-collection/examples-spring-aop</module>
+        <module>examples-collection/examples-mybatis-cache</module>
+        <!--<module>examples-collection/examples-code-generator</module>-->
     </modules>
 
     <properties>
         <revision>2024.10.12</revision>
         <!-- Maven 相关 -->
         <java.version>1.8</java.version>
+        <lombok.version>1.18.24</lombok.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -43,8 +47,14 @@
         <dubbo.registry.nacos.version>3.0.5</dubbo.registry.nacos.version>
         <spring.context.support.version>1.0.11</spring.context.support.version>
         <spring-cloud-starter-dubbo.version>2021.1</spring-cloud-starter-dubbo.version>
+        <mybatisplus.version>3.5.7</mybatisplus.version>
+        <redisson.spring.boot.starter.version>3.32.0</redisson.spring.boot.starter.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <google-guava.version>20.0</google-guava.version>
+        <commons.collections4.version>4.4</commons.collections4.version>
+        <hutool.version>5.8.27</hutool.version>
+        <commons.lang3.version>3.17.0</commons.lang3.version>
+        <knife4j.version>3.0.3</knife4j.version>
     </properties>
 
     <dependencyManagement>
@@ -123,6 +133,12 @@
             </dependency>-->
 
             <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>${redisson.spring.boot.starter.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.diguapao.cloud.product</groupId>
                 <artifactId>diguapao-center-product</artifactId>
                 <version>${revision}</version>
@@ -137,6 +153,42 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${google-guava.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>${commons.collections4.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>1.2.17</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons.lang3.version}</version>
+            </dependency>
+
+            <!-- 接口文档 -->
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-micro-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
             </dependency>
 
         </dependencies>
@@ -217,14 +269,14 @@
     <!-- 使用 huawei / aliyun 的 Maven 源，提升下载速度 -->
     <repositories>
         <repository>
-            <id>aliyunmaven</id>
-            <name>aliyun</name>
-            <url>https://maven.aliyun.com/repository/public</url>
-        </repository>
-        <repository>
-            <id>huaweicloud</id>
+            <id>huawei-cloud</id>
             <name>huawei</name>
             <url>https://mirrors.huaweicloud.com/repository/maven/</url>
+        </repository>
+        <repository>
+            <id>nexus-aliyun</id>
+            <name>aliyun</name>
+            <url>https://maven.aliyun.com/repository/public</url>
         </repository>
     </repositories>
 

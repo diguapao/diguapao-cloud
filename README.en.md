@@ -14,15 +14,11 @@
 
 #### Installation
 
-1. xxxx
-2. xxxx
-3. xxxx
+1. 
 
 #### Instructions
 
-1. xxxx
-2. xxxx
-3. xxxx
+1. 
 
 #### Contribution
 
