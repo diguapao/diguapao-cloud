@@ -1,0 +1,92 @@
+package ${packagePrefix}.service;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import ${packagePrefix}.api.dto.${className}QueryDTO;
+import ${packagePrefix}.api.dto.${className}DTO;
+import ${packagePrefix}.entity.${className};
+import ${packagePrefix}.vo.${className}VO;
+import ${commonPackagePrefix}.vo.PageResult;
+
+import java.util.List;
+import java.util.Set;
+
+/**
+ * ${tableComment} Service 接口类
+ *
+ * @author ${author}
+ * @version ${version}
+ * @since ${since}
+ */
+public interface ${className}Service extends IService<${className}> {
+
+    /**
+     * 根据ID获取实体信息
+     *
+     * @param id 主键
+     * @return {@link ${packagePrefix}.vo.${className}VO}
+     * @author ${author}
+     * @since ${since}
+     */
+    ${className}VO get${className}ById(${primaryKeyType} id);
+
+    /**
+     * 根据ID集获取实体信息
+     *
+     * @param ids 实体主键集
+     * @return {@link ${packagePrefix}.vo.${className}VO}
+     * @author ${author}
+     * @since ${since}
+     */
+    List<${className}VO> getByIds(Set<Long> ids);
+
+    /**
+     * 获取实体信息分页列表
+     *
+     * @param dto ${tableComment}查询传输对象
+     * @return {@link ${commonPackagePrefix}.vo.PageResult<${packagePrefix}.vo.${className}VO>}
+     * @author ${author}
+     * @since ${since}
+     */
+    PageResult<${className}VO> get${className}Page(${className}QueryDTO dto);
+
+    /**
+     * 获取列表
+     *
+     * @param dto ${tableComment}查询传输对象
+     * @return {@link List<${className}VO>}
+     * @author ${author}
+     * @since ${since}
+     */
+    List<${className}VO> getList(${className}QueryDTO dto);
+
+    /**
+     * 保存
+     *
+     * @param dto ${tableComment}传输对象
+     * @return {@link Long}
+     * @author ${author}
+     * @since ${since}
+     */
+    ${primaryKeyType} save(${className}DTO dto);
+
+    /**
+     * 编辑
+     *
+     * @param dto ${tableComment}传输对象
+     * @return {@link Long}
+     * @author ${author}
+     * @since ${since}
+     */
+    ${primaryKeyType} update(${className}DTO dto);
+
+    /**
+     * 删除
+     *
+     * @param id 主键
+     * @return {@link Long}
+     * @author ${author}
+     * @since ${since}
+     */
+    Boolean delete(${primaryKeyType} id);
+
+}

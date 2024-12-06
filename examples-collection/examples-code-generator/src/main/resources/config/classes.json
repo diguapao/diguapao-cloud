@@ -1,0 +1,41 @@
+[
+  {
+    "packageName": "com.example.microservice",
+    "entityPackageName": "com.example.microservice.entity",
+    "className": "Garden",
+    "tableName": "garden",
+    "comments": "花园",
+    "author": "Your Name",
+    "email": "your.email@example.com",
+    "datetime": "2024-11-06",
+    "since": "1.0.0",
+    "pathPrefix": "/api/",
+    "pathName": "garden",
+    "columns": [
+      {
+        "attrname": "id",
+        "attrType": "Long",
+        "columnName": "id",
+        "comments": "主键"
+      },
+      {
+        "attrname": "name",
+        "attrType": "String",
+        "columnName": "name",
+        "comments": "名称"
+      },
+      {
+        "attrname": "code",
+        "attrType": "String",
+        "columnName": "code",
+        "comments": "编码"
+      },
+      {
+        "attrname": "area",
+        "attrType": "BigDecimal",
+        "columnName": "area",
+        "comments": "面积"
+      }
+    ]
+  }
+]

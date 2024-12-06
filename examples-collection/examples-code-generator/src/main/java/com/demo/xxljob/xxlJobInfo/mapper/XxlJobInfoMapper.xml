@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.demo.xxljob.xxlJobInfo.mapper.XxlJobInfoMapper">
+
+    <resultMap id="BaseResultMap" type="com.demo.xxljob.xxlJobInfo.entity.XxlJobInfo">
+            <result column="id" property="id"/>
+            <result column="jobGroup" property="jobGroup"/>
+            <result column="scheduleConf" property="scheduleConf"/>
+            <result column="jobDesc" property="jobDesc"/>
+            <result column="addTime" property="addTime"/>
+            <result column="updateTime" property="updateTime"/>
+            <result column="author" property="author"/>
+            <result column="alarmEmail" property="alarmEmail"/>
+            <result column="executorRouteStrategy" property="executorRouteStrategy"/>
+            <result column="executorHandler" property="executorHandler"/>
+            <result column="executorParam" property="executorParam"/>
+            <result column="executorBlockStrategy" property="executorBlockStrategy"/>
+            <result column="executorTimeout" property="executorTimeout"/>
+            <result column="executorFailRetryCount" property="executorFailRetryCount"/>
+            <result column="glueType" property="glueType"/>
+            <result column="glueSource" property="glueSource"/>
+            <result column="glueRemark" property="glueRemark"/>
+            <result column="glueUpdatetime" property="glueUpdatetime"/>
+            <result column="childJobid" property="childJobid"/>
+            <result column="triggerStatus" property="triggerStatus"/>
+            <result column="triggerLastTime" property="triggerLastTime"/>
+            <result column="triggerNextTime" property="triggerNextTime"/>
+            <result column="scheduleType" property="scheduleType"/>
+            <result column="misfireStrategy" property="misfireStrategy"/>
+    </resultMap>
+
+</mapper>
