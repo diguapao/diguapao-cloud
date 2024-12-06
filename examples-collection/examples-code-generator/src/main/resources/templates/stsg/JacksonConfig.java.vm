@@ -1,0 +1,23 @@
+package ${packagePrefix};
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * Jackson 配置类
+ *
+ * @author ${author}
+ * @version ${version}
+ * @since ${since}
+ */
+@Configuration
+public class ${className} {
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        return objectMapper;
+    }
+}

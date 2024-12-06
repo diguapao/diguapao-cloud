@@ -1,0 +1,137 @@
+package ${packagePrefix}.controller;
+
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.lang.Assert;
+import ${packagePrefix}.api.dto.${className}DTO;
+import ${packagePrefix}.api.dto.${className}QueryDTO;
+import ${packagePrefix}.service.${className}Service;
+import ${packagePrefix}.vo.${className}VO;
+import ${commonPackagePrefix}.util.R;
+import ${commonPackagePrefix}.vo.PageResult;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * ${tableComment}控制层
+ *
+ * @author ${author}
+ * @version ${version}
+ * @since ${since}
+ */
+@Slf4j
+@Validated
+@RestController
+// @RequiredArgsConstructor
+// @SecurityRequirement(name = HttpHeaders.AUTHORIZATION)
+@Tag(description = "${tableComment}", name = "${tableComment}管理")
+public class ${className}Controller {
+
+    @Resource
+    private ${className}Service ${lfClassName}Service;
+
+    /**
+     * 获取${tableComment}
+     *
+     * @param id 主键
+     * @return {@link ${commonPackagePrefix}.util.R<${packagePrefix}.vo.${className}VO>}
+     * @author ${author}
+     * @since ${since}
+     */
+    @Operation(summary = "获取${tableComment}")
+    @Parameter(name = "id", description = "主键")
+    @GetMapping("/${lfClassName}/{id}")
+    public R<${className}VO> get${className}(@PathVariable("id") ${primaryKeyType} id) {
+        return R.ok(${lfClassName}Service.get${className}ById(id));
+    }
+
+    /**
+     * 获取${tableComment}分页列表
+     *
+     * @param dto ${tableComment}查询传输对象
+     * @return {@link ${commonPackagePrefix}.util.R<${commonPackagePrefix}.vo.PageResult>}
+     * @author ${author}
+     * @since ${since}
+     */
+    @PostMapping("/${lfClassName}/page")
+    @Operation(summary = "获取${tableComment}分页列表")
+    public R<PageResult<${className}VO>> get${className}Page(@Valid @RequestBody(required = false) ${className}QueryDTO dto) {
+        PageResult<${className}VO> pageResult = ${lfClassName}Service.get${className}Page(dto);
+        if (Objects.isNull(pageResult) || CollUtil.isEmpty(pageResult.getList())) {
+            return R.ok(PageResult.empty());
+        }
+        return R.ok(pageResult);
+    }
+
+    /**
+     * 获取${tableComment}列表方法
+     *
+     * @param dto ${tableComment}查询传输对象
+     * @return {@link ${commonPackagePrefix}.util.R<List>}
+     * @author ${author}
+     * @since ${since}
+     */
+    @Operation(summary = "获取${tableComment}列表")
+    @PostMapping(value = "/${lfClassName}/list")
+    public R<List<${className}VO>> list(@Valid @RequestBody(required = false) ${className}QueryDTO dto) {
+        return R.ok(${lfClassName}Service.getList(dto));
+    }
+
+    /**
+     * 新增${tableComment}
+     *
+     * @param dto ${tableComment}传输对象
+     * @return {@link ${commonPackagePrefix}.util.R<String>}
+     * @author ${author}
+     * @since ${since}
+     */
+    @Operation(summary = "新增${tableComment}")
+    @PostMapping(value = "/${lfClassName}")
+    public R<String> add(@Valid @RequestBody ${className}DTO dto) {
+        return R.ok(String.valueOf(${lfClassName}Service.save(dto)));
+    }
+
+    /**
+     * 编辑${tableComment}
+     *
+     * @param dto ${tableComment}传输对象
+     * @return {@link ${commonPackagePrefix}.util.R<String>}
+     * @author ${author}
+     * @since ${since}
+     */
+    @Operation(summary = "编辑${tableComment}")
+    @PutMapping(value = "/${lfClassName}")
+    public R<String> edit(@Valid @RequestBody ${className}DTO dto) {
+        if (Objects.isNull(dto.getId())) {
+            throw new RuntimeException("编辑数据主键不能为空");
+        }
+        Assert.notNull(${lfClassName}Service.getById(dto.getId()), () -> new RuntimeException("被编辑的数据不存在，主键ID：" + dto.getId()));
+        return R.ok(String.valueOf(${lfClassName}Service.update(dto)));
+    }
+
+    /**
+     * 删除${tableComment}
+     *
+     * @param id 主键
+     * @return {@link ${commonPackagePrefix}.util.R<Boolean>}
+     * @author ${author}
+     * @since ${since}
+     */
+    @Operation(summary = "删除${tableComment}")
+    @Parameter(name = "id", description = "主键")
+    @DeleteMapping(value = "/${lfClassName}/{id}")
+    public R<Boolean> delete(@PathVariable("id") ${primaryKeyType} id) {
+        return R.ok(${lfClassName}Service.delete(id));
+    }
+}

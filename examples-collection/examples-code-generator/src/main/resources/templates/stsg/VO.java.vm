@@ -1,0 +1,73 @@
+package ${packagePrefix}.vo;
+
+import cn.hutool.core.date.DatePattern;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+
+/**
+ * ${tableComment} VO
+ *
+ * @author ${author}
+ * @version ${version}
+ * @since ${since}
+ */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(callSuper = true)
+// @EqualsAndHashCode(callSuper = true)
+@Schema(description = "${tableComment} VO")
+public class ${className}VO implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+    #foreach ($column in $columns)
+    #if ($column.name != "createBy" && $column.name != "updateBy" && $column.name != "createTime" && $column.name != "updateTime")
+    #if ($column.columnName == "id")
+    /**
+     * 主键
+     */
+    @JsonSerialize(using = ToStringSerializer.class)
+    #else
+    /**
+     * ${column.comment}
+     */
+    #end
+    @Schema(description = "${column.comment}")
+    private $column.type $column.name;
+    #end
+    #end
+    /**
+     * 创建人
+     */
+    @Schema(description = "创建人")
+    private String createBy;
+    /**
+     * 修改人
+     */
+    @Schema(description = "修改人")
+    private String updateBy;
+    /**
+     * 创建时间
+     */
+    @Schema(description = "创建时间")
+    @DateTimeFormat(pattern = DatePattern.NORM_DATE_PATTERN)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DatePattern.NORM_DATETIME_PATTERN)
+    private LocalDateTime createTime;
+    /**
+     * 修改时间
+     */
+    @Schema(description = "修改时间")
+    @DateTimeFormat(pattern = DatePattern.NORM_DATE_PATTERN)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DatePattern.NORM_DATETIME_PATTERN)
+    private LocalDateTime updateTime;
+}

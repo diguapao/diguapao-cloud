@@ -1,0 +1,63 @@
+package ${packagePrefix}.dto;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+
+/**
+ * ${tableComment}传输对象
+ *
+ * @author ${author}
+ * @version ${version}
+ * @since ${since}
+ */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(callSuper = true)
+// @EqualsAndHashCode(callSuper = true)
+@Schema(description = "${tableComment}传输对象")
+public class ${className}DTO implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+    #foreach ($column in $columns)
+    #if ($column.name != "createBy" && $column.name != "updateBy" && $column.name != "createTime" && $column.name != "updateTime")
+    #if ($column.columnName == "id")
+    /**
+     * 主键
+     */
+    #else
+    /**
+     * ${column.comment}
+     */
+    #end
+    @Schema(description = "${column.comment}")
+    private $column.type $column.name;
+    #end
+    #end
+    /**
+     * 创建人
+     */
+    @Schema(description = "创建人")
+    private String createBy;
+    /**
+     * 修改人
+     */
+    @Schema(description = "修改人")
+    private String updateBy;
+    /**
+     * 创建时间
+     */
+    @Schema(description = "创建时间")
+    private LocalDateTime createTime;
+    /**
+     * 修改时间
+     */
+    @Schema(description = "修改时间")
+    private LocalDateTime updateTime;
+}

@@ -1,0 +1,116 @@
+package ${packagePrefix}.service.impl;
+
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import ${packagePrefix}.api.dto.${className}QueryDTO;
+import ${packagePrefix}.api.dto.${className}DTO;
+import ${packagePrefix}.entity.${className};
+import ${packagePrefix}.vo.${className}VO;
+import ${commonPackagePrefix}.vo.PageResult;
+import ${packagePrefix}.mapper.${className}Mapper;
+import ${packagePrefix}.service.${className}Service;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Set;
+import java.util.Objects;
+import com.google.common.collect.Lists;
+
+/**
+ * ${tableComment} Service 接口实现类
+ *
+ * @author ${author}
+ * @version ${version}
+ * @since ${since}
+ */
+@Slf4j
+@Service
+public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper, ${className}> implements ${className}Service {
+
+    @Override
+    public ${className}VO get${className}ById(${primaryKeyType} id) {
+        ${className} ${lfClassName} = getById(id);
+        if(Objects.isNull(${lfClassName} )){
+            return  null;
+        }
+        return BeanUtil.copyProperties(${lfClassName} , ${className}VO.class);
+    }
+
+    @Override
+    public List<${className}VO> getByIds(Set<Long> ids) {
+        List<${className}> ${lfClassName}s = list(new LambdaQueryWrapper<${className}>().in(${className}::getId, ids));
+        if (CollectionUtil.isEmpty(${lfClassName}s)) {
+            return Lists.newArrayList();
+        }
+        return BeanUtil.copyToList(${lfClassName}s, ${className}VO.class);
+    }
+
+    @Override
+    public PageResult<${className}VO> get${className}Page(${className}QueryDTO dto) {
+        if (Objects.isNull(dto)) {
+            dto = new ${className}QueryDTO();
+        }
+        // 页码 + 数量
+        Page<${className}> page = new Page<>(dto.getPageNo(), dto.getPageSize());
+        baseMapper.selectPage(page, new LambdaQueryWrapper<${className}>(BeanUtil.copyProperties(dto, ${className}.class)));
+        if (CollectionUtil.isEmpty(page.getRecords())) {
+            return new PageResult<>(Lists.newArrayList(), 0L);
+        }
+        // 转换返回
+        return new PageResult<>(BeanUtil.copyToList(page.getRecords(), ${className}VO.class), page.getTotal(), dto.getPageNo(), dto.getPageSize());
+    }
+
+    @Override
+    public List<${className}VO> getList(${className}QueryDTO dto) {
+        List<${className}> el = null;
+        if (Objects.nonNull(dto)) {
+            el = list(new LambdaQueryWrapper<${className}>(BeanUtil.copyProperties(dto, ${className}.class)).last("LIMIT " + IService.DEFAULT_BATCH_SIZE));
+        } else {
+            el = list();
+        }
+        if (CollectionUtil.isEmpty(el)) {
+            return Lists.newArrayList();
+        }
+        return BeanUtil.copyToList(el, ${className}VO.class);
+    }
+
+    @Transactional(rollbackFor = Throwable.class)
+    @Override
+    public ${primaryKeyType} save(${className}DTO dto) {
+        if (Objects.isNull(dto)) {
+            throw new RuntimeException("保存数据不能为空");
+        }
+        ${className} ${lfClassName} = new ${className}();
+        BeanUtils.copyProperties(dto, ${lfClassName});
+        baseMapper.insert(${lfClassName});
+        return ${lfClassName}.getId();
+    }
+
+    @Transactional(rollbackFor = Throwable.class)
+    @Override
+    public ${primaryKeyType} update(${className}DTO dto) {
+        if (Objects.isNull(dto)) {
+            throw new RuntimeException("修改数据不能为空");
+        }
+        if (Objects.isNull(dto.getId())) {
+            throw new RuntimeException("修改数据主键不能为空");
+        }
+        ${className} ${lfClassName} = new ${className}();
+        BeanUtils.copyProperties(dto, ${lfClassName});
+        this.updateById(${lfClassName});
+        return ${lfClassName}.getId();
+    }
+
+    @Override
+    public Boolean delete(${primaryKeyType} id) {
+        return removeById(id);
+    }
+
+}
