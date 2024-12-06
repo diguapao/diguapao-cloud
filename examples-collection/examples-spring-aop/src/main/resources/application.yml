@@ -1,0 +1,14 @@
+server:
+  port: 9898
+spring:
+  application:
+    name: ${app_name:examples-spring-aop}
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    password: redis
+logging:
+  level:
+    root: info
+    org.diguapao.cloud.framework.spring.aop.aspect.DistributedLockAspect: debug
