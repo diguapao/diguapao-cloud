@@ -1,6 +1,5 @@
 package org.diguapao.cloud.dcg.stsg;
 
-import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -173,18 +172,16 @@ public class TableParser {
                                     String fieldType = cd.getColDataType().getDataType();
                                     String javaType = DbTypeToJavaTypeConverter.convert(fieldType);
 
-                                    String comment = fieldName;
-                                    List<String> columnSpecs = cd.getColumnSpecs();
-                                    if (CollectionUtil.isNotEmpty(columnSpecs)) {
-                                        if (containsChineseChars(comment = columnSpecs.get(columnSpecs.size() - 1)) && !"null".equals(comment)) {
-                                            comment = comment.replace("'", StrUtil.EMPTY).replace("\"", StrUtil.EMPTY);
-                                        } else {
-                                            comment = "";
-                                        }
-                                        //设置主键类型
-                                        if (columnSpecs.contains("primary")) {
-                                            primaryKeyType.set(javaType);
-                                        }
+                                    String comment = "";
+                                    if (containsChineseChars(comment = cd.getColumnSpecs().get(cd.getColumnSpecs().size() - 1)) && !"null".equals(comment)) {
+                                        comment = comment.replace("'", StrUtil.EMPTY).replace("\"", StrUtil.EMPTY);
+                                    } else {
+                                        comment = "";
+                                    }
+
+                                    //设置主键类型
+                                    if (cd.getColumnSpecs().contains("primary")) {
+                                        primaryKeyType.set(javaType);
                                     }
 
                                     return new Column(cd.getColumnName(), fieldName, javaType, comment);

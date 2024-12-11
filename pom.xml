@@ -17,11 +17,11 @@
         <module>diguapao-center-product</module>
         <module>diguapao-center-inventory</module>
         <module>diguapao-center-trade</module>
-        <module>examples-collection/examples-collection-java</module>
-        <module>examples-collection/examples-spring-aop</module>
-        <module>examples-collection/examples-mybatis-cache</module>
-        <module>examples-collection/examples-code-generator</module>
-        <module>examples-collection/examples-cache</module>
+        <module>examples-collection/examples-java/examples-collection-java</module>
+        <module>examples-collection/examples-java/examples-spring-aop</module>
+        <module>examples-collection/examples-java/examples-mybatis-cache</module>
+        <module>examples-collection/examples-java/examples-code-generator</module>
+        <module>examples-collection/examples-java/examples-cache</module>
     </modules>
 
     <properties>

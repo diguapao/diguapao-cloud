@@ -40,7 +40,7 @@ public class CodeGenerator {
 
     public static void main(String[] args) throws IOException {
         try {
-            CodeGenerator cg = new CodeGenerator("");
+            CodeGenerator cg = new CodeGenerator("car_");
             //建表语句SQL文件
             String sqlFilePath = getUserDir() + "examples-collection/examples-code-generator/src/main/java/org/diguapao/cloud/dcg/stsg/TapeGenSql.sql";
             List<TableParser.TableInfo> tableInfos = TableParser.parseSqlFile(sqlFilePath, cg.getTablePrefix());
@@ -62,7 +62,7 @@ public class CodeGenerator {
                 //}
 
                 // 业务域关键词、基础包名、common 包名、config 包名
-                String domainKey = "device", packagePrefix = "com.csair.sc", commonPackagePrefix = packagePrefix + ".common.core", configPackagePrefix = packagePrefix + ".config";
+                String domainKey = "car", packagePrefix = "com.csair.sc", commonPackagePrefix = packagePrefix + ".common.core", configPackagePrefix = packagePrefix + ".config";
 
                 if (i == 0) {
                     cg.generateFile("CommonConstants.java.vm", commonPackagePrefix, commonPackagePrefix, tableName, "CommonConstants", tableComment, primaryKeyType, columns,
