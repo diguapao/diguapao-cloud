@@ -10,8 +10,8 @@ spring:
     type: redis
   redis:
     cluster:
-      nodes: 10.79.5.89:5379,10.79.5.89:6379,10.79.5.89:7379,10.79.5.90:5379,10.79.5.90:6379,10.79.5.90:7379,10.79.5.91:5379,10.79.5.91:6379,10.79.5.91:7379
-    password: ENC(+UiiIGNCm/3LlZ/998QWRiuG0A7Y1j+qLlmDWu+/uf/K3AdE7CMT3Zsm/nqDwzpo3/OfLSk/y4igCj4nhAKx/w==)
+      nodes:
+    password:
 
 logging:
   level:
