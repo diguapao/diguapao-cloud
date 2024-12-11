@@ -1,6 +1,6 @@
 # Cache 演示
 
-## 演示了以下缓存技术
+## 演示下缓存技术
 
 - org.springframework.data.redis.core.RedisTemplate
 - org.springframework.data.redis.core.StringRedisTemplate
