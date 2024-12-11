@@ -1,0 +1,14 @@
+###
+POST http://localhost:9898/demoCache/jet/DiGUaPao
+
+###
+POST http://localhost:9898/demoCache/sdc/DiGUaPao
+
+###
+POST http://localhost:9898/demoCache/rt/DiGUaPao
+
+###
+POST http://localhost:9898/demoCache/srt/DiGUaPao
+
+###
+POST http://localhost:9898/demoCache/rc/DiGUaPao
