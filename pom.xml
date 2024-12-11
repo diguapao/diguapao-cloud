@@ -20,7 +20,8 @@
         <module>examples-collection/examples-collection-java</module>
         <module>examples-collection/examples-spring-aop</module>
         <module>examples-collection/examples-mybatis-cache</module>
-        <!--<module>examples-collection/examples-code-generator</module>-->
+        <module>examples-collection/examples-code-generator</module>
+        <module>examples-collection/examples-cache</module>
     </modules>
 
     <properties>
@@ -48,13 +49,14 @@
         <spring.context.support.version>1.0.11</spring.context.support.version>
         <spring-cloud-starter-dubbo.version>2021.1</spring-cloud-starter-dubbo.version>
         <mybatisplus.version>3.5.7</mybatisplus.version>
-        <redisson.spring.boot.starter.version>3.32.0</redisson.spring.boot.starter.version>
+        <redisson.spring.boot.starter.version>3.18.0</redisson.spring.boot.starter.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <google-guava.version>20.0</google-guava.version>
         <commons.collections4.version>4.4</commons.collections4.version>
         <hutool.version>5.8.27</hutool.version>
         <commons.lang3.version>3.17.0</commons.lang3.version>
         <knife4j.version>3.0.3</knife4j.version>
+        <jasypt.version>3.0.4</jasypt.version>
     </properties>
 
     <dependencyManagement>
@@ -191,6 +193,12 @@
                 <version>${knife4j.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.github.ulisesbocchio</groupId>
+                <artifactId>jasypt-spring-boot-starter</artifactId>
+                <version>${jasypt.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -262,6 +270,27 @@
                         <phase>clean</phase>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.4.0-RC1</version>
+            </plugin>
+            <plugin>
+                <groupId>com.github.ulisesbocchio</groupId>
+                <artifactId>jasypt-maven-plugin</artifactId>
+                <version>${jasypt.version}</version>
+                <configuration>
+                    <path>file:src/main/resources/application.yml</path>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
             </plugin>
         </plugins>
     </build>
