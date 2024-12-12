@@ -10,8 +10,8 @@ spring:
     type: redis
   redis:
     cluster:
-      nodes:
-    password:
+      nodes: ${REDIS_CLUSTER}
+    password: ${REDIS_PWD}
 
 logging:
   level:
