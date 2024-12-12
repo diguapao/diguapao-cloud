@@ -47,19 +47,19 @@ func init() {
 
 func main() {
 	log.Info("程序启动")
-	cfg, err := config.LoadConfig("D:\\DiGuaPao\\gitee\\diguapao-cloud\\examples-collection\\examples-go\\examples-project-go\\sso-system\\config")
+	cfg, err := config.LoadConfig("./config")
 	if err != nil {
 		log.Fatalf("Error loading configuration: %v", err)
 	}
 
-	dbConn := db.NewDB(cfg.DBURL)
+	dbConn := db.NewMariadb(cfg.Database.DbUrl)
 	defer dbConn.Close()
 
 	redis.InitRedis(cfg)
 
 	router := gin.Default()
 
-	authService := services.NewAuthService(dbConn, redis.GetRedisClient(), cfg.Secret)
+	authService := services.NewAuthService(dbConn, redis.GetRedisClient(), cfg.Security.Secret)
 	// userService := services.NewUserService(dbConn)
 
 	authHandler := handlers.NewAuthHandler(authService)
@@ -91,11 +91,11 @@ func main() {
 
 	// 使用 logrus 记录服务器启动信息
 	log.WithFields(log.Fields{
-		"port": cfg.Port,
+		"port": cfg.Server.Port,
 	}).Info("Server is running")
 
 	// 使用 logrus 记录致命错误并退出程序
-	if err := router.Run(":" + cfg.Port); err != nil {
+	if err := router.Run(":" + cfg.Server.Port); err != nil {
 		log.WithError(err).Fatal("Failed to start server")
 	}
 	log.Info("程序启动完成")

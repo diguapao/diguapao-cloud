@@ -12,9 +12,9 @@ var rdb *redis.Client
 
 func InitRedis(cfg *config.Config) {
 	rdb = redis.NewClient(&redis.Options{
-		Addr:     cfg.RedisURL,
-		Password: cfg.RedisPWD,
-		DB:       cfg.RedisDB,
+		Addr:     cfg.Redis.URL,
+		Password: cfg.Redis.Pwd,
+		DB:       cfg.Redis.DB,
 	})
 
 	ctx := context.Background()

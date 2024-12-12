@@ -1,10 +1,14 @@
 server:
-  port: 8080
+  port: 6363
 database:
-  url: "postgres://user:password@localhost/dbname?sslmode=disable"
+  dialect: mariadb  # 或者 mariadb
+  postgres:
+    url: postgres://root:root@192.168.11.130/sso?sslmode=disable
+  mariadb:
+    url: root:root@tcp(192.168.11.66:3306)/sso?parseTime=true
 redis:
-  url: "redis://localhost:6379"
-  pwd: 123456
+  url: redis://192.168.11.66:6379
+  pwd: redis
   db: 0
 security:
-  secret: "examples-project-go"
+  secret: examples-project-go
