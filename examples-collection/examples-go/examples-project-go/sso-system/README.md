@@ -59,6 +59,7 @@ go get -u github.com/jmoiron/sqlx
 go get -u github.com/ory/hydra-client-go
 go get -u github.com/spf13/viper
 go get -u github.com/sirupsen/logrus
+go get -u github.com/go-sql-driver/mysql
 
 ```
 
