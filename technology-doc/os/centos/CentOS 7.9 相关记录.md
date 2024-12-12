@@ -1,4 +1,4 @@
-# [CentOS 7.9 设置静态 IP.md](CentOS%207.9%20%E8%AE%BE%E7%BD%AE%E9%9D%99%E6%80%81%20IP.md)
+# CentOS 7.9 相关记录
 
 ## 配置静态IP
 
@@ -61,4 +61,30 @@ ip addr show ens33
 
 ```shell
 sudo systemctl stop NetworkManager && sudo systemctl disable NetworkManager
+```
+
+## 如何产看 xxl-job accessToken
+
+在笔者的机器上，xxljob安装目录位于：/usr/local/xxljob/xxl-job-2.4.1/
+
+```shell
+#安装目录有如下内容
+[root@javaevn xxl-job-admin]# ll /usr/local/xxljob/xxl-job-2.4.1/
+total 92
+drwxr-xr-x. 4 root root   128 Oct 30 20:10 doc
+-rwxr-xr-x. 1 root root 35141 Oct 30 20:10 LICENSE
+-rwxr-xr-x. 1 root root   679 Oct 30 20:10 NOTICE
+-rwxr-xr-x. 1 root root  4409 Oct 30 20:10 pom.xml
+-rwxr-xr-x. 1 root root 42756 Oct 30 20:10 README.md
+drwxr-xr-x. 4 root root    64 Oct 30 20:10 xxl-job-admin
+drwxr-xr-x. 3 root root    32 Oct 30 20:10 xxl-job-core
+drwxr-xr-x. 4 root root   104 Oct 30 20:10 xxl-job-executor-samples
+
+#查看 accessToken
+[root@javaevn resources]# cat /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/src/main/resources/application.properties |
+grep 'accessToken'
+xxl.job.accessToken=default_token
+
+
+
 ```

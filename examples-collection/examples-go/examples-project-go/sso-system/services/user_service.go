@@ -12,7 +12,7 @@ type User struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Email    string `json:"email"`
-	role     string `json:"role"`
+	Role     string `json:"role"`
 }
 
 type UserService struct {
@@ -25,6 +25,7 @@ func NewUserService(db *sql.DB) *UserService {
 	}
 }
 
+// CreateUser 创建新用户
 func (us *UserService) CreateUser(user *User) (int, error) {
 	// 验证输入
 	if err := validateUser(user); err != nil {

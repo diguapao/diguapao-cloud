@@ -121,16 +121,18 @@ func (db *Database) GetDbUrl() (string, error) {
 		if db.PostgresURL == "" {
 			return "", fmt.Errorf("missing postgres URL")
 		}
+		dbUrl := db.PostgresURL
 		db.PostgresURL = ""
 		db.MariaDBURL = ""
-		return db.PostgresURL, nil
+		return dbUrl, nil
 	case "mariadb":
 		if db.MariaDBURL == "" {
 			return "", fmt.Errorf("missing mariadb URL")
 		}
+		dbUrl := db.MariaDBURL
 		db.PostgresURL = ""
 		db.MariaDBURL = ""
-		return db.MariaDBURL, nil
+		return dbUrl, nil
 	default:
 		return "", fmt.Errorf("invalid database dialect")
 	}
