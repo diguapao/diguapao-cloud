@@ -50,12 +50,12 @@ func (s *AuthService) Login(username string, password string) (string, error) {
 	claims := map[string]interface{}{
 		"sub":  user.ID,                               // 用户 ID
 		"exp":  time.Now().Add(24 * time.Hour).Unix(), // 令牌有效期为24小时
-		"role": user.role,                             // 用户角色
+		"role": user.Role,                             // 用户角色
 	}
 
 	// 构建JWT令牌
 	token, err := jwt.NewBuilder().
-		Issuer(`github.com/lestrrat-go/jwx`).
+		Issuer(`sso-system`).
 		IssuedAt(time.Now()).
 		Claim("claims", claims).
 		Build()
@@ -79,24 +79,6 @@ func (s *AuthService) Login(username string, password string) (string, error) {
 	return string(signedToken), nil
 }
 
-// CreateUser 创建新用户
-func (s *AuthService) CreateUser(username string, email string, password string) (int, error) {
-	// 对密码进行哈希处理
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return 0, fmt.Errorf("failed to hash password: %w", err)
-	}
-
-	query := `INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id`
-	var userID int
-	err = s.db.QueryRow(query, username, email, hashedPassword).Scan(&userID)
-	if err != nil {
-		return 0, fmt.Errorf("failed to create user: %w", err)
-	}
-
-	return userID, nil
-}
-
 // ValidateToken 验证给定的令牌字符串并返回用户 ID 和错误
 func (s *AuthService) ValidateToken(tokenStr string) (int, error) {
 	// 解析 JWT 令牌
@@ -108,14 +90,14 @@ func (s *AuthService) ValidateToken(tokenStr string) (int, error) {
 	claims := token.PrivateClaims()
 	log.Info("Error parsing JSON string: %v", claims)
 
-	userID := token.Subject()
-	// 检查 userID 是否为空或仅包含空白字符
-	if len(strings.TrimSpace(userID)) == 0 {
+	userId := token.Subject()
+	// 检查 userId 是否为空或仅包含空白字符
+	if len(strings.TrimSpace(userId)) == 0 {
 		// userID 是空的或者只包含空白字符
 		return 0, fmt.Errorf("invalid user ID in token")
 	}
 
-	userIDInt, err := strconv.Atoi(userID)
+	userIdInt, err := strconv.Atoi(userId)
 
-	return userIDInt, nil
+	return userIdInt, nil
 }

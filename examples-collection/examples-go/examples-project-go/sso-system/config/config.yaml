@@ -7,7 +7,7 @@ database:
   mariadb:
     url: root:root@tcp(192.168.11.66:3306)/sso?parseTime=true
 redis:
-  url: redis://192.168.11.66:6379
+  url: 192.168.11.66:6379
   pwd: redis
   db: 0
 security:

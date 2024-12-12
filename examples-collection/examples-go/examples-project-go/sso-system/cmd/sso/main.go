@@ -52,23 +52,31 @@ func main() {
 		log.Fatalf("Error loading configuration: %v", err)
 	}
 
+	// 初始化数据库连接
 	dbConn := db.NewMariadb(cfg.Database.DbUrl)
+	// 在函数结束时执行，即使发生了错误或提前返回
 	defer dbConn.Close()
 
+	// 初始化 Redis 连接
 	redis.InitRedis(cfg)
 
 	router := gin.Default()
 
 	authService := services.NewAuthService(dbConn, redis.GetRedisClient(), cfg.Security.Secret)
-	// userService := services.NewUserService(dbConn)
+	userService := services.NewUserService(dbConn)
 
-	authHandler := handlers.NewAuthHandler(authService)
-	// userHandler := handlers.NewUserHandler(userService)
+	authHandler := handlers.NewAuthHandler(authService, userService, cfg)
+	userHandler := handlers.NewUserHandler(userService)
 
 	api := router.Group("/api")
 	{
 		api.POST("/login", authHandler.Login)
 		api.POST("/register", authHandler.Register)
+		api.POST("/refreshToken", authHandler.RefreshToken)
+		api.POST("/getUserByID", userHandler.GetUserByID)
+		api.POST("/getUserByID", userHandler.GetUserByID)
+		api.POST("/updateUser", userHandler.UpdateUser)
+		api.POST("/deleteUser", userHandler.DeleteUser)
 		protected := api.Group("")
 		protected.Use(middleware.AuthMiddleware(authService))
 		{
@@ -98,5 +106,5 @@ func main() {
 	if err := router.Run(":" + cfg.Server.Port); err != nil {
 		log.WithError(err).Fatal("Failed to start server")
 	}
-	log.Info("程序启动完成")
+	log.Info("程序结束")
 }
