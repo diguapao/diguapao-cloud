@@ -6,13 +6,13 @@
         <groupId>org.diguapao.cloud</groupId>
         <artifactId>diguapao-cloud</artifactId>
         <version>${revision}</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../../../pom.xml</relativePath>
     </parent>-->
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.diguapao.cloud.dcg</groupId>
     <artifactId>examples-code-generator</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>2024.10.12</version>
 
     <properties>
         <spring-boot.version>3.2.6</spring-boot.version>

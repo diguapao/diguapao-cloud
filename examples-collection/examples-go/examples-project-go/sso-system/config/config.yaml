@@ -1,0 +1,10 @@
+server:
+  port: 8080
+database:
+  url: "postgres://user:password@localhost/dbname?sslmode=disable"
+redis:
+  url: "redis://localhost:6379"
+  pwd: 123456
+  db: 0
+security:
+  secret: "examples-project-go"
