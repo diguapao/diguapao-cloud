@@ -63,7 +63,7 @@ ip addr show ens33
 sudo systemctl stop NetworkManager && sudo systemctl disable NetworkManager
 ```
 
-## 如何产看 xxl-job accessToken
+## 如何查看 xxl-job accessToken
 
 在笔者的机器上，xxljob安装目录位于：/usr/local/xxljob/xxl-job-2.4.1/
 
