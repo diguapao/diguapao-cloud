@@ -677,7 +677,7 @@ touch /usr/local/rocketmq/rocketmq-dashboard/logs/output.log && touch /usr/local
 #重新加载服务的配置文件
 systemctl daemon-reload
 
-#启用开机启动，启动服务，查看服务状态
+#启用开机启动，启动服务，查看服务状态（若启动不来则手动启动，先启动 namesrv、namesrv 启动成功后再启动 broker，而后在启动 rocketmq_dashboard)
 systemctl enable rocketmq_namesrv.service && systemctl restart rocketmq_namesrv.service && systemctl status rocketmq_namesrv.service
 systemctl enable rocketmq_broker.service && systemctl restart rocketmq_broker.service && systemctl status rocketmq_broker.service
 systemctl enable rocketmq_dashboard.service && systemctl restart rocketmq_dashboard.service && systemctl status rocketmq_dashboard.service
@@ -1019,6 +1019,7 @@ firewall-cmd --zone=public --add-port=11800/tcp --permanent
 firewall-cmd --zone=public --add-port=12800/tcp --permanent
 
 #查看日志
-tail /usr/local/skywalking/apache-skywalking-apm-bin/logs/oap.log -f -n 500
+tail -f /usr/local/skywalking/apache-skywalking-apm-bin/logs/skywalking-oap-server.log -n 500
+tail -f /usr/local/skywalking/apache-skywalking-apm-bin/logs/oap.log -n 500
 ```
 
