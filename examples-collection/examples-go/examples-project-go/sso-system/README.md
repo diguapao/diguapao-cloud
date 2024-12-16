@@ -1,4 +1,4 @@
-# 一个单点登录（SSO）系统
+# 一个单基于 Golang 开发点登录（SSO）系统
 
 ## 技术栈
 
@@ -18,29 +18,29 @@
 
 ```
 sso-system/
-├── cmd/
-│   └── sso/
-│       └── main.go
-├── config/
-│   └── config.go
-├── handlers/
-│   ├── auth_handler.go
-│   └── user_handler.go
-├── middleware/
-│   └── auth_middleware.go
-├── models/
-│   └── user.go
-├── pkg/
+├── cmd/                    应用程序启动的地方
+│   └── sso/                
+│       └── main.go         程序的主文件，负责初始化配置、设置路由和启动 HTTP 服务器
+├── config/                 集中管理应用配置
+│   └── config.go           定义配置结构体，并提供加载配置的方法（例如从环境变量、配置文件等）
+├── handlers/               负责接收和响应 HTTP 请求
+│   ├── auth_handler.go     处理与认证相关的 HTTP 请求，如登录、注册、刷新令牌等
+│   └── user_handler.go     处理用户管理相关的 HTTP 请求，如获取用户信息、更新用户资料等
+├── middleware/             处理跨多个处理器的通用逻辑
+│   └── auth_middleware.go  实现认证中间件，如检查访问令牌的有效性，保护需要授权的端点
+├── models/                 定义应用程序的数据结构
+│   └── user.go             定义 User 结构体，表示用户的属性和行为
+├── pkg/                    包含各种可复用的功能组件
 │   ├── db/
-│   │   └── db.go
+│   │   └── db.go           提供数据库连接管理和操作方法
 │   ├── redis/
-│   │   └── redis.go
+│   │   └── redis.go        提供 Redis 连接管理和操作方法
 │   └── token/
-│       └── token.go
-├── services/
-│   ├── auth_service.go
-│   └── user_service.go
-└── go.mod
+│       └── token.go        实现 JWT 签发、验证等功能
+├── services/               核心业务规则和服务的实现
+│   ├── auth_service.go     包含认证相关的业务逻辑，如用户登录、密码重置等
+│   └── user_service.go     包含用户管理相关的业务逻辑，如创建用户、查询用户信息等
+└── go.mod                  Go 模块文件，定义了项目的模块名称以及所有直接和间接依赖的外部库版本
 
 ```
 
