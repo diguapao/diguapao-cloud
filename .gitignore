@@ -29,5 +29,6 @@ hs_err_pid*
 /**/.venv
 /**/.idea
 /**/*.bkp
+/**/*.iml
 /examples-collection/examples-code-generator/src/main/java/com/*
 /.github/workflows/mirror-from-gitee.yml
