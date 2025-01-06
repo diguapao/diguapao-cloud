@@ -1023,3 +1023,105 @@ tail -f /usr/local/skywalking/apache-skywalking-apm-bin/logs/skywalking-oap-serv
 tail -f /usr/local/skywalking/apache-skywalking-apm-bin/logs/oap.log -n 500
 ```
 
+## 部署 RabbitMQ
+
+### 安装 erlang
+
+```shell
+# git bash 连接远程主机，创建目录并进入目录
+ssh -t root@192.168.11.66 'mkdir -p /usr/local/erlang && mkdir -p /usr/local/rabbitmq && cd /usr/local/erlang/ && pwd && ls -la && bash'
+
+# 查看CPU架构/系统内核版本
+uname -m
+lscpu
+cat /proc/cpuinfo | grep 'model name' | uniq
+cat /proc/cpuinfo | grep 'architecture' | uniq
+uname -r
+uname -a
+hostnamectl
+
+# 安装所需的依赖
+sudo yum update -y
+sudo yum install -y logrotate
+sudo yum install openssl-libs libstdc++ ncurses-compat-libs libtinfo libz zlib
+
+# sudo mkdir -p /usr/local/erlang && cd /usr/local/erlang
+
+# 下载 Erlang（需下载 CentOS7 支持的版本， uname -r 命令显示：3.10.0-1160.119.1.el7.x86_64，因此我们下载 el7 的版本）
+wget https://github.com/rabbitmq/erlang-rpm/releases/download/v25.3.2.16/erlang-25.3.2.16-1.el7.x86_64.rpm
+# 如有不兼容版本需先行卸载
+sudo yum remove erlang
+sudo rm -rf /usr/lib/erlang
+# 安装 Erlang
+sudo rpm -i erlang-25.3.2.16-1.el7.x86_64.rpm
+# 验证 Erlang
+erl -v
+# 或者
+erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().'
+
+```
+
+### 安装 rabbitmq
+```shell
+ssh -t root@192.168.11.66 'mkdir -p /usr/local/rabbitmq && cd /usr/local/rabbitmq/ && pwd && ls -la && bash'
+# 下载 RabbitMQ（需下载 Erlang 支持的版本）
+wget https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.10.25/rabbitmq-server-3.10.25-1.el8.noarch.rpm
+wget https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.10.25/rabbitmq-server-3.10.25-1.el8.noarch.rpm.asc
+# 安装 RabbitMQ
+sudo rpm --import https://www.rabbitmq.com/rabbitmq-release-signing-key.asc
+sudo rpm -i rabbitmq-server-3.10.25-1.el8.noarch.rpm
+# 配置，配置文件不存在则创建
+sudo touch /etc/rabbitmq/rabbitmq.conf
+sudo chown rabbitmq:rabbitmq /etc/rabbitmq/rabbitmq.conf
+sudo chmod 644 /etc/rabbitmq/rabbitmq.conf
+vim /etc/rabbitmq/rabbitmq.conf
+
+# 优化最大打开文件限制，在文件末尾前面加入：rabbitmq(启动的用户名) - nofile 65535
+vim /etc/security/limits.conf
+# 查看 RabbitMQ 是以哪个用户身份启动的
+cat /lib/systemd/system/rabbitmq-server.service | grep User
+# 我的是：rabbitmq - nofile 65535
+
+# 让 RabbitMQ Server 作为守护进程启动
+systemctl enable rabbitmq-server
+# 启动
+systemctl start  rabbitmq-server
+# 查看状态
+systemctl status rabbitmq-server
+# 停止
+systemctl stop   rabbitmq-server
+# 重启
+systemctl restart   rabbitmq-server
+
+# 添加web管理插件
+rabbitmq-plugins enable rabbitmq_management
+# 防火墙开放端口并重启防火墙
+firewall-cmd --zone=public --add-port=5672/tcp --permanent
+firewall-cmd --zone=public --add-port=15672/tcp --permanent
+firewall-cmd --reload
+
+# 新增用户，账号密码都设置为 admin
+rabbitmqctl add_user admin admin
+# 分配权限
+rabbitmqctl set_user_tags admin administrator
+# 浏览器访问管理界面
+http://192.168.11.66:15672/#/
+
+# 卸载 RabbitMQ（！！！ 切记，一定要注意观察卸载的项目有哪些，包含依赖项等，避免误卸载掉不应该卸载的应用）
+sudo yum remove rabbitmq-server
+sudo rm -rf /usr/lib/rabbitmq/
+sudo rm -rf /var/lib/rabbitmq/
+sudo rm -rf /var/log/rabbitmq/
+sudo rm -rf /etc/rabbitmq/
+sudo yum remove erlang
+sudo rm -rf /usr/lib/erlang/
+sudo rm -rf /var/lib/erlang/
+sudo rm -rf /var/log/erlang/
+sudo rm -rf /etc/erlang/
+sudo yum remove socat
+sudo rm -rf /usr/lib/socat/
+sudo rm -rf /var/lib/socat/
+sudo rm -rf /var/log/socat/
+sudo rm -rf /etc/socat/
+
+```
