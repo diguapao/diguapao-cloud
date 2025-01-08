@@ -88,3 +88,17 @@ xxl.job.accessToken=default_token
 
 
 ```
+
+## 时间
+
+### 显示系统时间
+
+```shell
+date
+```
+
+### 手动设置系统时间
+
+```shell
+sudo date -s "2025-01-08 10:13:40"
+```
