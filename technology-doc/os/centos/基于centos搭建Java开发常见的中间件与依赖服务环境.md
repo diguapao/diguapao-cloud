@@ -77,8 +77,6 @@ sudo yum makecache
 sudo yum update
 ```
 
-
-
 ## 部署 MariaDB 11.4
 
 使用 MariaDB 11.4 代替 MySQL Server
@@ -174,8 +172,6 @@ exclude=mariadb* MariaDB*
 #sudo systemctl daemon-reload
 ```
 
-
-
 ## 部署 MongoDB Community Edition 6.0
 
 官方文档：[在 Red Hat 或 CentOS 上安装 MongoDB Community Edition - MongoDB 手册 v6.0](https://www.mongodb.com/zh-cn/docs/v6.0/tutorial/install-mongodb-on-red-hat/)
@@ -238,8 +234,6 @@ sudo firewall-cmd --reload
 数据目录 /var/lib/mongo
 
 日志目录 /var/log/mongodb
-
-
 
 ## 部署 Redis 7.0.2
 
@@ -321,8 +315,6 @@ sudo firewall-cmd --permanent --add-port=6379/tcp
 sudo firewall-cmd --reload
 ```
 
-
-
 ## 部署 Openjdk8
 
 ```shell
@@ -351,8 +343,6 @@ source ~/.bashrc
 #验证
 java -version
 ```
-
-
 
 ## 部署 Maven 3.9.9
 
@@ -387,8 +377,6 @@ vi /usr/local/maven/apache-maven-3.9.9/conf/settings.xml
 #调整为如下内容
 <localRepository>/usr/local/maven/apache-maven-3.9.9/.m2/repository</localRepository>
 ```
-
-
 
 ## 部署 Nacos 2.4.3
 
@@ -467,8 +455,6 @@ tail -f /usr/local/nacos/nacos/output.log -n 500
 #验证是否启动
 curl -L 127.0.0.1:8484/nacos/index.html
 ```
-
-
 
 ## 部署 xxl-job
 
@@ -568,8 +554,6 @@ cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin && nohup /usr/local/maven/apach
 tail /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log -f -n 500
 tail /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log -f -n 500
 ```
-
-
 
 ## 部署 RocketMQ 5.x
 
@@ -707,8 +691,6 @@ tail /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log 
 tail /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log -f -n 500
 tail /usr/local/rocketmq/rocketmq-dashboard/logs/output.log -f -n 500
 ```
-
-
 
 ## 部署 Elasticsearch 7.17.25、openjdk-11
 
@@ -944,8 +926,6 @@ tail /usr/local/rocketmq/rocketmq-dashboard/logs/output.log -f -n 500
 > tail /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_1/logs/javaevn-elasticsearchv7.17.25.log -f -n 500
 > ```
 
-
-
 ### 问题处理
 
 ### org.elasticsearch.discovery.MasterNotDiscoveredException: null
@@ -953,8 +933,6 @@ tail /usr/local/rocketmq/rocketmq-dashboard/logs/output.log -f -n 500
 主节点指定的名字要保证存在，别指定了不存在的节点名。
 
 ![image-20241030203008281](img.assets/image-20241030203008281.png)
-
-
 
 ## 部署 Skywalking 10.1.0
 
@@ -1042,17 +1020,11 @@ hostnamectl
 
 # 安装所需的依赖
 sudo yum update -y
-sudo yum install -y logrotate
-sudo yum install openssl-libs libstdc++ ncurses-compat-libs libtinfo libz zlib
-
-# sudo mkdir -p /usr/local/erlang && cd /usr/local/erlang
+sudo yum install logrotate openssl-libs libstdc++ ncurses-compat-libs libtinfo libz zlib
 
 # 下载 Erlang（需下载 CentOS7 支持的版本， uname -r 命令显示：3.10.0-1160.119.1.el7.x86_64，因此我们下载 el7 的版本）
 wget https://github.com/rabbitmq/erlang-rpm/releases/download/v25.3.2.16/erlang-25.3.2.16-1.el7.x86_64.rpm
-# 如有不兼容版本需先行卸载
-sudo yum remove erlang
-sudo rm -rf /usr/lib/erlang
-# 安装 Erlang
+# 安装 Erlang（如有不兼容版本需先行卸载，卸载方法见后续内容）
 sudo rpm -i erlang-25.3.2.16-1.el7.x86_64.rpm
 # 验证 Erlang
 erl -v
@@ -1062,6 +1034,7 @@ erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().'
 ```
 
 ### 安装 rabbitmq
+
 ```shell
 ssh -t root@192.168.11.66 'mkdir -p /usr/local/rabbitmq && cd /usr/local/rabbitmq/ && pwd && ls -la && bash'
 # 下载 RabbitMQ（需下载 Erlang 支持的版本）
@@ -1106,6 +1079,12 @@ rabbitmqctl add_user admin admin
 rabbitmqctl set_user_tags admin administrator
 # 浏览器访问管理界面
 http://192.168.11.66:15672/#/
+
+```
+
+### 卸载 rabbitmq
+
+```shell
 
 # 卸载 RabbitMQ（！！！ 切记，一定要注意观察卸载的项目有哪些，包含依赖项等，避免误卸载掉不应该卸载的应用）
 sudo yum remove rabbitmq-server
