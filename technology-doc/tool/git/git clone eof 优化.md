@@ -39,3 +39,10 @@ git config --global http.version HTTP/1.1
 git config --global http.lowSpeedLimit 0
 git config --global http.lowSpeedTime 99999999
 ```
+
+git clone 报错“RPC failed”，可进行浅层克隆仓库再更新，例如：
+```shell
+git clone https://github.com/go-admin-team/go-admin.git --depth 1
+cd go-admin
+git fetch --unshallow
+```
