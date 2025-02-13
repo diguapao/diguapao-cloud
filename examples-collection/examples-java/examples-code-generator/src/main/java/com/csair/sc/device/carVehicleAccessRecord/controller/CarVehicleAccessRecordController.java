@@ -26,7 +26,7 @@ import java.util.Objects;
 /**
  * 车辆出入记录控制层
  *
- * @author LiPiao
+ * @author DiGuaPao
  * @version 1.0
  * @since 2024-11-22 11:12:50
  */
@@ -46,7 +46,7 @@ public class CarVehicleAccessRecordController {
      *
      * @param id 主键
      * @return {@link com.csair.sc.common.core.util.R<com.csair.sc.device.carVehicleAccessRecord.vo.CarVehicleAccessRecordVO>}
-     * @author LiPiao
+     * @author DiGuaPao
      * @since 2024-11-22 11:12:50
      */
     @Operation(summary = "获取车辆出入记录")
@@ -61,7 +61,7 @@ public class CarVehicleAccessRecordController {
      *
      * @param dto 车辆出入记录查询传输对象
      * @return {@link com.csair.sc.common.core.util.R<com.csair.sc.common.core.vo.PageResult>}
-     * @author LiPiao
+     * @author DiGuaPao
      * @since 2024-11-22 11:12:50
      */
     @PostMapping("/carVehicleAccessRecord/page")
@@ -79,7 +79,7 @@ public class CarVehicleAccessRecordController {
      *
      * @param dto 车辆出入记录查询传输对象
      * @return {@link com.csair.sc.common.core.util.R<List>}
-     * @author LiPiao
+     * @author DiGuaPao
      * @since 2024-11-22 11:12:50
      */
     @Operation(summary = "获取车辆出入记录列表")
@@ -93,7 +93,7 @@ public class CarVehicleAccessRecordController {
      *
      * @param dto 车辆出入记录传输对象
      * @return {@link com.csair.sc.common.core.util.R<String>}
-     * @author LiPiao
+     * @author DiGuaPao
      * @since 2024-11-22 11:12:50
      */
     @Operation(summary = "新增车辆出入记录")
@@ -107,7 +107,7 @@ public class CarVehicleAccessRecordController {
      *
      * @param dto 车辆出入记录传输对象
      * @return {@link com.csair.sc.common.core.util.R<String>}
-     * @author LiPiao
+     * @author DiGuaPao
      * @since 2024-11-22 11:12:50
      */
     @Operation(summary = "编辑车辆出入记录")
@@ -125,7 +125,7 @@ public class CarVehicleAccessRecordController {
      *
      * @param id 主键
      * @return {@link com.csair.sc.common.core.util.R<Boolean>}
-     * @author LiPiao
+     * @author DiGuaPao
      * @since 2024-11-22 11:12:50
      */
     @Operation(summary = "删除车辆出入记录")

@@ -12,7 +12,7 @@ import java.time.LocalDate;
 /**
  * 车辆出入记录实体类
  *
- * @author LiPiao
+ * @author DiGuaPao
  * @version 1.0
  * @since 2024-11-22 11:12:50
  */
