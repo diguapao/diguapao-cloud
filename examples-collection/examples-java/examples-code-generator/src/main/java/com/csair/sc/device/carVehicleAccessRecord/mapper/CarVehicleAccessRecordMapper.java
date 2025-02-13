@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 /**
  * 车辆出入记录Mapper 接口
  *
- * @author LiPiao
+ * @author DiGuaPao
  * @version 1.0
  * @since 2024-11-22 11:12:50
  */

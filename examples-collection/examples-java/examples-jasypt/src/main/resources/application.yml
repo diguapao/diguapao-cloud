@@ -1,0 +1,14 @@
+rabbitmq:
+  config-map:
+    upms-plugin:
+      addresses: 192.168.1.10:5672,192.168.1.11:5672,192.168.1.12:5672
+      username: guest
+      password: ENC(sPyA86ZwbpEgbkQEtlkyMMAS8y48Wsn6aa0T9SwsPGZoYq1iGc5WvzBt+5sAt7z7)
+      virtual-host: guest
+      upms-plugin-notice:
+        exchange: guest.exchange
+        queue: guest.queue.${spring.profiles.active}
+        group: guest.group
+
+#用于 jasypt 解密的密码，配置到启动参数里
+jasypt.encryptor.password: "examples-jasypt"

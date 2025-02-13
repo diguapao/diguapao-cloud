@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * 车辆出入记录VO
  *
- * @author LiPiao
+ * @author DiGuaPao
  * @version 1.0
  * @since 2024-11-22 11:12:50
  */
@@ -45,7 +45,7 @@ public final class PageResult<T> implements Serializable {
      * 返回空分页结果，不指定总数
      *
      * @return 空分页结果
-     * @author LiPiao
+     * @author DiGuaPao
      * @since 2024-11-22 11:12:50
      */
     public static <T> PageResult<T> empty() {
@@ -56,7 +56,7 @@ public final class PageResult<T> implements Serializable {
      * 返回空分页结果，指定总数
      *
      * @return 空分页结果
-     * @author LiPiao
+     * @author DiGuaPao
      * @since 2024-11-22 11:12:50
      */
     public static <T> PageResult<T> empty(Long total) {
