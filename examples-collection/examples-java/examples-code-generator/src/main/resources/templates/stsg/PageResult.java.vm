@@ -3,6 +3,7 @@ package ${packagePrefix}.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,9 @@ import java.util.List;
  */
 @Data
 @Schema(description = "分页结果")
-public final class ${className}<T> implements Serializable {
+public final class ${className}<T> extends PageParam implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     /**
      * 数据
      */
@@ -29,6 +32,13 @@ public final class ${className}<T> implements Serializable {
     private Long total;
 
     public PageResult() {
+    }
+
+    public PageResult(List<T> list, Long total, Integer pageNo, Integer pageSize) {
+        this.list = list;
+        this.total = total;
+        super.setPageNo(pageNo);
+        super.setPageSize(pageSize);
     }
 
     public PageResult(List<T> list, Long total) {
