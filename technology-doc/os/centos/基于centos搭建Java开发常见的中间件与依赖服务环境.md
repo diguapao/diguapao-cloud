@@ -608,7 +608,7 @@ LimitNOFILE=65536
 WantedBy=multi-user.target
 EOF
 
-#开机自启 rocketmq_mqnamesrv
+#开机自启 rocketmq_broker
 sudo tee /etc/systemd/system/rocketmq_broker.service <<EOF
 [Unit]
 Description=RocketMQ Broker Service
@@ -686,10 +686,14 @@ netstat -tulnp | grep 8181
 ss -tnlp | grep :8181
 lsof -i :8181
 
-#查看仪表盘日志
+#查看 rocketmq 相关日志
 tail /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log -f -n 500
 tail /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log -f -n 500
 tail /usr/local/rocketmq/rocketmq-dashboard/logs/output.log -f -n 500
+
+# 停止 broker
+/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqshutdown broker
+
 ```
 
 ## 部署 Elasticsearch 7.17.25、openjdk-11

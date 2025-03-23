@@ -32,3 +32,4 @@ hs_err_pid*
 /**/*.iml
 /examples-collection/examples-code-generator/src/main/java/com/*
 /.github/workflows/mirror-from-gitee.yml
+/combat-series/**
