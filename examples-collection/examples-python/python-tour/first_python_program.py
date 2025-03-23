@@ -1,5 +1,4 @@
 # 手机充值
-import datetime
 
 
 def phone_recharge():
@@ -31,5 +30,45 @@ def print_shopping_receipts():
     print("\n··················································")
 
 
+# 逻辑运算符
+def demo01():
+    result_one = 0 or 3 + 5  # 左操作数布尔值为 False
+    print(result_one)
+    result_two = 3 or 0  # 左操作数布尔值为 True
+    print(result_two)
+
+    result_three = 3 - 3 and 5  # 左操作数布尔值为 False
+    print(result_three)
+    result_four = 3 - 4 and 5  # 左操作数布尔值为 True
+    print(result_four)
+
+    result_five = not 3 - 5  # 操作数布尔值为 True
+    print(result_five)
+    result_six = not False  # 操作数布尔值为 False
+    print(result_six)
+
+
+# 成员运算符
+def demo2():
+    words = "abcdefghijklmnopqrstuvwxyz"  # 保存字符串类型数据的变量
+    print("f" in words)  # 检测字符串中是否有 f
+    print("R" not in words)  # 检测字符串中是否没有 R
+
+
+# 位运算
+def demo3():
+    num_one = 10
+    num_two = 11
+    print("左移两位：", num_one << 2)
+    print("右移两位：", num_one >> 2)
+    print("按位与2：", num_one & 2)
+    print("按位与2：", num_one | 2)
+    print("按位异或：", num_one ^ num_two)
+    print("按位取反：", ~num_one)
+
+    # 二进制转十进制
+    print("1010 转为十进制：", int("1010", 2))
+
+
 if __name__ == '__main__':
-    print_shopping_receipts()
+    demo3()
