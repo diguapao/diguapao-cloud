@@ -4,9 +4,13 @@
 
 ##### Core Business
 
+##### [business-center](business-center)
+
     Browse products -> Add cart -> Order -> Deduct inventory -> Pay...
 
 #### Software Architecture
+
+##### [business-center](business-center)
 
     Microservice architecture based on Nacos, Dubbo and Spring Cloud Gateway
     These include: API  diguapao-center-gateway, diguapao-center-product, diguapao-center-inventory, and diguapao-center-trade
@@ -14,11 +18,11 @@
 
 #### Installation
 
-1. 
+1.
 
 #### Instructions
 
-1. 
+1.
 
 #### Contribution
 
