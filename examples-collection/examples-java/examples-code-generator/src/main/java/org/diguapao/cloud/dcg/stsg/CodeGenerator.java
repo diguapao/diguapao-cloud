@@ -35,14 +35,14 @@ public class CodeGenerator {
 
     private String tablePrefix;
 
-    private static final String TEMPLATE_DIR = getUserDir() + "examples-collection/examples-code-generator/src/main/resources/templates/stsg/";
-    private static final String OUTPUT_DIR = getUserDir() + "examples-collection/examples-code-generator/src/main/java/";
+    private static final String TEMPLATE_DIR = getUserDir() + "examples-collection/examples-java/examples-code-generator/src/main/resources/templates/stsg/";
+    private static final String OUTPUT_DIR = getUserDir() + "examples-collection/examples-java/examples-code-generator/src/main/java/";
 
     public static void main(String[] args) throws IOException {
         try {
             CodeGenerator cg = new CodeGenerator("car_");
             //建表语句SQL文件
-            String sqlFilePath = getUserDir() + "examples-collection/examples-code-generator/src/main/java/org/diguapao/cloud/dcg/stsg/TapeGenSql.sql";
+            String sqlFilePath = getUserDir() + "examples-collection/examples-java/examples-code-generator/src/main/java/org/diguapao/cloud/dcg/stsg/TapeGenSql.sql";
             List<TableParser.TableInfo> tableInfos = TableParser.parseSqlFile(sqlFilePath, cg.getTablePrefix());
 
             for (int i = 0; i < tableInfos.size(); i++) {
