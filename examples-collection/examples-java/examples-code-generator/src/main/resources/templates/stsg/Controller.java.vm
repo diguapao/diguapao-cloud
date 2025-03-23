@@ -35,7 +35,7 @@ import java.util.Objects;
 @RestController
 // @RequiredArgsConstructor
 // @SecurityRequirement(name = HttpHeaders.AUTHORIZATION)
-@Tag(description = "${tableComment}", name = "${tableComment}管理")
+@Tag(name = "${tableComment}", description = "${tableComment}管理")
 public class ${className}Controller {
 
     @Resource
