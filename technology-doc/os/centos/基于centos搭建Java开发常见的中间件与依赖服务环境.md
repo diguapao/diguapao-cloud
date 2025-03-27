@@ -315,6 +315,263 @@ sudo firewall-cmd --permanent --add-port=6379/tcp
 sudo firewall-cmd --reload
 ```
 
+### 创建集群
+
+#### node1
+
+```shell
+# 配置原本部署好的一个 redis 节点，作为 node1
+# node1
+# 编辑配置文件，入以下配置（！！！原有配置需先备份）
+cp /usr/local/redis/redis-7.0.2/redis.conf /usr/local/redis/redis-7.0.2/redis.conf_back_20250327
+sudo tee /usr/local/redis/redis-7.0.2/redis.conf <<EOF
+# 每个节点的端口号不同，分别设置为 6379、6380、6381
+port 6379
+# 绑定到本地地址（如果需要远程访问，可以改为 0.0.0.0）
+bind 0.0.0.0
+# 认证密码
+requirepass redis
+# 设置主从复制时的密码
+masterauth redis
+# 启用集群模式
+cluster-enabled yes
+# 集群配置文件路径
+cluster-config-file /usr/local/redis/redis-7.0.2/node.conf
+# 节点超时时间（毫秒）
+cluster-node-timeout 15000
+
+# 开启 AOF 持久化（可选），默认每秒执行一次 fsync
+appendonly yes
+ # AOF 文件名
+appendfilename "appendonly.aof"
+# 每秒同步一次到磁盘
+appendfsync everysec
+
+# 启用 RDB 持久化
+# 如果 900 秒内有至少 1 个键被修改，则触发保存
+save 900 1
+# 如果 300 秒内有至少 10 个键被修改，则触发保存
+save 300 10
+# 如果 60 秒内有至少 10000 个键被修改，则触发保存
+save 60 10000
+
+ # 后台运行
+daemonize yes
+# PID 文件路径，根据端口号调整
+pidfile /usr/local/redis/redis-7.0.2/redis.pid
+# 日志文件路径
+logfile "redis.log"
+# 数据存储目录
+dir /usr/local/redis/redis-7.0.2/data
+EOF
+
+
+# 启动 node1 并查看状态
+systemctl start redis && systemctl status redis
+
+
+```
+
+#### node 2
+
+```shell
+
+# 创建 node2 配置目录
+mkdir -p /usr/local/redis/redis-7.0.2-node2
+# 编辑配置文件，入以下配置
+sudo tee /usr/local/redis/redis-7.0.2-node2/redis.conf <<EOF
+# 每个节点的端口号不同，分别设置为 6379、6380、6381
+port 6380
+# 绑定到本地地址（如果需要远程访问，可以改为 0.0.0.0）
+bind 0.0.0.0
+# 认证密码
+requirepass redis
+# 设置主从复制时的密码
+masterauth redis
+# 启用集群模式
+cluster-enabled yes
+# 集群配置文件路径
+cluster-config-file /usr/local/redis/redis-7.0.2-node2/node.conf
+# 节点超时时间（毫秒）
+cluster-node-timeout 15000
+
+# 开启 AOF 持久化（可选），默认每秒执行一次 fsync
+appendonly yes
+ # AOF 文件名
+appendfilename "appendonly.aof"
+# 每秒同步一次到磁盘
+appendfsync everysec
+
+# 启用 RDB 持久化
+# 如果 900 秒内有至少 1 个键被修改，则触发保存
+save 900 1
+# 如果 300 秒内有至少 10 个键被修改，则触发保存
+save 300 10
+# 如果 60 秒内有至少 10000 个键被修改，则触发保存
+save 60 10000
+
+ # 后台运行
+daemonize yes
+# PID 文件路径，根据端口号调整
+pidfile /usr/local/redis/redis-7.0.2-node2/redis.pid
+# 日志文件路径
+logfile "redis.log"
+# 数据存储目录
+dir /usr/local/redis/redis-7.0.2-node2/data
+EOF
+
+
+
+# node2 开机自启
+sudo tee /etc/systemd/system/redis6280.service <<EOF
+[Unit]
+Description=redis6280-server
+After=network.target
+
+[Service]
+Type=forking
+
+ExecStart=/usr/local/bin/redis-server /usr/local/redis/redis-7.0.2-node2/redis.conf
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+
+EOF
+# 重新加载系统服务并设置redis开机自启
+systemctl daemon-reload && systemctl enable redis6280
+# 启动 node2 并查看状态
+systemctl start redis6280 && systemctl status redis6280
+
+```
+
+#### node 3
+
+```shell
+
+# 创建 node3 配置目录
+mkdir -p /usr/local/redis/redis-7.0.2-node3
+# 编辑配置文件，写入以下配置
+sudo tee /usr/local/redis/redis-7.0.2-node3/redis.conf <<EOF
+# 每个节点的端口号不同，分别设置为 6379、6380、6381
+port 6381
+# 绑定到本地地址（如果需要远程访问，可以改为 0.0.0.0）
+bind 0.0.0.0
+# 认证密码
+requirepass redis
+# 设置主从复制时的密码
+masterauth redis
+# 启用集群模式
+cluster-enabled yes
+# 集群配置文件路径
+cluster-config-file /usr/local/redis/redis-7.0.2-node3/node.conf
+# 节点超时时间（毫秒）
+cluster-node-timeout 15000
+
+# 开启 AOF 持久化（可选），默认每秒执行一次 fsync
+appendonly yes
+ # AOF 文件名
+appendfilename "appendonly.aof"
+# 每秒同步一次到磁盘
+appendfsync everysec
+
+# 启用 RDB 持久化
+# 如果 900 秒内有至少 1 个键被修改，则触发保存
+save 900 1
+# 如果 300 秒内有至少 10 个键被修改，则触发保存
+save 300 10
+# 如果 60 秒内有至少 10000 个键被修改，则触发保存
+save 60 10000
+
+ # 后台运行
+daemonize yes
+# PID 文件路径，根据端口号调整
+pidfile /usr/local/redis/redis-7.0.2-node3/redis.pid
+# 日志文件路径
+logfile "redis.log"
+# 数据存储目录
+dir /usr/local/redis/redis-7.0.2-node3/data
+EOF
+
+
+# node3 开机自启
+sudo tee /etc/systemd/system/redis6281.service <<EOF
+[Unit]
+Description=redis6281-server
+After=network.target
+
+[Service]
+Type=forking
+
+ExecStart=/usr/local/bin/redis-server /usr/local/redis/redis-7.0.2-node3/redis.conf
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+
+EOF
+# 重新加载系统服务并设置redis开机自启
+systemctl daemon-reload && systemctl enable redis6281
+# 启动 node2 并查看状态
+systemctl start redis6281 && systemctl status redis6281
+
+
+```
+
+#### 创建 Redis 集群
+
+```shell
+# 执行以下命令，创建集群集群。-a 参数用于指定认证密码
+redis-cli --cluster create 127.0.0.1:6379 127.0.0.1:6380 127.0.0.1:6381 --cluster-replicas 0 -a redis
+```
+
+输出日志
+
+```textmate
+>>> Performing hash slots allocation on 3 nodes...
+Master[0] -> Slots 0 - 5460
+Master[1] -> Slots 5461 - 10922
+Master[2] -> Slots 10923 - 16383
+M: 77b5fa537910089bf8b0b9fff6e23d5df38da118 127.0.0.1:6379
+   slots:[0-5460] (5461 slots) master
+M: e8d4a6d4a347abcca169490fa20edcef76be50ba 127.0.0.1:6380
+   slots:[5461-10922] (5462 slots) master
+M: 1b884946c30e9a2180b008f0e86c9f2973030f9a 127.0.0.1:6381
+   slots:[10923-16383] (5461 slots) master
+Can I set the above configuration? (type 'yes' to accept): yes
+>>> Nodes configuration updated
+>>> Assign a different config epoch to each node
+>>> Sending CLUSTER MEET messages to join the cluster
+Waiting for the cluster to join
+
+>>> Performing Cluster Check (using node 127.0.0.1:6379)
+M: 77b5fa537910089bf8b0b9fff6e23d5df38da118 127.0.0.1:6379
+   slots:[0-5460] (5461 slots) master
+M: e8d4a6d4a347abcca169490fa20edcef76be50ba 127.0.0.1:6380
+   slots:[5461-10922] (5462 slots) master
+M: 1b884946c30e9a2180b008f0e86c9f2973030f9a 127.0.0.1:6381
+   slots:[10923-16383] (5461 slots) master
+[OK] All nodes agree about slots configuration.
+>>> Check for open slots...
+>>> Check slots coverage...
+[OK] All 16384 slots covered.
+```
+
+验证集群状态
+
+redis-cli -c -p 6379 -a redis cluster info
+
+redis-cli -c -p 6379 -a redis cluster nodes
+
+```shell
+[root@javaevn ~]# redis-cli -c -p 6379 cluster nodes
+e8d4a6d4a347abcca169490fa20edcef76be50ba 127.0.0.1:6380@16380 master - 0 1743058940296 2 connected 5461-10922
+77b5fa537910089bf8b0b9fff6e23d5df38da118 127.0.0.1:6379@16379 myself,master - 0 1743058940000 1 connected 0-5460
+1b884946c30e9a2180b008f0e86c9f2973030f9a 127.0.0.1:6381@16381 master - 0 1743058941305 3 connected 10923-16383
+```
+
+！！！ Redis 官方建议在生产环境中使用至少 6 个节点（3 主 3 从）来构建集群。这里为了快速搭建好，则省去了三个副本几点。
+
 ## 部署 Openjdk8
 
 ```shell

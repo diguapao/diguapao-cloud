@@ -13,10 +13,13 @@
     <url>https://github.com/diguapao/diguapao-cloud</url>
 
     <modules>
-        <module>diguapao-center-gateway</module>
-        <module>diguapao-center-product</module>
-        <module>diguapao-center-inventory</module>
-        <module>diguapao-center-trade</module>
+        <module>business-center</module>
+        <module>examples-collection</module>
+        <module>technology-doc</module>
+        <module>business-center/diguapao-center-gateway</module>
+        <module>business-center/diguapao-center-product</module>
+        <module>business-center/diguapao-center-inventory</module>
+        <module>business-center/diguapao-center-trade</module>
         <module>examples-collection/examples-java/examples-collection-java</module>
         <module>examples-collection/examples-java/examples-spring-aop</module>
         <module>examples-collection/examples-java/examples-mybatis-cache</module>
