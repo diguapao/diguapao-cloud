@@ -372,7 +372,7 @@ systemctl start redis && systemctl status redis
 
 ```
 
-#### node 2
+#### node2
 
 ```shell
 
@@ -423,9 +423,9 @@ EOF
 
 
 # node2 开机自启
-sudo tee /etc/systemd/system/redis6280.service <<EOF
+sudo tee /etc/systemd/system/redis6380.service <<EOF
 [Unit]
-Description=redis6280-server
+Description=redis6380-server
 After=network.target
 
 [Service]
@@ -439,13 +439,13 @@ WantedBy=multi-user.target
 
 EOF
 # 重新加载系统服务并设置redis开机自启
-systemctl daemon-reload && systemctl enable redis6280
+systemctl daemon-reload && systemctl enable redis6380
 # 启动 node2 并查看状态
-systemctl start redis6280 && systemctl status redis6280
+systemctl start redis6380 && systemctl status redis6380
 
 ```
 
-#### node 3
+#### node3
 
 ```shell
 
@@ -495,9 +495,9 @@ EOF
 
 
 # node3 开机自启
-sudo tee /etc/systemd/system/redis6281.service <<EOF
+sudo tee /etc/systemd/system/redis6381.service <<EOF
 [Unit]
-Description=redis6281-server
+Description=redis6381-server
 After=network.target
 
 [Service]
@@ -511,9 +511,9 @@ WantedBy=multi-user.target
 
 EOF
 # 重新加载系统服务并设置redis开机自启
-systemctl daemon-reload && systemctl enable redis6281
-# 启动 node2 并查看状态
-systemctl start redis6281 && systemctl status redis6281
+systemctl daemon-reload && systemctl enable redis6381
+# 启动 node3 并查看状态
+systemctl start redis6381 && systemctl status redis6381
 
 
 ```
