@@ -1,4 +1,4 @@
-package org.diguapao.cloud.framework.mybatis.entity;
+package org.diguapao.cloud.cache.mybatis.entity;
 
 import java.io.Serializable;
 

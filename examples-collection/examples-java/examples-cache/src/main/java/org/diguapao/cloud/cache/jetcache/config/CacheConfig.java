@@ -1,4 +1,4 @@
-package org.diguapao.cloud.framework.jetcache.config;
+package org.diguapao.cloud.cache.jetcache.config;
 
 import com.google.common.collect.Maps;
 import org.springframework.cache.CacheManager;

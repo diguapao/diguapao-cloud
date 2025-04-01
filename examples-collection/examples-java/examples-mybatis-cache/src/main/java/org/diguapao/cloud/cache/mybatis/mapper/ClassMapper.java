@@ -1,4 +1,4 @@
-package org.diguapao.cloud.framework.mybatis.mapper;
+package org.diguapao.cloud.cache.mybatis.mapper;
 
 import org.apache.ibatis.annotations.Param;
 
