@@ -1,4 +1,4 @@
-package org.diguapao.cloud.framework.jetcache;
+package org.diguapao.cloud.cache.jetcache;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

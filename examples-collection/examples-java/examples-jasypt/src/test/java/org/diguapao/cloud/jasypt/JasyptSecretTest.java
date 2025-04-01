@@ -1,4 +1,4 @@
-package org.diguapao.cloud.framework.jasypt;
+package org.diguapao.cloud.jasypt;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

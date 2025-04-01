@@ -1,12 +1,12 @@
-package mapper;
+package org.diguapao.cloud.cache.mybatis.mapper;
 
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.diguapao.cloud.framework.mybatis.entity.StudentEntity;
-import org.diguapao.cloud.framework.mybatis.mapper.ClassMapper;
-import org.diguapao.cloud.framework.mybatis.mapper.StudentMapper;
+import org.diguapao.cloud.cache.mybatis.entity.StudentEntity;
+import org.diguapao.cloud.cache.mybatis.mapper.ClassMapper;
+import org.diguapao.cloud.cache.mybatis.mapper.StudentMapper;
 import org.junit.Before;
 import org.junit.Test;
 

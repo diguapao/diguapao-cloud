@@ -1,8 +1,8 @@
-package org.diguapao.cloud.framework.mybatis.mapper;
+package org.diguapao.cloud.cache.mybatis.mapper;
 
 import org.apache.ibatis.annotations.Param;
 
-import org.diguapao.cloud.framework.mybatis.entity.StudentEntity;
+import org.diguapao.cloud.cache.mybatis.entity.StudentEntity;
 
 public interface StudentMapper {
 

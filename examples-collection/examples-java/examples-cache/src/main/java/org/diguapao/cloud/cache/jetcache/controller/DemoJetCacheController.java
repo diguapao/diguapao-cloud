@@ -1,4 +1,4 @@
-package org.diguapao.cloud.framework.jetcache.controller;
+package org.diguapao.cloud.cache.jetcache.controller;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;

@@ -1,4 +1,4 @@
-package org.diguapao.cloud.framework.jetcache.config;
+package org.diguapao.cloud.cache.jetcache.config;
 
 import com.alicp.jetcache.CacheBuilder;
 import com.alicp.jetcache.anno.CacheConsts;
