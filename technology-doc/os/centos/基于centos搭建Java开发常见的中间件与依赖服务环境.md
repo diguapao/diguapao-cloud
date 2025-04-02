@@ -1252,6 +1252,9 @@ EOF
 #重新加载systemd配置，设置开机启动并启动服务，然后查看服务状态
 sudo systemctl daemon-reload && sudo systemctl enable skywalking && sudo systemctl restart skywalking && sudo systemctl status skywalking
 
+# 开机启动时，可能会由于es尚未启动完毕导致skywalking报错，待es启动完毕后重启一下skywalking
+sudo systemctl restart skywalking && sudo systemctl status skywalking
+
 #防火墙放行
 firewall-cmd --zone=public --add-port=18080/tcp --permanent
 firewall-cmd --zone=public --add-port=11800/tcp --permanent
@@ -1260,7 +1263,77 @@ firewall-cmd --zone=public --add-port=12800/tcp --permanent
 #查看日志
 tail -f /usr/local/skywalking/apache-skywalking-apm-bin/logs/skywalking-oap-server.log -n 500
 tail -f /usr/local/skywalking/apache-skywalking-apm-bin/logs/oap.log -n 500
+
+
 ```
+
+### 集成 spring-boot/spring-cloud
+
+#### 引入依赖
+
+```xml
+
+<!--
+<properties>
+    <skywalking.version>9.4.0</skywalking.version>
+</properties>
+-->
+
+<dependencies>
+    <!-- skywalking -->
+    <dependency>
+        <groupId>org.apache.skywalking</groupId>
+        <artifactId>apm-toolkit-trace</artifactId>
+        <version>${skywalking.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.skywalking</groupId>
+        <artifactId>apm-toolkit-meter</artifactId>
+        <version>${skywalking.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.skywalking</groupId>
+        <artifactId>apm-toolkit-logback-1.x</artifactId>
+        <version>${skywalking.version}</version>
+    </dependency>
+</dependencies>
+
+```
+
+#### 配置 logback 日志
+
+```xml
+
+<configuration>
+    <appender name="grpc" class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.log.GRPCLogClientAppender">
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.mdc.TraceIdMDCPatternLogbackLayout">
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{tid}] [%thread] %-5level %logger{36} -%msg%n</Pattern>
+            </layout>
+        </encoder>
+    </appender>
+    <root level="INFO">
+        <appender-ref ref="grpc"/>
+    </root>
+</configuration>
+
+```
+
+#### Java-Agent 下载地址
+
+https://dlcdn.apache.org/skywalking/java-agent/9.4.0/apache-skywalking-java-agent-9.4.0.tgz
+
+#### idea Application -> Run -> EditConfigurations... 增加如下参数到 VM options 中
+
+```shell
+-javaagent:D:/soft/Program/skywalking/skywalking-agent/skywalking-agent.jar
+-Dskywalking.agent.service_name=service-your-appname
+-Dskywalking.collector.backend_service=http://192.168.11.66:11800
+```
+
+#### 参考资料
+
+https://skywalking.apache.org/zh/2020-04-19-skywalking-quick-start/
 
 ## 部署 RabbitMQ
 
