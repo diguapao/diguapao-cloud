@@ -1416,14 +1416,14 @@ touch /usr/local/rocketmq/rocketmq-dashboard/logs/output.log && touch /usr/local
 sudo systemctl daemon-reload
 
 #启用开机启动，启动服务，查看服务状态（若启动不来则手动启动，先启动 namesrv、namesrv 启动成功后再启动 broker，而后在启动 rocketmq_dashboard)
-sudo systemctl enable rocketmq_namesrv.service   && sudo systemctl restart rocketmq_namesrv.service   && sudo systemctl status rocketmq_namesrv.service
-sudo systemctl enable rocketmq_broker.service    && sudo systemctl restart rocketmq_broker.service    && sudo systemctl status rocketmq_broker.service
-sudo systemctl enable rocketmq_dashboard.service && sudo systemctl restart rocketmq_dashboard.service && sudo systemctl status rocketmq_dashboard.service
+sudo systemctl enable rocketmq_namesrv   && sudo systemctl restart rocketmq_namesrv   && sudo systemctl status rocketmq_namesrv
+sudo systemctl enable rocketmq_broker    && sudo systemctl restart rocketmq_broker    && sudo systemctl status rocketmq_broker
+sudo systemctl enable rocketmq_dashboard && sudo systemctl restart rocketmq_dashboard && sudo systemctl status rocketmq_dashboard
 
 #停止
-systemctl stop rocketmq_broker.service
-systemctl stop rocketmq_namesrv.service
-systemctl stop rocketmq_dashboard.service
+systemctl stop rocketmq_broker
+systemctl stop rocketmq_namesrv
+systemctl stop rocketmq_dashboard
 
 #如果无法自动启动，则可手动启动
 #打开一个新的ssh窗口执行
@@ -1456,9 +1456,9 @@ tail /usr/local/rocketmq/rocketmq-dashboard/logs/output.log -f -n 500
 /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqshutdown broker
 
 #卸载服务(如果需要的话)
-sudo systemctl disable rocketmq_broker.service
-sudo systemctl disable rocketmq_namesrv.service
-sudo systemctl disable rocketmq_dashboard.service
+sudo systemctl disable rocketmq_broker
+sudo systemctl disable rocketmq_namesrv
+sudo systemctl disable rocketmq_dashboard
 
 ```
 
