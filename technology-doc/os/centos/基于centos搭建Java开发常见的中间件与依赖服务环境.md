@@ -1269,7 +1269,7 @@ Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
 ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
 ExecStop=/bin/kill -s TERM $MAINPID
 # Restart=on-failure
-ExecStartPre=/bin/sleep 30
+ExecStartPre=/bin/sleep 90
 StandardOutput=file:/usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log
 
 [Install]
@@ -1341,7 +1341,7 @@ ExecStart=/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqnamesrv
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s QUIT $MAINPID
 #Restart=on-failure
-StartLimitInterval=30
+StartLimitInterval=60
 StartLimitBurst=5
 StandardOutput=file:/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log
 StandardError=file:/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/error.log
@@ -1366,10 +1366,10 @@ ExecStart=/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqbroker -c /us
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s QUIT $MAINPID
 #Restart=on-failure
-StartLimitInterval=30
+StartLimitInterval=60
 StartLimitBurst=5
 TimeoutStartSec=300
-ExecStartPre=/bin/sleep 30
+ExecStartPre=/bin/sleep 10
 StandardOutput=file:/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log
 StandardError=file:/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/error.log
 LimitNOFILE=65536
@@ -1392,10 +1392,10 @@ Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
 ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run
 ExecStop=/bin/kill -s TERM $MAINPID
 #Restart=on-failure
-StartLimitInterval=30
+StartLimitInterval=60
 StartLimitBurst=5
 TimeoutStartSec=300
-ExecStartPre=/bin/sleep 60
+ExecStartPre=/bin/sleep 90
 StandardOutput=file:/usr/local/rocketmq/rocketmq-dashboard/logs/output.log
 StandardError=file:/usr/local/rocketmq/rocketmq-dashboard/logs/error.log
 
@@ -1434,6 +1434,7 @@ cd /usr/local/rocketmq/rocketmq-dashboard && nohup /usr/local/maven/apache-maven
 ps -ef | grep rocketmq
 #通过端口查看
 sudo netstat -tulnp | grep 8181
+# 推介使用这个
 sudo ss -tnlp | grep :8181
 sudo lsof -i :8181
 # 查找进程信息，21941 是进程id
