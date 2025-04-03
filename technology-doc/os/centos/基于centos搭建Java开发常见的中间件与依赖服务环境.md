@@ -1149,7 +1149,7 @@ db.password.0=root
 sudo tee /etc/systemd/system/nacos.service <<EOF
 [Unit]
 Description=Nacos Server
-After=network.target
+After=network.target mariadb
 
 [Service]
 Type=forking
@@ -1234,13 +1234,14 @@ firewall-cmd --list-port
 
 #启动 xxl_job，先启动调度中心 xxl-job-admin，因为执行器启动后需要向调度中心注册
 cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin && mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
+# xxl-job-admin 启动成功后在启动 xxl-job-executor
 cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot && mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
 
 #开机自启 xxl_job_admin
 sudo tee /etc/systemd/system/xxl_job_admin.service <<EOF
 [Unit]
 Description=XXL-Job Admin Service
-After=network.target
+After=network.target mariadb
 
 [Service]
 Type=forking
@@ -1259,7 +1260,7 @@ EOF
 sudo tee /etc/systemd/system/xxl_job_executor.service <<EOF
 [Unit]
 Description=XXL-Job Executor Service
-After=network.target
+After=network.target xxl_job_admin
 
 [Service]
 Type=forking
@@ -1269,7 +1270,7 @@ Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
 ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
 ExecStop=/bin/kill -s TERM $MAINPID
 # Restart=on-failure
-ExecStartPre=/bin/sleep 90
+ExecStartPre=/bin/sleep 30
 StandardOutput=file:/usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log
 
 [Install]
@@ -1286,8 +1287,9 @@ sudo systemctl enable xxl_job_admin     && sudo systemctl restart xxl_job_admin 
 sudo systemctl enable xxl_job_executor  && sudo systemctl restart xxl_job_executor  && sudo systemctl status xxl_job_executor
 
 #如果启不来，则可手动启动
-cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log 2>&1 &
-cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log 2>&1 &
+cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin                                                && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log 2>&1 &
+# xxl-job-admin 启动成功后在启动 xxl-job-executor
+cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot  && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log 2>&1 &
 
 #查看日志
 tail /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log -f -n 500
@@ -1355,7 +1357,7 @@ EOF
 sudo tee /etc/systemd/system/rocketmq_broker.service <<EOF
 [Unit]
 Description=RocketMQ Broker Service
-After=network.target rocketmq_namesrv.service
+After=network.target rocketmq_namesrv
 
 [Service]
 Type=forking
@@ -1382,7 +1384,7 @@ EOF
 sudo tee /etc/systemd/system/rocketmq_dashboard.service <<EOF
 [Unit]
 Description=RocketMQ Dashboard Service
-After=network.target rocketmq_namesrv.service rocketmq_broker.service
+After=network.target rocketmq_namesrv rocketmq_broker
 
 [Service]
 Type=forking
@@ -1395,7 +1397,7 @@ ExecStop=/bin/kill -s TERM $MAINPID
 StartLimitInterval=60
 StartLimitBurst=5
 TimeoutStartSec=300
-ExecStartPre=/bin/sleep 90
+ExecStartPre=/bin/sleep 30
 StandardOutput=file:/usr/local/rocketmq/rocketmq-dashboard/logs/output.log
 StandardError=file:/usr/local/rocketmq/rocketmq-dashboard/logs/error.log
 
