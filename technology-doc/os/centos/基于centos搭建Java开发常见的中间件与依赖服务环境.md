@@ -1232,7 +1232,7 @@ sudo firewall-cmd --reload
 #查看开放的端口列表
 firewall-cmd --list-port
 
-#启动 xxl_job
+#启动 xxl_job，先启动调度中心 xxl-job-admin，因为执行器启动后需要向调度中心注册
 cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin && mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
 cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot && mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
 
@@ -1249,7 +1249,6 @@ WorkingDirectory=/usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin
 Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
 ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
 ExecStop=/bin/kill -s TERM $MAINPID
-#SuccessExitStatus=143
 Restart=on-failure
 StandardOutput=file:/usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log
 
@@ -1269,8 +1268,8 @@ WorkingDirectory=/usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-jo
 Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
 ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
 ExecStop=/bin/kill -s TERM $MAINPID
-#SuccessExitStatus=143
 Restart=on-failure
+ExecStartPre=/bin/sleep 30
 StandardOutput=file:/usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log
 
 [Install]
@@ -1283,16 +1282,16 @@ sudo chmod -R 755 /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log
 #重新加载systemd配置
 sudo systemctl daemon-reload
 #设置开机启动并启动服务，然后查看服务状态（Active: failed 没所谓）
-sudo systemctl enable xxl_job_executor  && sudo systemctl restart xxl_job_executor  && sudo systemctl status xxl_job_executor
 sudo systemctl enable xxl_job_admin     && sudo systemctl restart xxl_job_admin     && sudo systemctl status xxl_job_admin
+sudo systemctl enable xxl_job_executor  && sudo systemctl restart xxl_job_executor  && sudo systemctl status xxl_job_executor
 
 #如果启不来，则可手动启动
-cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log 2>&1 &
 cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log 2>&1 &
+cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log 2>&1 &
 
 #查看日志
-tail /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log -f -n 500
 tail /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log -f -n 500
+tail /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log -f -n 500
 ```
 
 ## 部署 RocketMQ 5.x
