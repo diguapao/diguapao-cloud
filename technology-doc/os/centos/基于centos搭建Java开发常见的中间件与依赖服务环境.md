@@ -1331,12 +1331,16 @@ After=network.target remote-fs.target nss-lookup.target
 
 [Service]
 Type=forking
+#Type=simple
 User=root
 WorkingDirectory=/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/
+Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
 ExecStart=/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqnamesrv
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s QUIT $MAINPID
-Restart=always
+Restart=on-failure
+StartLimitInterval=30
+StartLimitBurst=5
 StandardOutput=file:/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log
 StandardError=file:/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/error.log
 LimitNOFILE=65536
@@ -1349,16 +1353,21 @@ EOF
 sudo tee /etc/systemd/system/rocketmq_broker.service <<EOF
 [Unit]
 Description=RocketMQ Broker Service
-After=network.target
+After=network.target rocketmq_namesrv.service
 
 [Service]
 Type=forking
 User=root
 WorkingDirectory=/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/
+Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
 ExecStart=/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqbroker -c /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/conf/broker.conf -n 192.168.11.66:9876
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s QUIT $MAINPID
-Restart=always
+Restart=on-failure
+StartLimitInterval=30
+StartLimitBurst=5
+TimeoutStartSec=300
+ExecStartPre=/bin/sleep 30
 StandardOutput=file:/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log
 StandardError=file:/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/error.log
 LimitNOFILE=65536
@@ -1371,7 +1380,7 @@ EOF
 sudo tee /etc/systemd/system/rocketmq_dashboard.service <<EOF
 [Unit]
 Description=RocketMQ Dashboard Service
-After=network.target
+After=network.target rocketmq_namesrv.service rocketmq_broker.service
 
 [Service]
 Type=forking
@@ -1380,8 +1389,11 @@ WorkingDirectory=/usr/local/rocketmq/rocketmq-dashboard
 Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
 ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run
 ExecStop=/bin/kill -s TERM $MAINPID
-#SuccessExitStatus=143
 Restart=on-failure
+StartLimitInterval=30
+StartLimitBurst=5
+TimeoutStartSec=300
+ExecStartPre=/bin/sleep 60
 StandardOutput=file:/usr/local/rocketmq/rocketmq-dashboard/logs/output.log
 StandardError=file:/usr/local/rocketmq/rocketmq-dashboard/logs/error.log
 
@@ -1396,12 +1408,12 @@ touch /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log 
 touch /usr/local/rocketmq/rocketmq-dashboard/logs/output.log && touch /usr/local/rocketmq/rocketmq-dashboard/logs/error.log
 
 #重新加载服务的配置文件
-systemctl daemon-reload
+sudo systemctl daemon-reload
 
 #启用开机启动，启动服务，查看服务状态（若启动不来则手动启动，先启动 namesrv、namesrv 启动成功后再启动 broker，而后在启动 rocketmq_dashboard)
-systemctl enable rocketmq_namesrv.service && systemctl restart rocketmq_namesrv.service && systemctl status rocketmq_namesrv.service
-systemctl enable rocketmq_broker.service && systemctl restart rocketmq_broker.service && systemctl status rocketmq_broker.service
-systemctl enable rocketmq_dashboard.service && systemctl restart rocketmq_dashboard.service && systemctl status rocketmq_dashboard.service
+sudo systemctl enable rocketmq_namesrv.service   && sudo systemctl restart rocketmq_namesrv.service   && sudo systemctl status rocketmq_namesrv.service
+sudo systemctl enable rocketmq_broker.service    && sudo systemctl restart rocketmq_broker.service    && sudo systemctl status rocketmq_broker.service
+sudo systemctl enable rocketmq_dashboard.service && sudo systemctl restart rocketmq_dashboard.service && sudo systemctl status rocketmq_dashboard.service
 
 #停止
 systemctl stop rocketmq_broker.service
@@ -1428,8 +1440,15 @@ tail /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log 
 tail /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log -f -n 500
 tail /usr/local/rocketmq/rocketmq-dashboard/logs/output.log -f -n 500
 
+# 停止 mqnamesrv
+/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqshutdown mqnamesrv
 # 停止 broker
 /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqshutdown broker
+
+#卸载服务(如果需要的话)
+sudo systemctl disable rocketmq_broker.service
+sudo systemctl disable rocketmq_namesrv.service
+sudo systemctl disable rocketmq_dashboard.service
 
 ```
 
