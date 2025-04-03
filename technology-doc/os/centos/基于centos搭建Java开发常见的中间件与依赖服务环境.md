@@ -1249,7 +1249,7 @@ WorkingDirectory=/usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin
 Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
 ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
 ExecStop=/bin/kill -s TERM $MAINPID
-Restart=on-failure
+# Restart=on-failure
 StandardOutput=file:/usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log
 
 [Install]
@@ -1268,7 +1268,7 @@ WorkingDirectory=/usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-jo
 Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
 ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
 ExecStop=/bin/kill -s TERM $MAINPID
-Restart=on-failure
+# Restart=on-failure
 ExecStartPre=/bin/sleep 30
 StandardOutput=file:/usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log
 
@@ -1340,7 +1340,7 @@ Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
 ExecStart=/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqnamesrv
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s QUIT $MAINPID
-Restart=on-failure
+#Restart=on-failure
 StartLimitInterval=30
 StartLimitBurst=5
 StandardOutput=file:/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log
@@ -1365,7 +1365,7 @@ Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
 ExecStart=/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqbroker -c /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/conf/broker.conf -n 192.168.11.66:9876
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s QUIT $MAINPID
-Restart=on-failure
+#Restart=on-failure
 StartLimitInterval=30
 StartLimitBurst=5
 TimeoutStartSec=300
@@ -1391,7 +1391,7 @@ WorkingDirectory=/usr/local/rocketmq/rocketmq-dashboard
 Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
 ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run
 ExecStop=/bin/kill -s TERM $MAINPID
-Restart=on-failure
+#Restart=on-failure
 StartLimitInterval=30
 StartLimitBurst=5
 TimeoutStartSec=300
