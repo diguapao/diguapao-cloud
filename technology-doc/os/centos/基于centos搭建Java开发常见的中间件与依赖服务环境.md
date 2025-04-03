@@ -1283,8 +1283,8 @@ sudo chmod -R 755 /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log
 #重新加载systemd配置
 sudo systemctl daemon-reload
 #设置开机启动并启动服务，然后查看服务状态（Active: failed 没所谓）
-sudo systemctl enable xxl_job_admin     && sudo systemctl restart xxl_job_admin     && sudo systemctl status xxl_job_admin
 sudo systemctl enable xxl_job_executor  && sudo systemctl restart xxl_job_executor  && sudo systemctl status xxl_job_executor
+sudo systemctl enable xxl_job_admin     && sudo systemctl restart xxl_job_admin     && sudo systemctl status xxl_job_admin
 
 #如果启不来，则可手动启动
 cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log 2>&1 &
