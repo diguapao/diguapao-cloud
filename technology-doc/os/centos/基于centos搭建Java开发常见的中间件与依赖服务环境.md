@@ -1247,7 +1247,7 @@ Type=forking
 User=root
 WorkingDirectory=/usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin
 Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
-ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run
+ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
 ExecStop=/bin/kill -s TERM $MAINPID
 #SuccessExitStatus=143
 Restart=on-failure
@@ -1267,7 +1267,7 @@ Type=forking
 User=root
 WorkingDirectory=/usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot
 Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
-ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run
+ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
 ExecStop=/bin/kill -s TERM $MAINPID
 #SuccessExitStatus=143
 Restart=on-failure
@@ -1277,15 +1277,18 @@ StandardOutput=file:/usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl
 WantedBy=multi-user.target
 EOF
 
+sudo touch /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log
+sudo chmod -R 755 /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log
+
 #重新加载systemd配置
 sudo systemctl daemon-reload
 #设置开机启动并启动服务，然后查看服务状态（Active: failed 没所谓）
-sudo systemctl enable xxl_job_admin && sudo systemctl restart xxl_job_admin && sudo systemctl status xxl_job_admin
-sudo systemctl enable xxl_job_executor && sudo systemctl restart xxl_job_executor && sudo systemctl status xxl_job_executor
+sudo systemctl enable xxl_job_admin     && sudo systemctl restart xxl_job_admin     && sudo systemctl status xxl_job_admin
+sudo systemctl enable xxl_job_executor  && sudo systemctl restart xxl_job_executor  && sudo systemctl status xxl_job_executor
 
 #如果启不来，则可手动启动
-cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log 2>&1 &
-cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log 2>&1 &
+cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log 2>&1 &
+cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log 2>&1 &
 
 #查看日志
 tail /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log -f -n 500
@@ -1431,9 +1434,13 @@ cd /usr/local/rocketmq/rocketmq-dashboard && nohup /usr/local/maven/apache-maven
 #查看 rocketmq 相关进程
 ps -ef | grep rocketmq
 #通过端口查看
-netstat -tulnp | grep 8181
-ss -tnlp | grep :8181
-lsof -i :8181
+sudo netstat -tulnp | grep 8181
+sudo ss -tnlp | grep :8181
+sudo lsof -i :8181
+# 查找进程信息，21941 是进程id
+ps -p 21941 -o pid,comm,user
+# 杀死进程
+kill -9 21941
 
 #查看 rocketmq 相关日志
 tail /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log -f -n 500
