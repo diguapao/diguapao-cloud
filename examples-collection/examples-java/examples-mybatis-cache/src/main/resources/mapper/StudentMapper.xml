@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="org.diguapao.cloud.framework.mybatis.mapper.StudentMapper">
+<mapper namespace="org.diguapao.cloud.cache.mybatis.mapper.StudentMapper">
 
     <cache/>
 
     <select id="getStudentById" parameterType="int"
-            resultType="org.diguapao.cloud.framework.mybatis.entity.StudentEntity">
+            resultType="org.diguapao.cloud.cache.mybatis.entity.StudentEntity">
         SELECT id, name, age
         FROM student
         WHERE id = #{id}
     </select>
 
     <select id="getStudentByIdWithClassInfo" parameterType="int"
-            resultType="org.diguapao.cloud.framework.mybatis.entity.StudentEntity">
+            resultType="org.diguapao.cloud.cache.mybatis.entity.StudentEntity">
         SELECT s.id, s.name, s.age, class.name as className
         FROM classroom c
                  JOIN student s ON c.student_id = s.id
@@ -20,7 +20,7 @@
         WHERE s.id = #{id};
     </select>
 
-    <insert id="addStudent" parameterType="org.diguapao.cloud.framework.mybatis.entity.StudentEntity"
+    <insert id="addStudent" parameterType="org.diguapao.cloud.cache.mybatis.entity.StudentEntity"
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO student(name, age)
         VALUES (#{name}, #{age})

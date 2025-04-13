@@ -10,7 +10,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.diguapao.cloud.framework.spring.aop</groupId>
+    <groupId>org.diguapao.cloud.jasypt</groupId>
     <artifactId>examples-jasypt</artifactId>
     <version>${revision}</version>
     <packaging>jar</packaging>

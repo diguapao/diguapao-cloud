@@ -1,0 +1,4 @@
+spring.application.name: spring-ai
+
+spring.ai.openai.base-url: "https://dashscope.aliyuncs.com/api/v1/"
+spring.ai.openai.api-key: "您的 api-key"
