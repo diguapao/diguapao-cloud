@@ -365,11 +365,8 @@ logfile "redis.log"
 dir /usr/local/redis/redis-7.0.2/data
 EOF
 
-
 # 启动 node1 并查看状态
 systemctl start redis && systemctl status redis
-
-
 ```
 
 #### node2
@@ -442,7 +439,6 @@ EOF
 systemctl daemon-reload && systemctl enable redis6380
 # 启动 node2 并查看状态
 systemctl start redis6380 && systemctl status redis6380
-
 ```
 
 #### node3
@@ -514,63 +510,547 @@ EOF
 systemctl daemon-reload && systemctl enable redis6381
 # 启动 node3 并查看状态
 systemctl start redis6381 && systemctl status redis6381
+```
 
+#### node4
 
+```shell
+
+# 创建 node4 配置目录
+mkdir -p /usr/local/redis/redis-7.0.2-node4/data
+# 编辑配置文件，写入以下配置
+sudo tee /usr/local/redis/redis-7.0.2-node4/redis.conf <<EOF
+# 每个节点的端口号不同，分别设置为 6379、6380、6381、6382、6383、6384
+port 6382
+# 绑定到本地地址（如果需要远程访问，可以改为 0.0.0.0）
+bind 0.0.0.0
+# 认证密码
+requirepass redis
+# 设置主从复制时的密码
+masterauth redis
+# 启用集群模式
+cluster-enabled yes
+# 集群配置文件路径
+cluster-config-file /usr/local/redis/redis-7.0.2-node4/node.conf
+# 节点超时时间（毫秒）
+cluster-node-timeout 15000
+
+# 开启 AOF 持久化（可选），默认每秒执行一次 fsync
+appendonly yes
+ # AOF 文件名
+appendfilename "appendonly.aof"
+# 每秒同步一次到磁盘
+appendfsync everysec
+
+# 启用 RDB 持久化
+# 如果 900 秒内有至少 1 个键被修改，则触发保存
+save 900 1
+# 如果 300 秒内有至少 10 个键被修改，则触发保存
+save 300 10
+# 如果 60 秒内有至少 10000 个键被修改，则触发保存
+save 60 10000
+
+ # 后台运行
+daemonize yes
+# PID 文件路径，根据端口号调整
+pidfile /usr/local/redis/redis-7.0.2-node4/redis.pid
+# 日志文件路径
+logfile "redis.log"
+# 数据存储目录
+dir /usr/local/redis/redis-7.0.2-node4/data
+EOF
+
+# node4 开机自启
+sudo tee /etc/systemd/system/redis6382.service <<EOF
+[Unit]
+Description=redis6382-server
+After=network.target
+
+[Service]
+Type=forking
+
+ExecStart=/usr/local/bin/redis-server /usr/local/redis/redis-7.0.2-node4/redis.conf
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+EOF
+# 重新加载系统服务并设置redis开机自启
+systemctl daemon-reload && systemctl enable redis6382
+# 启动 node4 并查看状态
+systemctl start redis6382 && systemctl status redis6382
+```
+
+#### node5
+
+```shell
+
+# 创建 node5 配置目录
+mkdir -p /usr/local/redis/redis-7.0.2-node5/data
+# 编辑配置文件，写入以下配置
+sudo tee /usr/local/redis/redis-7.0.2-node5/redis.conf <<EOF
+# 每个节点的端口号不同，分别设置为 6379、6380、6381、6382、6383、6384
+port 6383
+# 绑定到本地地址（如果需要远程访问，可以改为 0.0.0.0）
+bind 0.0.0.0
+# 认证密码
+requirepass redis
+# 设置主从复制时的密码
+masterauth redis
+# 启用集群模式
+cluster-enabled yes
+# 集群配置文件路径
+cluster-config-file /usr/local/redis/redis-7.0.2-node5/node.conf
+# 节点超时时间（毫秒）
+cluster-node-timeout 15000
+
+# 开启 AOF 持久化（可选），默认每秒执行一次 fsync
+appendonly yes
+ # AOF 文件名
+appendfilename "appendonly.aof"
+# 每秒同步一次到磁盘
+appendfsync everysec
+
+# 启用 RDB 持久化
+# 如果 900 秒内有至少 1 个键被修改，则触发保存
+save 900 1
+# 如果 300 秒内有至少 10 个键被修改，则触发保存
+save 300 10
+# 如果 60 秒内有至少 10000 个键被修改，则触发保存
+save 60 10000
+
+ # 后台运行
+daemonize yes
+# PID 文件路径，根据端口号调整
+pidfile /usr/local/redis/redis-7.0.2-node5/redis.pid
+# 日志文件路径
+logfile "redis.log"
+# 数据存储目录
+dir /usr/local/redis/redis-7.0.2-node5/data
+EOF
+
+# node5 开机自启
+sudo tee /etc/systemd/system/redis6383.service <<EOF
+[Unit]
+Description=redis6383-server
+After=network.target
+
+[Service]
+Type=forking
+
+ExecStart=/usr/local/bin/redis-server /usr/local/redis/redis-7.0.2-node5/redis.conf
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+EOF
+# 重新加载系统服务并设置redis开机自启
+systemctl daemon-reload && systemctl enable redis6383
+# 启动 node5 并查看状态
+systemctl start redis6383 && systemctl status redis6383
+```
+
+#### node6
+
+```shell
+
+# 创建 node6 配置目录
+mkdir -p /usr/local/redis/redis-7.0.2-node6/data
+# 编辑配置文件，写入以下配置
+sudo tee /usr/local/redis/redis-7.0.2-node6/redis.conf <<EOF
+# 每个节点的端口号不同，分别设置为 6379、6380、6381、6382、6383、6384
+port 6384
+# 绑定到本地地址（如果需要远程访问，可以改为 0.0.0.0）
+bind 0.0.0.0
+# 认证密码
+requirepass redis
+# 设置主从复制时的密码
+masterauth redis
+# 启用集群模式
+cluster-enabled yes
+# 集群配置文件路径
+cluster-config-file /usr/local/redis/redis-7.0.2-node6/node.conf
+# 节点超时时间（毫秒）
+cluster-node-timeout 15000
+
+# 开启 AOF 持久化（可选），默认每秒执行一次 fsync
+appendonly yes
+ # AOF 文件名
+appendfilename "appendonly.aof"
+# 每秒同步一次到磁盘
+appendfsync everysec
+
+# 启用 RDB 持久化
+# 如果 900 秒内有至少 1 个键被修改，则触发保存
+save 900 1
+# 如果 300 秒内有至少 10 个键被修改，则触发保存
+save 300 10
+# 如果 60 秒内有至少 10000 个键被修改，则触发保存
+save 60 10000
+
+ # 后台运行
+daemonize yes
+# PID 文件路径，根据端口号调整
+pidfile /usr/local/redis/redis-7.0.2-node6/redis.pid
+# 日志文件路径
+logfile "redis.log"
+# 数据存储目录
+dir /usr/local/redis/redis-7.0.2-node6/data
+EOF
+
+# node6 开机自启
+sudo tee /etc/systemd/system/redis6384.service <<EOF
+[Unit]
+Description=redis6384-server
+After=network.target
+
+[Service]
+Type=forking
+
+ExecStart=/usr/local/bin/redis-server /usr/local/redis/redis-7.0.2-node6/redis.conf
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+EOF
+# 重新加载系统服务并设置redis开机自启
+systemctl daemon-reload && systemctl enable redis6384
+# 启动 node6 并查看状态
+systemctl start redis6384 && systemctl status redis6384
 ```
 
 #### 创建 Redis 集群
 
 ```shell
-# 执行以下命令，创建集群集群。-a 参数用于指定认证密码
-redis-cli --cluster create 127.0.0.1:6379 127.0.0.1:6380 127.0.0.1:6381 --cluster-replicas 0 -a redis
+# 执行以下命令，创建集群集群。-a 参数用于指定认证密码。--cluster-replicas 1 表示每个节点一个副本。
+redis-cli --cluster create 192.168.11.66:6379 192.168.11.66:6380 192.168.11.66:6381 192.168.11.66:6382 192.168.11.66:6383 192.168.11.66:6384 --cluster-replicas 1 -a redis
 ```
 
-输出日志
+##### 添加从节点
 
-```textmate
->>> Performing hash slots allocation on 3 nodes...
+```shell
+# 主节点获取 节点id 如下：
+redis-cli -h 192.168.11.66 -p 6379
+192.168.11.66:6379> AUTH redis
+OK
+192.168.11.66:6379> CLUSTER NODES
+e4a81f20411d9a8978597b933156e21a3f5645c8 192.168.11.66:6379@16379 myself,master - 0 1743582270162 0 connected
+# cluster-master-id 为 e4a81f20411d9a8978597b933156e21a3f5645c8
+
+# 将 192.168.11.66:6380 这个节点添加为 192.168.11.66:6379 的从节点
+redis-cli --cluster add-node 192.168.11.66:6380 192.168.11.66:6379 --cluster-slave --cluster-master-id e4a81f20411d9a8978597b933156e21a3f5645c8 -a redis
+
+# 同理，将 192.168.11.66:6381 这个节点添加为 192.168.11.66:6379 的从节点
+redis-cli --cluster add-node 192.168.11.66:6381 192.168.11.66:6379 --cluster-slave --cluster-master-id e4a81f20411d9a8978597b933156e21a3f5645c8 -a redis
+
+# 检查哈希槽分配情况
+redis-cli -c -h 192.168.11.66 -p 6379 -a redis CLUSTER SLOTS
+# 查找未分配的哈希槽
+redis-cli -c -h 192.168.11.66 -p 6379 -a redis CLUSTER INFO
+```
+
+### 测试集群
+
+#### 基本读写
+
+```shell
+redis-cli -c -h 192.168.11.66 -p 6379 -a redis SET diguapao "12345678987654321-"
+redis-cli -c -h 192.168.11.66 -p 6381 -a redis GET diguapao
+```
+
+#### 跨节点的数据存储
+
+```shell
+# 根据槽位早数据所在节点
+redis-cli -c -h 192.168.11.66 -p 6379 -a redis CLUSTER KEYSLOT diguapao
+# 在不通节点访问数据
+redis-cli -c -h 192.168.11.66 -p 6381 -a redis GET diguapao
+```
+
+#### 高可用性（故障转移）
+
+```shell
+#查看主从关系
+redis-cli -c -h 192.168.11.66 -p 6379 -a redis CLUSTER NODES
+#停止主节点，看从节点是否接管
+redis-cli -c -h 192.168.11.66 -p 6379 -a redis SHUTDOWN
+redis-cli -c -h 192.168.11.66 -p 6384 -a redis CLUSTER NODES
+#启动复原来的主节点 6379，6384 变为主节点，6379变为从节点
+systemctl start redis && systemctl status redis
+redis-cli -c -h 192.168.11.66 -p 6384 -a redis CLUSTER NODES
+```
+
+#### 负载均衡
+
+python 脚本写入数据，python 版本：python2
+
+```shell
+# 验证python环境
+[root@javaevn test]# python --version
+Python 2.7.5
+
+sudo yum update
+sudo yum install python-pip
+
+pip install redis==2.10.6
+
+mkdir -p /usr/local/redis/test
+sudo tee /usr/local/redis/test/load_balanc.py <<EOF
+# -*- coding: utf-8 -*-
+"""
+测试 Redis Cluster 的负载均衡
+
+Windows 下 python3 安装依赖
+py -m pip install redis
+py -m pip install redis-py-cluster
+"""
+
+from rediscluster import RedisCluster
+import random
+
+# 定义 Redis 集群的启动节点
+startup_nodes = [
+    {"host": "192.168.11.66", "port": "6379"},
+    {"host": "192.168.11.66", "port": "6380"},
+    {"host": "192.168.11.66", "port": "6381"},
+]
+
+# 连接到 Redis 集群
+client = RedisCluster(
+    startup_nodes=startup_nodes,
+    decode_responses=True,
+    password="redis",  # 如果没有密码，请删除此参数
+)
+
+# 写入 10000 条数据
+for i in range(10000):
+    key = f"key{i}"  # 键
+    value = f"value{random.randint(1, 1000)}"  # 值
+    client.set(key, value)  # 写入数据
+
+print("数据写入完成！")
+EOF
+python /usr/local/redis/test/load_balanc.py
+```
+
+```shell
+# 检查数据分布
+redis-cli -c -h 192.168.11.66 -p 6379 -a redis CLUSTER COUNTKEYSINSLOT 0
+redis-cli -c -h 192.168.11.66 -p 6380 -a redis CLUSTER COUNTKEYSINSLOT 5461
+redis-cli -c -h 192.168.11.66 -p 6380 -a redis CLUSTER COUNTKEYSINSLOT 10922
+redis-cli -c -h 192.168.11.66 -p 6381 -a redis CLUSTER COUNTKEYSINSLOT 16383
+# 清空测试数据（需要连接到主节点）
+redis-cli -h 192.168.11.66 -p 6384 -a redis FLUSHALL
+```
+
+### 删除集群
+
+```shell
+redis-cli -h 192.168.11.66 -p 6379 -a redis SHUTDOWN
+redis-cli -h 192.168.11.66 -p 6380 -a redis SHUTDOWN
+redis-cli -h 192.168.11.66 -p 6381 -a redis SHUTDOWN
+redis-cli -h 192.168.11.66 -p 6382 -a redis SHUTDOWN
+redis-cli -h 192.168.11.66 -p 6383 -a redis SHUTDOWN
+redis-cli -h 192.168.11.66 -p 6384 -a redis SHUTDOWN
+
+systemctl status redis
+systemctl status redis6380
+systemctl status redis6381
+systemctl status redis6382
+systemctl status redis6383
+systemctl status redis6384
+
+ps aux | grep redis
+
+rm -rf /usr/local/redis/redis-7.0.2/data/dump.rdb
+rm -rf /usr/local/redis/redis-7.0.2/data/appendonlydir
+rm -rf /usr/local/redis/redis-7.0.2-node2/data/dump.rdb
+rm -rf /usr/local/redis/redis-7.0.2-node2/data/appendonlydir
+rm -rf /usr/local/redis/redis-7.0.2-node3/data/dump.rdb
+rm -rf /usr/local/redis/redis-7.0.2-node3/data/appendonlydir
+rm -rf /usr/local/redis/redis-7.0.2-node4/data/dump.rdb
+rm -rf /usr/local/redis/redis-7.0.2-node4/data/appendonlydir
+rm -rf /usr/local/redis/redis-7.0.2-node5/data/dump.rdb
+rm -rf /usr/local/redis/redis-7.0.2-node5/data/appendonlydir
+rm -rf /usr/local/redis/redis-7.0.2-node6/data/dump.rdb
+rm -rf /usr/local/redis/redis-7.0.2-node6/data/appendonlydir
+
+rm -rf /usr/local/redis/redis-7.0.2/node.conf
+rm -rf /usr/local/redis/redis-7.0.2-node2/node.conf
+rm -rf /usr/local/redis/redis-7.0.2-node3/node.conf
+rm -rf /usr/local/redis/redis-7.0.2-node4/node.conf
+rm -rf /usr/local/redis/redis-7.0.2-node5/node.conf
+rm -rf /usr/local/redis/redis-7.0.2-node6/node.conf
+
+
+```
+
+### 重置集群
+
+如果想重置集群，那么需在删除集群后进行操作。
+
+在执行删除集群后，启动各个节点。
+
+```shell
+systemctl start redis     && systemctl status redis
+systemctl start redis6380 && systemctl status redis6380
+systemctl start redis6381 && systemctl status redis6381
+systemctl start redis6382 && systemctl status redis6382
+systemctl start redis6383 && systemctl status redis6383
+systemctl start redis6384 && systemctl status redis6384
+```
+
+重新创建集群
+
+```shell
+redis-cli --cluster create 192.168.11.66:6379 192.168.11.66:6380 192.168.11.66:6381 192.168.11.66:6382 192.168.11.66:6383 192.168.11.66:6384 --cluster-replicas 1 -a redis
+```
+
+控制台输出
+
+```shell
+[root@javaevn ~]# redis-cli --cluster create 192.168.11.66:6379 192.168.11.66:6380 192.168.11.66:6381 192.168.11.66:6382 192.168.11.66:6383 192.168.11.66:6384 --cluster-replicas 1 -a redis
+Warning: Using a password with '-a' or '-u' option on the command line interface may not be safe.
+>>> Performing hash slots allocation on 6 nodes...
 Master[0] -> Slots 0 - 5460
 Master[1] -> Slots 5461 - 10922
 Master[2] -> Slots 10923 - 16383
-M: 77b5fa537910089bf8b0b9fff6e23d5df38da118 127.0.0.1:6379
+Adding replica 192.168.11.66:6383 to 192.168.11.66:6379
+Adding replica 192.168.11.66:6384 to 192.168.11.66:6380
+Adding replica 192.168.11.66:6382 to 192.168.11.66:6381
+>>> Trying to optimize slaves allocation for anti-affinity
+[WARNING] Some slaves are in the same host as their master
+M: e8d317994907ddaa5b6289e60f9561731d9a7b24 192.168.11.66:6379
    slots:[0-5460] (5461 slots) master
-M: e8d4a6d4a347abcca169490fa20edcef76be50ba 127.0.0.1:6380
+M: afcc41d62f7b256b25cde1099238cebc352b28ba 192.168.11.66:6380
    slots:[5461-10922] (5462 slots) master
-M: 1b884946c30e9a2180b008f0e86c9f2973030f9a 127.0.0.1:6381
+M: 54a6692c1a8a5caa25a01e680090253add065977 192.168.11.66:6381
    slots:[10923-16383] (5461 slots) master
+S: 5233816bf9dd5d54f2ff3fd51ec5a23dbe33f38c 192.168.11.66:6382
+   replicates afcc41d62f7b256b25cde1099238cebc352b28ba
+S: c5f956ba72c322eb47e743ca1196316b8112c6b5 192.168.11.66:6383
+   replicates 54a6692c1a8a5caa25a01e680090253add065977
+S: d846b253cf715bc5c60d9de715509db3e62c75b7 192.168.11.66:6384
+   replicates e8d317994907ddaa5b6289e60f9561731d9a7b24
 Can I set the above configuration? (type 'yes' to accept): yes
 >>> Nodes configuration updated
 >>> Assign a different config epoch to each node
 >>> Sending CLUSTER MEET messages to join the cluster
 Waiting for the cluster to join
-
->>> Performing Cluster Check (using node 127.0.0.1:6379)
-M: 77b5fa537910089bf8b0b9fff6e23d5df38da118 127.0.0.1:6379
+..
+>>> Performing Cluster Check (using node 192.168.11.66:6379)
+M: e8d317994907ddaa5b6289e60f9561731d9a7b24 192.168.11.66:6379
    slots:[0-5460] (5461 slots) master
-M: e8d4a6d4a347abcca169490fa20edcef76be50ba 127.0.0.1:6380
+   1 additional replica(s)
+S: d846b253cf715bc5c60d9de715509db3e62c75b7 192.168.11.66:6384
+   slots: (0 slots) slave
+   replicates e8d317994907ddaa5b6289e60f9561731d9a7b24
+M: afcc41d62f7b256b25cde1099238cebc352b28ba 192.168.11.66:6380
    slots:[5461-10922] (5462 slots) master
-M: 1b884946c30e9a2180b008f0e86c9f2973030f9a 127.0.0.1:6381
+   1 additional replica(s)
+S: c5f956ba72c322eb47e743ca1196316b8112c6b5 192.168.11.66:6383
+   slots: (0 slots) slave
+   replicates 54a6692c1a8a5caa25a01e680090253add065977
+S: 5233816bf9dd5d54f2ff3fd51ec5a23dbe33f38c 192.168.11.66:6382
+   slots: (0 slots) slave
+   replicates afcc41d62f7b256b25cde1099238cebc352b28ba
+M: 54a6692c1a8a5caa25a01e680090253add065977 192.168.11.66:6381
    slots:[10923-16383] (5461 slots) master
+   1 additional replica(s)
 [OK] All nodes agree about slots configuration.
 >>> Check for open slots...
 >>> Check slots coverage...
 [OK] All 16384 slots covered.
+
 ```
 
 验证集群状态
 
-redis-cli -c -p 6379 -a redis cluster info
-
-redis-cli -c -p 6379 -a redis cluster nodes
-
 ```shell
-[root@javaevn ~]# redis-cli -c -p 6379 cluster nodes
-e8d4a6d4a347abcca169490fa20edcef76be50ba 127.0.0.1:6380@16380 master - 0 1743058940296 2 connected 5461-10922
-77b5fa537910089bf8b0b9fff6e23d5df38da118 127.0.0.1:6379@16379 myself,master - 0 1743058940000 1 connected 0-5460
-1b884946c30e9a2180b008f0e86c9f2973030f9a 127.0.0.1:6381@16381 master - 0 1743058941305 3 connected 10923-16383
+redis-cli -c -h 192.168.11.66 -p 6379 -a redis CLUSTER INFO
+redis-cli -c -h 192.168.11.66 -p 6379 -a redis CLUSTER SLOTS
+redis-cli -c -h 192.168.11.66 -p 6379 -a redis CLUSTER NODES
 ```
 
-！！！ Redis 官方建议在生产环境中使用至少 6 个节点（3 主 3 从）来构建集群。这里为了快速搭建好，则省去了三个副本几点。
+控制台输出
+
+```shell
+[root@javaevn ~]# redis-cli -c -h 192.168.11.66 -p 6379 -a redis CLUSTER INFO
+Warning: Using a password with '-a' or '-u' option on the command line interface may not be safe.
+cluster_state:ok
+cluster_slots_assigned:16384
+cluster_slots_ok:16384
+cluster_slots_pfail:0
+cluster_slots_fail:0
+cluster_known_nodes:6
+cluster_size:3
+cluster_current_epoch:6
+cluster_my_epoch:1
+cluster_stats_messages_ping_sent:155
+cluster_stats_messages_pong_sent:147
+cluster_stats_messages_sent:302
+cluster_stats_messages_ping_received:142
+cluster_stats_messages_pong_received:155
+cluster_stats_messages_meet_received:5
+cluster_stats_messages_received:302
+total_cluster_links_buffer_limit_exceeded:0
+[root@javaevn ~]# redis-cli -c -h 192.168.11.66 -p 6379 -a redis CLUSTER SLOTS
+Warning: Using a password with '-a' or '-u' option on the command line interface may not be safe.
+1) 1) (integer) 0
+   2) (integer) 5460
+   3) 1) "192.168.11.66"
+      2) (integer) 6379
+      3) "e8d317994907ddaa5b6289e60f9561731d9a7b24"
+      4) (empty array)
+   4) 1) "192.168.11.66"
+      2) (integer) 6384
+      3) "d846b253cf715bc5c60d9de715509db3e62c75b7"
+      4) (empty array)
+2) 1) (integer) 5461
+   2) (integer) 10922
+   3) 1) "192.168.11.66"
+      2) (integer) 6380
+      3) "afcc41d62f7b256b25cde1099238cebc352b28ba"
+      4) (empty array)
+   4) 1) "192.168.11.66"
+      2) (integer) 6382
+      3) "5233816bf9dd5d54f2ff3fd51ec5a23dbe33f38c"
+      4) (empty array)
+3) 1) (integer) 10923
+   2) (integer) 16383
+   3) 1) "192.168.11.66"
+      2) (integer) 6381
+      3) "54a6692c1a8a5caa25a01e680090253add065977"
+      4) (empty array)
+   4) 1) "192.168.11.66"
+      2) (integer) 6383
+      3) "c5f956ba72c322eb47e743ca1196316b8112c6b5"
+      4) (empty array)
+[root@javaevn ~]# redis-cli -c -h 192.168.11.66 -p 6379 -a redis CLUSTER NODES
+Warning: Using a password with '-a' or '-u' option on the command line interface may not be safe.
+d846b253cf715bc5c60d9de715509db3e62c75b7 192.168.11.66:6384@16384 slave e8d317994907ddaa5b6289e60f9561731d9a7b24 0 1743647528280 1 connected
+afcc41d62f7b256b25cde1099238cebc352b28ba 192.168.11.66:6380@16380 master - 0 1743647530301 2 connected 5461-10922
+c5f956ba72c322eb47e743ca1196316b8112c6b5 192.168.11.66:6383@16383 slave 54a6692c1a8a5caa25a01e680090253add065977 0 1743647528000 3 connected
+5233816bf9dd5d54f2ff3fd51ec5a23dbe33f38c 192.168.11.66:6382@16382 slave afcc41d62f7b256b25cde1099238cebc352b28ba 0 1743647529000 2 connected
+54a6692c1a8a5caa25a01e680090253add065977 192.168.11.66:6381@16381 master - 0 1743647529291 3 connected 10923-16383
+e8d317994907ddaa5b6289e60f9561731d9a7b24 192.168.11.66:6379@16379 myself,master - 0 1743647527000 1 connected 0-5460
+```
+
+可以看到 Redis 集群的状态正常，可以正常工作，所有哈希槽（0-16383）都已分配且正常。集群中有 3 个节点，且都是主节点，在服务哈希槽。
+
+哈希槽被均匀分配到 3 个主节点：
+
+- 192.168.11.66:6379 负责槽范围 [0-5460]
+- 192.168.11.66:6380 负责槽范围 [5461-10922]
+- 192.168.11.66:6381 负责槽范围 [10923-16383]
+
+集群中还有 3 个从节点：
+
+- 192.168.11.66:6384 对应主节点 6379
+- 192.168.11.66:6382 对应主节点 6380
+- 192.168.11.66:6383 对应主节点 6381
+
+！！！ Redis 官方建议在生产环境中使用至少 6 个节点（3 主 3 从）来构建集群。
 
 ## 部署 Openjdk8
 
@@ -669,7 +1149,7 @@ db.password.0=root
 sudo tee /etc/systemd/system/nacos.service <<EOF
 [Unit]
 Description=Nacos Server
-After=network.target
+After=network.target mariadb
 
 [Service]
 Type=forking
@@ -752,25 +1232,25 @@ sudo firewall-cmd --reload
 #查看开放的端口列表
 firewall-cmd --list-port
 
-#启动 xxl_job
+#启动 xxl_job，先启动调度中心 xxl-job-admin，因为执行器启动后需要向调度中心注册
 cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin && mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
+# xxl-job-admin 启动成功后在启动 xxl-job-executor
 cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot && mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
 
 #开机自启 xxl_job_admin
 sudo tee /etc/systemd/system/xxl_job_admin.service <<EOF
 [Unit]
 Description=XXL-Job Admin Service
-After=network.target
+After=network.target mariadb
 
 [Service]
 Type=forking
 User=root
 WorkingDirectory=/usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin
 Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
-ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run
+ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
 ExecStop=/bin/kill -s TERM $MAINPID
-#SuccessExitStatus=143
-Restart=on-failure
+# Restart=on-failure
 StandardOutput=file:/usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log
 
 [Install]
@@ -780,36 +1260,40 @@ EOF
 sudo tee /etc/systemd/system/xxl_job_executor.service <<EOF
 [Unit]
 Description=XXL-Job Executor Service
-After=network.target
+After=network.target xxl_job_admin
 
 [Service]
 Type=forking
 User=root
 WorkingDirectory=/usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot
 Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
-ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run
+ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
 ExecStop=/bin/kill -s TERM $MAINPID
-#SuccessExitStatus=143
-Restart=on-failure
+# Restart=on-failure
+ExecStartPre=/bin/sleep 30
 StandardOutput=file:/usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
+sudo touch /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log
+sudo chmod -R 755 /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log
+
 #重新加载systemd配置
 sudo systemctl daemon-reload
 #设置开机启动并启动服务，然后查看服务状态（Active: failed 没所谓）
-sudo systemctl enable xxl_job_admin && sudo systemctl restart xxl_job_admin && sudo systemctl status xxl_job_admin
-sudo systemctl enable xxl_job_executor && sudo systemctl restart xxl_job_executor && sudo systemctl status xxl_job_executor
+sudo systemctl enable xxl_job_admin     && sudo systemctl restart xxl_job_admin     && sudo systemctl status xxl_job_admin
+sudo systemctl enable xxl_job_executor  && sudo systemctl restart xxl_job_executor  && sudo systemctl status xxl_job_executor
 
 #如果启不来，则可手动启动
-cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log 2>&1 &
-cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log 2>&1 &
+cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin                                                && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log 2>&1 &
+# xxl-job-admin 启动成功后在启动 xxl-job-executor
+cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot  && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log 2>&1 &
 
 #查看日志
-tail /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log -f -n 500
 tail /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log -f -n 500
+tail /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log -f -n 500
 ```
 
 ## 部署 RocketMQ 5.x
@@ -851,12 +1335,17 @@ After=network.target remote-fs.target nss-lookup.target
 
 [Service]
 Type=forking
+#Type=simple
 User=root
 WorkingDirectory=/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/
+Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
 ExecStart=/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqnamesrv
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s QUIT $MAINPID
-Restart=always
+#Restart=on-failure
+StartLimitInterval=60
+StartLimitBurst=5
+TimeoutStartSec=0
 StandardOutput=file:/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log
 StandardError=file:/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/error.log
 LimitNOFILE=65536
@@ -869,16 +1358,21 @@ EOF
 sudo tee /etc/systemd/system/rocketmq_broker.service <<EOF
 [Unit]
 Description=RocketMQ Broker Service
-After=network.target
+After=network.target rocketmq_namesrv
 
 [Service]
 Type=forking
 User=root
 WorkingDirectory=/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/
+Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
 ExecStart=/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqbroker -c /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/conf/broker.conf -n 192.168.11.66:9876
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s QUIT $MAINPID
-Restart=always
+#Restart=on-failure
+StartLimitInterval=60
+StartLimitBurst=5
+TimeoutStartSec=0
+ExecStartPre=/bin/sleep 10
 StandardOutput=file:/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log
 StandardError=file:/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/error.log
 LimitNOFILE=65536
@@ -891,7 +1385,7 @@ EOF
 sudo tee /etc/systemd/system/rocketmq_dashboard.service <<EOF
 [Unit]
 Description=RocketMQ Dashboard Service
-After=network.target
+After=network.target rocketmq_namesrv rocketmq_broker
 
 [Service]
 Type=forking
@@ -900,8 +1394,11 @@ WorkingDirectory=/usr/local/rocketmq/rocketmq-dashboard
 Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
 ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run
 ExecStop=/bin/kill -s TERM $MAINPID
-#SuccessExitStatus=143
-Restart=on-failure
+#Restart=on-failure
+StartLimitInterval=60
+StartLimitBurst=5
+TimeoutStartSec=0
+ExecStartPre=/bin/sleep 30
 StandardOutput=file:/usr/local/rocketmq/rocketmq-dashboard/logs/output.log
 StandardError=file:/usr/local/rocketmq/rocketmq-dashboard/logs/error.log
 
@@ -916,17 +1413,17 @@ touch /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log 
 touch /usr/local/rocketmq/rocketmq-dashboard/logs/output.log && touch /usr/local/rocketmq/rocketmq-dashboard/logs/error.log
 
 #重新加载服务的配置文件
-systemctl daemon-reload
+sudo systemctl daemon-reload
 
 #启用开机启动，启动服务，查看服务状态（若启动不来则手动启动，先启动 namesrv、namesrv 启动成功后再启动 broker，而后在启动 rocketmq_dashboard)
-systemctl enable rocketmq_namesrv.service && systemctl restart rocketmq_namesrv.service && systemctl status rocketmq_namesrv.service
-systemctl enable rocketmq_broker.service && systemctl restart rocketmq_broker.service && systemctl status rocketmq_broker.service
-systemctl enable rocketmq_dashboard.service && systemctl restart rocketmq_dashboard.service && systemctl status rocketmq_dashboard.service
+sudo systemctl enable rocketmq_namesrv   && sudo systemctl restart rocketmq_namesrv   && sudo systemctl status rocketmq_namesrv
+sudo systemctl enable rocketmq_broker    && sudo systemctl restart rocketmq_broker    && sudo systemctl status rocketmq_broker
+sudo systemctl enable rocketmq_dashboard && sudo systemctl restart rocketmq_dashboard && sudo systemctl status rocketmq_dashboard
 
 #停止
-systemctl stop rocketmq_broker.service
-systemctl stop rocketmq_namesrv.service
-systemctl stop rocketmq_dashboard.service
+systemctl stop rocketmq_broker
+systemctl stop rocketmq_namesrv
+systemctl stop rocketmq_dashboard
 
 #如果无法自动启动，则可手动启动
 #打开一个新的ssh窗口执行
@@ -939,17 +1436,29 @@ cd /usr/local/rocketmq/rocketmq-dashboard && nohup /usr/local/maven/apache-maven
 #查看 rocketmq 相关进程
 ps -ef | grep rocketmq
 #通过端口查看
-netstat -tulnp | grep 8181
-ss -tnlp | grep :8181
-lsof -i :8181
+sudo netstat -tulnp | grep 8181
+# 推介使用这个
+sudo ss -tnlp | grep :8181
+sudo lsof -i :8181
+# 查找进程信息，21941 是进程id
+ps -p 21941 -o pid,comm,user
+# 杀死进程
+kill -9 21941
 
 #查看 rocketmq 相关日志
 tail /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log -f -n 500
 tail /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log -f -n 500
 tail /usr/local/rocketmq/rocketmq-dashboard/logs/output.log -f -n 500
 
+# 停止 mqnamesrv
+/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqshutdown mqnamesrv
 # 停止 broker
 /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqshutdown broker
+
+#卸载服务(如果需要的话)
+sudo systemctl disable rocketmq_broker
+sudo systemctl disable rocketmq_namesrv
+sudo systemctl disable rocketmq_dashboard
 
 ```
 
@@ -957,235 +1466,232 @@ tail /usr/local/rocketmq/rocketmq-dashboard/logs/output.log -f -n 500
 
 官方文档：https://www.elastic.co/guide/en/elasticsearch/reference/7.17/targz.html#targz-runninghttps://www.elastic.co/guide/en/elasticsearch/reference/7.17/targz.html#targz-running
 
-> ```shell
-> #采用 root 用户登陆进行如下操作
-> sudo adduser es
-> sudo passwd es
-> #直接在/etc/sudoers文件中授权，使用visudo编辑sudoers文件
-> sudo visudo
-> #添加授权条目，末尾追加以下内容
-> # es 用户执行sudo需输入密码
-> # es ALL=(ALL) ALL
-> # es 用户执行sudo无需输入密码
-> es ALL=(ALL) NOPASSWD: ALL
-> #为sudo命令设置环境变量
-> Defaults    env_keep += "PATH"
-> #es用户执行sudo命令时可以继承环境变量
-> Defaults:es env_reset
-> Defaults:es env_keep += "JAVA_HOME PATH M2_HOME"
-> Defaults:es secure_path = /sbin:/bin:/usr/sbin:/usr/bin
-> 
-> 
-> 
-> 
-> #采用 es 账户登陆 centos 进行操作
-> sudo mkdir -p /home/es/soft/elasticsearchv7.17.25 && cd /home/es/soft/elasticsearchv7.17.25
-> 
-> #手动下载并安装 RPM
-> sudo wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.17.25-linux-x86_64.tar.gz
-> #sudo wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.17.25-linux-x86_64.tar.gz.sha512
-> #sudo shasum -a 512 -c elasticsearch-7.17.25-linux-x86_64.tar.gz.sha512 
-> sudo tar -xzf elasticsearch-7.17.25-linux-x86_64.tar.gz
-> 
-> # 将目录复制三份，作为三个节点，对应配置 ES 集群的三个实例
-> sudo cp -R elasticsearch-7.17.25 elasticsearchv7.17.25_node_1
-> sudo cp -R elasticsearch-7.17.25 elasticsearchv7.17.25_node_2
-> sudo mv    elasticsearch-7.17.25 elasticsearchv7.17.25_node_3
-> # 以 root 用户启动不了 ES，这里授权给 es 用户
-> sudo chown -R es elasticsearchv7.17.25_node_*
-> 
-> #备份 es 配置
-> sudo mv /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_1/config/elasticsearch.yml /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_1/config/elasticsearch.yml_def
-> sudo mv /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_2/config/elasticsearch.yml /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_2/config/elasticsearch.yml_def
-> sudo mv /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_3/config/elasticsearch.yml /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_3/config/elasticsearch.yml_def
-> 
-> #准备目录，更改目录的所有者和组，更改目录权限
-> sudo chown -R es:es /home/es/soft/elasticsearchv7.17.25 && sudo chmod -R 755 /home/es/soft/elasticsearchv7.17.25
-> 
-> #准备配置
-> #Master-only 节点（node1），在生产环境中，通常至少有三个Master节点，以确保任意两个节点失效时仍然可以形成多数派（quorum）。
-> sudo tee /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_1/config/elasticsearch.yml <<EOF
-> # elasticsearchv7.17.25_node_1
-> cluster.name: javaevn-elasticsearchv7.17.25
-> node.name: node1
-> node.master: true
-> node.data: false
-> node.ingest: false
-> path.data: /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_1/data
-> path.logs: /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_1/logs
-> network.host: 0.0.0.0
-> http.port: 9200
-> transport.port: 9300
-> discovery.type: zen #发现类型，这里使用zen表示基于Zen Discovery的发现机制。
-> discovery.seed_hosts: ["127.0.0.1:9300","127.0.0.1:9301","127.0.0.1:9302"]
-> cluster.initial_master_nodes: ["node1"]
-> action.auto_create_index: false
-> EOF
-> 
-> #Data-only 节点（node2）
-> sudo tee /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_2/config/elasticsearch.yml <<EOF
-> # elasticsearchv7.17.25_node_2
-> cluster.name: javaevn-elasticsearchv7.17.25
-> node.name: node2
-> node.master: false
-> node.data: true
-> node.ingest: false
-> path.data: /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_2/data
-> path.logs: /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_2/logs
-> network.host: 0.0.0.0
-> http.port: 9201
-> transport.port: 9301
-> discovery.type: zen #发现类型，这里使用zen表示基于Zen Discovery的发现机制。
-> discovery.seed_hosts: ["127.0.0.1:9300","127.0.0.1:9301","127.0.0.1:9302"]
-> action.auto_create_index: false
-> EOF
-> 
-> #Ingest-only 节点（node3）
-> sudo tee /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_3/config/elasticsearch.yml <<EOF
-> # elasticsearchv7.17.25_node_3
-> cluster.name: javaevn-elasticsearchv7.17.25
-> node.name: node3
-> node.master: false
-> node.data: false
-> node.ingest: true
-> path.data: /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_3/data
-> path.logs: /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_3/logs
-> network.host: 0.0.0.0
-> http.port: 9202
-> transport.port: 9302
-> discovery.type: zen #发现类型，这里使用zen表示基于Zen Discovery的发现机制。
-> discovery.seed_hosts: ["127.0.0.1:9300","127.0.0.1:9301","127.0.0.1:9302"]
-> action.auto_create_index: false
-> EOF
-> 
-> #检查配置项
-> sudo egrep -v "^#|^$" /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_1/config/elasticsearch.yml
-> 
-> #elasticsearch 7 要求 jdk11，这里进行部署
-> # ！！！ 在后期部署 es 过程中发现，Openjdk8 不宜部署在 root 目录下
-> sudo mkdir -p /usr/local/jdk/openjdk11 && cd /usr/local/jdk/openjdk11
-> wget OpenJDK11U-jdk_x64_linux_hotspot_11.0.24_8.tar.gz https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.24%2B8/OpenJDK11U-jdk_x64_linux_hotspot_11.0.24_8.tar.gz
-> tar zxvf OpenJDK11U-jdk_x64_linux_hotspot_11.0.24_8.tar.gz
-> cd jdk-11.0.24+8
-> 
-> #系统级别的环境变量，这里只是 es 用户需要 jdk11，因此这一不可以不设置
-> sudo vi /etc/profile
-> #在文件末尾添加：
-> export ES_JAVA_HOME=/usr/local/jdk/openjdk11/jdk-11.0.24+8
-> export PATH=$ES_JAVA_HOME/bin:$PATH
-> #使配置生效
-> source /etc/profile
-> 
-> # 用户级别的环境（推荐设置）
-> vi ~/.bashrc 
-> #在文件末尾添加：
-> export ES_JAVA_HOME=/usr/local/jdk/openjdk11/jdk-11.0.24+8
-> export PATH=$ES_JAVA_HOME/bin:$PATH
-> #使配置生效
-> source ~/.bashrc
-> 
-> #验证
-> java -version
-> 
-> # 调整文件描述符限制
-> sudo vi /etc/security/limits.conf
-> # 文件末尾添加以下行
-> es hard nofile 65536
-> es soft nofile 65536
-> # 编辑完limits.conf文件后，需要重启系统或重新登录以使新的限制生效，验证描述符：
-> ulimit -n
-> 
-> #调整 vm.max_map_count 参数
-> sudo vi /etc/sysctl.conf
-> # 文件末尾添加以下行
-> vm.max_map_count=262144
-> #使配置生效
-> sudo sysctl -p
-> 
-> #启动 node1，不用 sudo
-> /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_1/bin/elasticsearch
-> /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_2/bin/elasticsearch
-> /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_3/bin/elasticsearch
-> 
-> #开机自启 elasticsearch 7 集群
-> #Elasticsearch_v7.17.25_1
-> sudo tee /etc/systemd/system/elasticsearch_v7.17.25_1.service <<EOF
-> [Unit]
-> Description=Elasticsearch_v7.17.25_1 Service
-> After=network.target
-> 
-> [Service]
-> User=es
-> Group=es
-> WorkingDirectory=/home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_1
-> ExecStart=/home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_1/bin/elasticsearch
-> TimeoutStartSec=0
-> Restart=on-failure
-> RestartSec=30
-> LimitNOFILE=65535
-> 
-> [Install]
-> WantedBy=multi-user.target
-> EOF
-> #Elasticsearch_v7.17.25_2
-> sudo tee /etc/systemd/system/elasticsearch_v7.17.25_2.service <<EOF
-> [Unit]
-> Description=Elasticsearch_v7.17.25_2 Service
-> After=network.target
-> 
-> [Service]
-> User=es
-> Group=es
-> WorkingDirectory=/home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_2
-> ExecStart=/home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_2/bin/elasticsearch
-> TimeoutStartSec=0
-> Restart=on-failure
-> RestartSec=30
-> LimitNOFILE=65535
-> 
-> [Install]
-> WantedBy=multi-user.target
-> EOF
-> ##Elasticsearch_v7.17.25_3
-> sudo tee /etc/systemd/system/elasticsearch_v7.17.25_3.service <<EOF
-> [Unit]
-> Description=Elasticsearch_v7.17.25_3 Service
-> After=network.target
-> 
-> [Service]
-> User=es
-> Group=es
-> WorkingDirectory=/home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_3
-> ExecStart=/home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_3/bin/elasticsearch
-> TimeoutStartSec=0
-> Restart=on-failure
-> RestartSec=30
-> LimitNOFILE=65535
-> 
-> [Install]
-> WantedBy=multi-user.target
-> EOF
-> 
-> #使配置生效
-> sudo systemctl daemon-reload
-> #启用并启动服务
-> sudo systemctl enable elasticsearch_v7.17.25_1 && sudo systemctl start elasticsearch_v7.17.25_1 && sudo systemctl status elasticsearch_v7.17.25_1
-> sudo systemctl enable elasticsearch_v7.17.25_2 && sudo systemctl start elasticsearch_v7.17.25_2 && sudo systemctl status elasticsearch_v7.17.25_2
-> sudo systemctl enable elasticsearch_v7.17.25_3 && sudo systemctl start elasticsearch_v7.17.25_3 && sudo systemctl status elasticsearch_v7.17.25_3
-> 
-> # 访问验证
-> http://192.168.11.66:9200/_cat/nodes
-> http://192.168.11.66:9200/_nodes
-> 
-> #安装插件
-> #官方文档：https://www.elastic.co/guide/en/elasticsearch/plugins/7.17/installation.html
-> sudo /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_1/bin/elasticsearch-plugin install analysis-icu
-> sudo /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_2/bin/elasticsearch-plugin install analysis-icu
-> sudo /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_3/bin/elasticsearch-plugin install analysis-icu
-> 
-> #查看日志
-> tail /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_1/logs/javaevn-elasticsearchv7.17.25.log -f -n 500
-> ```
+```shell
+#采用 root 用户登陆进行如下操作
+sudo adduser es
+sudo passwd es
+#直接在/etc/sudoers文件中授权，使用visudo编辑sudoers文件
+sudo visudo
+#添加授权条目，末尾追加以下内容
+# es 用户执行sudo需输入密码
+# es ALL=(ALL) ALL
+# es 用户执行sudo无需输入密码
+es ALL=(ALL) NOPASSWD: ALL
+#为sudo命令设置环境变量
+Defaults    env_keep += "PATH"
+#es用户执行sudo命令时可以继承环境变量
+Defaults:es env_reset
+Defaults:es env_keep += "JAVA_HOME PATH M2_HOME"
+Defaults:es secure_path = /sbin:/bin:/usr/sbin:/usr/bin
+
+#采用 es 账户登陆 centos 进行操作
+sudo mkdir -p /home/es/soft/elasticsearchv7.17.25 && cd /home/es/soft/elasticsearchv7.17.25
+
+#手动下载并安装 RPM
+sudo wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.17.25-linux-x86_64.tar.gz
+#sudo wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.17.25-linux-x86_64.tar.gz.sha512
+#sudo shasum -a 512 -c elasticsearch-7.17.25-linux-x86_64.tar.gz.sha512 
+sudo tar -xzf elasticsearch-7.17.25-linux-x86_64.tar.gz
+
+# 将目录复制三份，作为三个节点，对应配置 ES 集群的三个实例
+sudo cp -R elasticsearch-7.17.25 elasticsearchv7.17.25_node_1
+sudo cp -R elasticsearch-7.17.25 elasticsearchv7.17.25_node_2
+sudo mv    elasticsearch-7.17.25 elasticsearchv7.17.25_node_3
+# 以 root 用户启动不了 ES，这里授权给 es 用户
+sudo chown -R es elasticsearchv7.17.25_node_*
+
+#备份 es 配置
+sudo mv /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_1/config/elasticsearch.yml /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_1/config/elasticsearch.yml_def
+sudo mv /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_2/config/elasticsearch.yml /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_2/config/elasticsearch.yml_def
+sudo mv /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_3/config/elasticsearch.yml /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_3/config/elasticsearch.yml_def
+
+#准备目录，更改目录的所有者和组，更改目录权限
+sudo chown -R es:es /home/es/soft/elasticsearchv7.17.25 && sudo chmod -R 755 /home/es/soft/elasticsearchv7.17.25
+
+#准备配置
+#Master-only 节点（node1），在生产环境中，通常至少有三个Master节点，以确保任意两个节点失效时仍然可以形成多数派（quorum）。
+sudo tee /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_1/config/elasticsearch.yml <<EOF
+# elasticsearchv7.17.25_node_1
+cluster.name: javaevn-elasticsearchv7.17.25
+node.name: node1
+node.master: true
+node.data: false
+node.ingest: false
+path.data: /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_1/data
+path.logs: /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_1/logs
+network.host: 0.0.0.0
+http.port: 9200
+transport.port: 9300
+discovery.type: zen #发现类型，这里使用zen表示基于Zen Discovery的发现机制。
+discovery.seed_hosts: ["127.0.0.1:9300","127.0.0.1:9301","127.0.0.1:9302"]
+cluster.initial_master_nodes: ["node1"]
+action.auto_create_index: false
+EOF
+
+#Data-only 节点（node2）
+sudo tee /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_2/config/elasticsearch.yml <<EOF
+# elasticsearchv7.17.25_node_2
+cluster.name: javaevn-elasticsearchv7.17.25
+node.name: node2
+node.master: false
+node.data: true
+node.ingest: false
+path.data: /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_2/data
+path.logs: /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_2/logs
+network.host: 0.0.0.0
+http.port: 9201
+transport.port: 9301
+discovery.type: zen #发现类型，这里使用zen表示基于Zen Discovery的发现机制。
+discovery.seed_hosts: ["127.0.0.1:9300","127.0.0.1:9301","127.0.0.1:9302"]
+action.auto_create_index: false
+EOF
+
+#Ingest-only 节点（node3）
+sudo tee /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_3/config/elasticsearch.yml <<EOF
+# elasticsearchv7.17.25_node_3
+cluster.name: javaevn-elasticsearchv7.17.25
+node.name: node3
+node.master: false
+node.data: false
+node.ingest: true
+path.data: /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_3/data
+path.logs: /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_3/logs
+network.host: 0.0.0.0
+http.port: 9202
+transport.port: 9302
+discovery.type: zen #发现类型，这里使用zen表示基于Zen Discovery的发现机制。
+discovery.seed_hosts: ["127.0.0.1:9300","127.0.0.1:9301","127.0.0.1:9302"]
+action.auto_create_index: false
+EOF
+
+#检查配置项
+sudo egrep -v "^#|^$" /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_1/config/elasticsearch.yml
+
+#elasticsearch 7 要求 jdk11，这里进行部署
+# ！！！ 在后期部署 es 过程中发现，Openjdk8 不宜部署在 root 目录下
+sudo mkdir -p /usr/local/jdk/openjdk11 && cd /usr/local/jdk/openjdk11
+wget OpenJDK11U-jdk_x64_linux_hotspot_11.0.24_8.tar.gz https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.24%2B8/OpenJDK11U-jdk_x64_linux_hotspot_11.0.24_8.tar.gz
+tar zxvf OpenJDK11U-jdk_x64_linux_hotspot_11.0.24_8.tar.gz
+cd jdk-11.0.24+8
+
+#系统级别的环境变量，这里只是 es 用户需要 jdk11，因此这一不可以不设置
+sudo vi /etc/profile
+#在文件末尾添加：
+export ES_JAVA_HOME=/usr/local/jdk/openjdk11/jdk-11.0.24+8
+export PATH=$ES_JAVA_HOME/bin:$PATH
+#使配置生效
+source /etc/profile
+
+# 用户级别的环境（推荐设置）
+vi ~/.bashrc 
+#在文件末尾添加：
+export ES_JAVA_HOME=/usr/local/jdk/openjdk11/jdk-11.0.24+8
+export PATH=$ES_JAVA_HOME/bin:$PATH
+#使配置生效
+source ~/.bashrc
+
+#验证
+java -version
+
+# 调整文件描述符限制
+sudo vi /etc/security/limits.conf
+# 文件末尾添加以下行
+es hard nofile 65536
+es soft nofile 65536
+# 编辑完limits.conf文件后，需要重启系统或重新登录以使新的限制生效，验证描述符：
+ulimit -n
+
+#调整 vm.max_map_count 参数
+sudo vi /etc/sysctl.conf
+# 文件末尾添加以下行
+vm.max_map_count=262144
+#使配置生效
+sudo sysctl -p
+
+#启动 node1，不用 sudo
+/home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_1/bin/elasticsearch
+/home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_2/bin/elasticsearch
+/home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_3/bin/elasticsearch
+
+#开机自启 elasticsearch 7 集群
+#Elasticsearch_v7.17.25_1
+sudo tee /etc/systemd/system/elasticsearch_v7.17.25_1.service <<EOF
+[Unit]
+Description=Elasticsearch_v7.17.25_1 Service
+After=network.target
+
+[Service]
+User=es
+Group=es
+WorkingDirectory=/home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_1
+ExecStart=/home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_1/bin/elasticsearch
+TimeoutStartSec=0
+Restart=on-failure
+RestartSec=30
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+#Elasticsearch_v7.17.25_2
+sudo tee /etc/systemd/system/elasticsearch_v7.17.25_2.service <<EOF
+[Unit]
+Description=Elasticsearch_v7.17.25_2 Service
+After=network.target
+
+[Service]
+User=es
+Group=es
+WorkingDirectory=/home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_2
+ExecStart=/home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_2/bin/elasticsearch
+TimeoutStartSec=0
+Restart=on-failure
+RestartSec=30
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+##Elasticsearch_v7.17.25_3
+sudo tee /etc/systemd/system/elasticsearch_v7.17.25_3.service <<EOF
+[Unit]
+Description=Elasticsearch_v7.17.25_3 Service
+After=network.target
+
+[Service]
+User=es
+Group=es
+WorkingDirectory=/home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_3
+ExecStart=/home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_3/bin/elasticsearch
+TimeoutStartSec=0
+Restart=on-failure
+RestartSec=30
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+#使配置生效
+sudo systemctl daemon-reload
+#启用并启动服务
+sudo systemctl enable elasticsearch_v7.17.25_1 && sudo systemctl start elasticsearch_v7.17.25_1 && sudo systemctl status elasticsearch_v7.17.25_1
+sudo systemctl enable elasticsearch_v7.17.25_2 && sudo systemctl start elasticsearch_v7.17.25_2 && sudo systemctl status elasticsearch_v7.17.25_2
+sudo systemctl enable elasticsearch_v7.17.25_3 && sudo systemctl start elasticsearch_v7.17.25_3 && sudo systemctl status elasticsearch_v7.17.25_3
+
+# 访问验证
+http://192.168.11.66:9200/_cat/nodes
+http://192.168.11.66:9200/_nodes
+
+#安装插件
+#官方文档：https://www.elastic.co/guide/en/elasticsearch/plugins/7.17/installation.html
+sudo /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_1/bin/elasticsearch-plugin install analysis-icu
+sudo /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_2/bin/elasticsearch-plugin install analysis-icu
+sudo /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_3/bin/elasticsearch-plugin install analysis-icu
+
+#查看日志
+tail /home/es/soft/elasticsearchv7.17.25/elasticsearchv7.17.25_node_1/logs/javaevn-elasticsearchv7.17.25.log -f -n 500
+```
 
 ### 问题处理
 
@@ -1233,7 +1739,7 @@ oapServices: ${SW_OAP_ADDRESS:-http://192.168.11.66:12800}
 sudo tee /etc/systemd/system/skywalking.service <<EOF
 [Unit]
 Description=Skywalking 10.1.0 Server
-After=network.target
+After=network.target elasticsearch_v7.17.25_1 elasticsearch_v7.17.25_2 elasticsearch_v7.17.25_3
 
 [Service]
 Type=forking
@@ -1241,6 +1747,7 @@ User=root
 WorkingDirectory=/usr/local/skywalking/apache-skywalking-apm-bin
 Environment="JAVA_HOME=/usr/local/jdk/openjdk11/jdk-11.0.24+8"
 Environment="SKYWALKING_HOME=/usr/local/skywalking/apache-skywalking-apm-bin/bin"
+ExecStartPre=/bin/sleep 30
 ExecStart=/bin/bash /usr/local/skywalking/apache-skywalking-apm-bin/bin/startup.sh
 ExecStop=/bin/kill -s TERM $MAINPID
 Restart=on-failure
@@ -1252,6 +1759,9 @@ EOF
 #重新加载systemd配置，设置开机启动并启动服务，然后查看服务状态
 sudo systemctl daemon-reload && sudo systemctl enable skywalking && sudo systemctl restart skywalking && sudo systemctl status skywalking
 
+# 开机启动时，可能会由于es尚未启动完毕导致skywalking报错，待es启动完毕后重启一下skywalking
+sudo systemctl restart skywalking && sudo systemctl status skywalking
+
 #防火墙放行
 firewall-cmd --zone=public --add-port=18080/tcp --permanent
 firewall-cmd --zone=public --add-port=11800/tcp --permanent
@@ -1261,6 +1771,74 @@ firewall-cmd --zone=public --add-port=12800/tcp --permanent
 tail -f /usr/local/skywalking/apache-skywalking-apm-bin/logs/skywalking-oap-server.log -n 500
 tail -f /usr/local/skywalking/apache-skywalking-apm-bin/logs/oap.log -n 500
 ```
+
+### 集成 spring-boot/spring-cloud
+
+#### 引入依赖
+
+```xml
+
+<!--
+<properties>
+    <skywalking.version>9.4.0</skywalking.version>
+</properties>
+-->
+
+<dependencies>
+    <!-- skywalking -->
+    <dependency>
+        <groupId>org.apache.skywalking</groupId>
+        <artifactId>apm-toolkit-trace</artifactId>
+        <version>${skywalking.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.skywalking</groupId>
+        <artifactId>apm-toolkit-meter</artifactId>
+        <version>${skywalking.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.skywalking</groupId>
+        <artifactId>apm-toolkit-logback-1.x</artifactId>
+        <version>${skywalking.version}</version>
+    </dependency>
+</dependencies>
+
+```
+
+#### 配置 logback 日志
+
+```xml
+
+<configuration>
+    <appender name="grpc" class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.log.GRPCLogClientAppender">
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="org.apache.skywalking.apm.toolkit.log.logback.v1.x.mdc.TraceIdMDCPatternLogbackLayout">
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{tid}] [%thread] %-5level %logger{36} -%msg%n</Pattern>
+            </layout>
+        </encoder>
+    </appender>
+    <root level="INFO">
+        <appender-ref ref="grpc"/>
+    </root>
+</configuration>
+
+```
+
+#### Java-Agent 下载地址
+
+https://dlcdn.apache.org/skywalking/java-agent/9.4.0/apache-skywalking-java-agent-9.4.0.tgz
+
+#### idea Application -> Run -> EditConfigurations... 增加如下参数到 VM options 中
+
+```shell
+-javaagent:D:/soft/Program/skywalking/skywalking-agent/skywalking-agent.jar
+-Dskywalking.agent.service_name=service-your-appname
+-Dskywalking.collector.backend_service=http://192.168.11.66:11800
+```
+
+#### 参考资料
+
+https://skywalking.apache.org/zh/2020-04-19-skywalking-quick-start/
 
 ## 部署 RabbitMQ
 

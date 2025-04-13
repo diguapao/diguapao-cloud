@@ -26,6 +26,7 @@
         <module>examples-collection/examples-java/examples-code-generator</module>
         <module>examples-collection/examples-java/examples-cache</module>
         <module>examples-collection/examples-java/examples-jasypt</module>
+        <module>examples-collection/examples-java/examples-ai/spring-ai</module>
     </modules>
 
     <properties>

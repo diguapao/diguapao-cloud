@@ -10,7 +10,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.diguapao.cloud.framework.mybatis</groupId>
+    <groupId>org.diguapao.cloud.cache.mybatis</groupId>
     <artifactId>examples-mybatis-cache</artifactId>
     <version>${revision}</version>
     <packaging>jar</packaging>
