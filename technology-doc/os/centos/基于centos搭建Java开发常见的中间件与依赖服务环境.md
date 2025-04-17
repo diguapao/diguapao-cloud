@@ -1317,7 +1317,7 @@ chmod a+x /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqbroker
 yum install -y git
 git clone https://github.com/apache/rocketmq-dashboard.git
 cd /usr/local/rocketmq/rocketmq-dashboard
-vi  /usr/local/rocketmq/rocketmq-dashboard/src/main/resources/application.yml
+vi /usr/local/rocketmq/rocketmq-dashboard/src/main/resources/application.yml
 #端口改为 8080
 #nameser 地址改为自己的IP地址
 rocketmq:
@@ -1465,8 +1465,10 @@ sudo systemctl disable rocketmq_dashboard
 ### 杀死进程
 
 ```shell
-# 杀死 rocketmq-dashboard，8080是端口
-kill -9 $(lsof -t -i:8080)
+
+# 杀死 rocketmq-dashboard，8181 是端口
+kill -9 $(lsof -t -i:8181)
+
 ```
 
 ## 部署 Elasticsearch 7.17.25、openjdk-11
