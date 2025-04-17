@@ -1462,6 +1462,13 @@ sudo systemctl disable rocketmq_dashboard
 
 ```
 
+### 杀死进程
+
+```shell
+# 杀死 rocketmq-dashboard，8080是端口
+kill -9 $(lsof -t -i:8080)
+```
+
 ## 部署 Elasticsearch 7.17.25、openjdk-11
 
 官方文档：https://www.elastic.co/guide/en/elasticsearch/reference/7.17/targz.html#targz-runninghttps://www.elastic.co/guide/en/elasticsearch/reference/7.17/targz.html#targz-running
