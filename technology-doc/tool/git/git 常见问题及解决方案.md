@@ -59,3 +59,11 @@ git fetch --unshallow
 ```shell
 git config --global http.sslVerify false
 ```
+
+# ssh 命令
+
+##  保活建立 ssh 连接
+```shell
+# 每隔 60 秒发送一次心跳包，最多发送 999999 次心跳包
+ssh root@192.168.11.66 -o ServerAliveInterval=60 -o ServerAliveCountMax=999999
+```
