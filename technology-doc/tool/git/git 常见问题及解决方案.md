@@ -111,7 +111,7 @@ mkdir spring-ai-alibaba-examples && cd spring-ai-alibaba-examples
 git init
 git remote add origin https://github.com/springaialibaba/spring-ai-alibaba-examples.git
 git fetch --depth 1 origin main
-git checkout 1.0.0-RC1
+git checkout main
 ```
 
 ### 定期同步
