@@ -123,3 +123,21 @@ git checkout main
 通过上述方法，你可以在一定程度上缓解网络不稳定带来的影响，并尽可能保证 Git 操作的成功率。然而，需要注意的是，Git 本身并不支持真正的断点续传功能，所以在网络彻底中断的情况下，可能仍然需要重新开始部分或全部操作。 
 
 此外，如果你正在使用 SourceTree 或其他图形界面工具，也可以参考相关文档或社区讨论中的建议来调整设置，例如增大 `http.postBuffer` 的值或更改 SSH 客户端选项等 。
+
+
+
+
+
+# 路径太长怎么办(Filename too long)
+
+在注册表 HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem 下的 LongPathsEnabled 配置为 1 重启系统后依然无效则进行如下操作：
+
+配置 Git 忽略 Windows 路径限制
+
+```sh
+# 配置
+git config --global core.longpaths true
+# 验证配置
+git config --global --get core.longpaths
+```
+
