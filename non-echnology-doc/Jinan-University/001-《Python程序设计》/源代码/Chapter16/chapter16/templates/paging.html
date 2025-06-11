@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!-- 显示分页导航 -->
+<div class="pagination">
+  <span class="step-links">
+    <!-- 显示前一页链接 -->
+    {% if page_obj.has_previous %}
+      <a href="?page=1">&laquo; 首页</a>
+      <a href="?page={{ page_obj.previous_page_number }}">上一页</a>
+    {% endif %}
+    <!-- 显示当前页数和总页数 -->
+    <span class="current-page">{{ page_obj.number }}</span>
+    / {{ page_obj.paginator.num_pages }}
+    <!-- 显示后一页链接 -->
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}">下一页</a>
+      <a href="?page={{ page_obj.paginator.num_pages }}">最后一页 &raquo;</a>
+    {% endif %}
+  </span>
+</div>
+<!-- 显示当前页的数据 -->
+<ul>
+  {% for num in page_obj %}
+    <li>{{ num }}</li>
+  {% endfor %}
+</ul>
+
+</body>
+</html>

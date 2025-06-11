@@ -1,0 +1,135 @@
+body,
+input {
+    margin: 0;
+    padding: 0;
+}
+
+input {
+    display: inline-block;
+    background: #fff;
+}
+
+.it-container {
+    width: 100%;
+    background: white;
+}
+
+.it-register-box {
+    position: relative;
+    height: 500px;
+    width: 800px;
+    top: 50px;
+    margin: 0 auto;
+    z-index: 99999;
+    background: #ffffff;
+}
+
+.it-title-box {
+    position: absolute;
+    width: 300px;
+    height: 50px;
+    margin-left: 180px;
+    margin-top: 5px;
+    text-align: center;
+    font-size: 28px;
+    font-weight: 800;
+    color: #ff5000;
+    line-height: 50px;
+}
+
+.it-username-box {
+    position: absolute;
+    width: 420px;
+    height: 40px;
+    line-height: 40px;
+    margin-top: 100px;
+    margin-left: 80px;
+    font-weight: 700;
+}
+
+.it-username-input {
+    display: inline-block;
+    margin-left: 60px;
+}
+
+#username {
+    height: 35px;
+    width: 290px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+}
+
+#userEmail {
+    height: 35px;
+    width: 290px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+}
+
+.it-userPassword-box {
+    position: absolute;
+    width: 420px;
+    height: 40px;
+    line-height: 40px;
+    margin-top: 180px;
+    margin-left: 80px;
+    font-weight: 700;
+}
+
+.it-userPassword-input {
+    display: inline-block;
+    margin-left: 61px;
+}
+
+#userPassword {
+    height: 35px;
+    width: 290px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+}
+
+.it-userRePassword-box {
+    position: absolute;
+    width: 420px;
+    height: 40px;
+    line-height: 40px;
+    margin-top: 260px;
+    margin-left: 80px;
+    font-weight: 700;
+}
+
+.it-userRePassword-input {
+    display: inline-block;
+    margin-left: 28px;
+}
+
+#userRePassword {
+    height: 35px;
+    width: 290px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+}
+
+.it-require {
+    color: red;
+}
+
+.it-submit-box {
+    position: absolute;
+    width: 80px;
+    height: 40px;
+    line-height: 40px;
+    margin-top: 350px;
+    margin-left: 177px;
+    border-radius: 5px;
+}
+
+#it-submit-button {
+    display: inline-block;
+    width: 80px;
+    height: 40px;
+    border-radius: 5px;
+    color: white;
+    background: #5cb85c;
+    outline: none;
+}
