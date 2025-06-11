@@ -30,6 +30,7 @@ hs_err_pid*
 /**/.idea
 /**/*.bkp
 /**/*.iml
+/**/**/.idea
 /examples-collection/examples-code-generator/src/main/java/com/*
 /.github/workflows/mirror-from-gitee.yml
 /combat-series/**
