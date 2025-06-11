@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>用户注册</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/register.css">
+</head>
+
+<body>
+    <div class="it-container">
+        <div class="it-register-box">
+            <div class="it-title-box">
+                <span>用户注册</span>
+            </div>
+            <form action="" method="post">
+                <div class="it-username-box">
+                    <label for="userEmail" style="float:left">邮箱 </label>
+                    <div class="it-username-input">
+                        <input type="email" id="userEmail" name="userEmail" placeholder="请输入您的邮箱地址，如：123@qq.com" required/>
+                        <div style="color: red" id="msg">{{ msg }}</div>
+                    </div>
+
+
+                </div>
+                <div class="it-userPassword-box">
+                    <label for="userPassword" style="float:left">密码</label>
+                    <div class="it-userPassword-input">
+                        <input type="password" id="userPassword" name="userPassword" placeholder="请输入密码" required/>
+                    </div>
+                </div>
+
+                <div class="it-userRePassword-box">
+                    <label for="userRePassword" style="float:left">确认密码</label>
+                    <div class="it-userRePassword-input">
+                        <input type="password" id="userRePassword" name="userRePassword" placeholder="请重复输入密码" required/>
+                        <div style="color: red;text-align:left" id="errorpwd">{{ error_msg }}</div>
+                    </div>
+                </div>
+
+                <div class="it-submit-box">
+                    <input id="it-submit-button" type="submit" value="注册" style="border:none" onmouseover="this.style.backgroundColor='green';" onmouseout="this.style.backgroundColor='#5cb85c';">
+                </div>
+
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

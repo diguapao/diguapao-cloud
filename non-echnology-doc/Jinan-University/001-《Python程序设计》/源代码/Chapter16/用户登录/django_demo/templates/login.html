@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>用户登录</title>
+</head>
+<body>
+<div style="margin: 15% 40%;">
+    <h1>用户登录</h1>
+    <form action="/login/" method="post">
+        <p>
+            <label for="id_username">邮&nbsp;&nbsp;&nbsp;箱：</label>
+            <input type="text" id="id_username" name="username"
+                   placeholder="邮箱" autofocus required/>
+        </p>
+        <p>
+            <label for="id_password">密&nbsp;&nbsp;&nbsp;码：</label>
+            <input type="password" id="id_password"
+                   placeholder="密码" name="password" required>
+        </p>
+        <style>
+				label{
+						 display: inline-block;
+						 min-width: 100px;
+					}
+        </style>
+        <input type="submit" value="登录">
+        <a href=/register/>
+            <input name="注册" type="button" id="btn1" title="注册" value="注册">
+        </a>
+        <p style="color: red">{{ error_msg }}</p>
+    </form>
+</div>
+</body>
+</html>
