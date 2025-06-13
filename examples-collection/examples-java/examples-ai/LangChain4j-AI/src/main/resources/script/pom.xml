@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.diguapao.cloud.framework.langchain4j.ai.script</groupId>
+    <artifactId>LangChain4j-AI-Script</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>${project.artifactId}</name>
+    <description>LangChain4j-AI, getting started example, using Open AI</description>
+    <packaging>pom</packaging>
+
+</project>
