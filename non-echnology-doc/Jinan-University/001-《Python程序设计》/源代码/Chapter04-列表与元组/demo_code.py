@@ -47,7 +47,7 @@ print(li_one)
 print(li_two)
 
 li_one = ['a', 'b', 'c', 'd']
-li_one.reverse()
+li_one.reverse()  # 反转列表
 print(li_one)
 
 print('===========   4.3.1添加列表元素   ===========')
@@ -69,7 +69,7 @@ print('===========   4.3.2删除列表元素   ===========')
 names = ['小明', '小红', '小华', '小花', '小李', '小张']
 del names[0]  # 删除索引为1的元素
 print(names)
-del names[1:3]  # 删除索引为1至索引为3之前的元素
+del names[1:3]  # 删除索引为1至索引为3之前的元素（注意不会删除索引为3得元素，进删除索引为1、2得元素）
 print(names)
 
 chars = ['h', 'e', 'l', 'l', 'e']
@@ -119,7 +119,7 @@ print(tuple_demo[1])  # 访问索引为1的元素
 print(tuple_demo[2])  # 访问索引为2的元素
 
 exam_tuple = ('h', 'e', 'l', 'l', 'o')
-print(exam_tuple[1:4])  # 访问索引为1至索引为4之前的元素
+print(exam_tuple[1:4])  # 访问索引为1至索引为4之前的元素（注意：不包含第4号元素）
 
 exam_tuple = ('hello', 100, 'Python')
 # exam_tuple[0] = 'hi'  # 将索引为0的元素修改为'hi'，这里会报错，因为元组不可变
