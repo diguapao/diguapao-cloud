@@ -274,6 +274,30 @@ print(x)  	# 输出: 8
        print(f"{number} 不是水仙花数")
    ```
 
+   判断一个数是否为水仙花数Java 版：
+
+   ```java
+   public static boolean isNarcissistic(int num) {
+       // 将数字转换为字符串，方便逐位处理
+       String numStr = Integer.toString(num);
+       // 获取数字的位数
+       int n = numStr.length();
+       // 计算各位数字的n次幂之和
+       int sumOfPowers = 0;
+       for (int i = 0; i < numStr.length(); i++) {
+           // 取出每一位数字并计算其n次幂
+           int digit = Character.getNumericValue(numStr.charAt(i));
+           sumOfPowers += Math.pow(digit, n);
+       }
+       // 判断是否等于原数
+       return sumOfPowers == num;
+   }
+   ```
+
+   
+
+   
+
     找出 Long.max() 范围内的所有水仙花数：
 
    ```python
