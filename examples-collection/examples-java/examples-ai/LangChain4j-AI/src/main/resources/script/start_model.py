@@ -38,8 +38,8 @@ def load_model():
         print("Loading model...")
         # 在笔者的机器上，模型下载后位于：C:\Users\Administrator\.cache\huggingface\hub
         # pipe = DiffusionPipeline.from_pretrained(
-        # pipe = StableDiffusionXLPipeline.from_pretrained(
-        pipe = StableDiffusionImg2ImgPipeline.from_pretrained(
+        pipe = StableDiffusionXLPipeline.from_pretrained(
+        # pipe = StableDiffusionImg2ImgPipeline.from_pretrained(
             model_id,
             torch_dtype=torch_dtype,
             variant=variant,
@@ -51,6 +51,7 @@ def load_model():
         global pipe_device
         pipe_device = "cuda" if torch.cuda.is_available() else "xpu"
         pipe_device = "xpu" if torch.xpu.is_available() else "cpu"
+        pipe.to(pipe_device)
         print(f"Model loaded on {pipe_device}")
 
         # ===========================
@@ -83,29 +84,29 @@ async def generate_image(width: int, height: int, steps: int, seed: int,
     if pipe is None:
         raise HTTPException(status_code=500, detail="Model not loaded")
 
-    print(f"Generating image for prompt: {prompt}")
-    output_dir = ("E:/DiGuaPao/gitee/diguapao-cloud/examples-collection/examples-java/examples-ai/LangChain4j-AI/src/main/resources/script/py_output_img/")
-
     # 假设reference_image是你想要用作参考的PIL Image
     reference_image = Image.open("E:/DiGuaPao/gitee/diguapao-cloud/examples-collection/examples-java/examples-ai/LangChain4j-AI/src/main/resources/script/temp.jpg").convert("RGB")
     reference_image = reference_image.resize((750, 1000))  # 调整大小以匹配目标尺寸
     generator = torch.Generator(device=pipe_device).manual_seed(seed)
 
+    print(f"Generating image for prompt: {prompt}")
     image = pipe(
         # width=width,
         # height=height,
         steps=steps,
-        # seed=seed,
+        seed=seed,
         guidance_scale=guidance_scale,
         num_inference_steps=num_inference_steps,
         negative_prompt=negative_prompt,
         prompt=prompt,
-        image=reference_image,
-        strength=0.75,  # 控制参考图像的影响程度，值越小影响越大
-        generator=generator,
+        # image=reference_image,
+        # strength=0.75,  # 控制参考图像的影响程度，值越小影响越大
+        # generator=generator,
+        # num_images_per_prompt=1  # 控制只生成一张图
     )
 
     image_paths = []
+    output_dir = ("E:/DiGuaPao/gitee/diguapao-cloud/examples-collection/examples-java/examples-ai/LangChain4j-AI/src/main/resources/script/py_output_img/")
     for i, image in enumerate(image.images):
         timestamp = str(int(time.time()))
         image_path = os.path.join(output_dir, f"{timestamp}_output_{i}.png")

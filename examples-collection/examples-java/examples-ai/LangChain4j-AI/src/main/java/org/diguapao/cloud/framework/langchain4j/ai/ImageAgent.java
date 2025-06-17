@@ -45,7 +45,7 @@ public class ImageAgent {
                 CompletableFuture.runAsync(() -> {
                     for (int i = 0; i < 100000; i++) {
                         try {
-                            ImageGenerator.generateImage(apiUrl, finalPrompt, negativePrompt, 750, 1000, 60, 99999);
+                            ImageGenerator.generateImage(apiUrl, finalPrompt, negativePrompt, 1024, 1024, 30, 12345);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
@@ -54,7 +54,7 @@ public class ImageAgent {
                 CompletableFuture.runAsync(() -> {
                     for (int i = 0; i < 10000; i++) {
                         try {
-                            ImageGenerator.generateImage(apiUrl, finalPrompt, negativePrompt, 750, 1000, 30, 99999);
+                            ImageGenerator.generateImage(apiUrl, finalPrompt, negativePrompt, 1024, 1024, 30, 12345);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
