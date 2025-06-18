@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "E:/Users/13984/AppData/Roaming/JetBrains/IntelliJIdea2025.2/plugins/python-ce/helpers/pydev/pydevd.py", line 1570, in _exec
+    pydev_imports.execfile(file, globals, locals)  # execute the script
+  File "E:\Users\13984\AppData\Roaming\JetBrains\IntelliJIdea2025.2\plugins\python-ce\helpers\pydev\_pydev_imps\_pydev_execfile.py", line 18, in execfile
+    exec(compile(contents+"\n", file, 'exec'), glob, loc)
+  File "D:\DiGuaPao\gitee\diguapao-cloud\non-echnology-doc\Jinan-University\001-《Python程序设计》\源代码\Chapter10-错误和异常\demo_code.py", line 65, in <module>
+    file = open('异常.txt', 'r')
+FileNotFoundError: [Errno 2] No such file or directory: '异常.txt'
