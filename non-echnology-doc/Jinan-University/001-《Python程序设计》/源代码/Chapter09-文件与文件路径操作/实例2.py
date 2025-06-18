@@ -67,7 +67,3 @@ class TelephoneBook:
                     break
             else:
                 print('请输入正确的指令')
-
-if __name__ == '__main__':
-    tb = TelephoneBook()
-    tb.main()
