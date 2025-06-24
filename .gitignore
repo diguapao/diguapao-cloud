@@ -35,3 +35,4 @@ hs_err_pid*
 /examples-collection/examples-code-generator/src/main/java/com/*
 /.github/workflows/mirror-from-gitee.yml
 /combat-series/**
+/examples-collection/examples-python/examples-collection-python/examples-collection-python.iml
