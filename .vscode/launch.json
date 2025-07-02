@@ -8,7 +8,16 @@
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
-            "environment": [],
+            "environment": [
+                {
+                    "name": "LANG",
+                    "value": "zh_CN.UTF-8"
+                },
+                {
+                    "name": "LC_ALL",
+                    "value": "zh_CN.UTF-8"
+                }
+            ],
             "externalConsole": false,
             "MIMode": "gdb",
             "miDebuggerPath": "D:\\soft\\windows\\mingw64\\bin\\gdb.exe",
