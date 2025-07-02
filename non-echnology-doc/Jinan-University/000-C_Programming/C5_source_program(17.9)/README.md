@@ -6,5 +6,66 @@
 
 三、 这些源程序可以直接上机进行编译和运行。
 
+# 环境配置
 
-# vs code  .c 文件执行run code，中断报错时中文乱码
+参见：
+
+https://zhuanlan.zhihu.com/p/26143367916
+
+https://zhuanlan.zhihu.com/p/1921587106700071006
+
+# 添加调试属性
+
+![img.png](./assets/img.png)
+
+![img_1.png](./assets/img_1.png)
+
+这时会生成 .vscode\launch.json，调整为如下配置即可
+
+```json
+{
+  "configurations": [
+    {
+      "name": "C/C++: gcc.exe 构建和调试活动文件",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [
+        {
+          "name": "LANG",
+          "value": "zh_CN.UTF-8"
+        },
+        {
+          "name": "LC_ALL",
+          "value": "zh_CN.UTF-8"
+        }
+      ],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "miDebuggerPath": "D:\\soft\\windows\\mingw64\\bin\\gdb.exe",
+      "setupCommands": [
+        {
+          "description": "为 gdb 启用整齐打印",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        },
+        {
+          "description": "将反汇编风格设置为 Intel",
+          "text": "-gdb-set disassembly-flavor intel",
+          "ignoreFailures": true
+        }
+      ],
+      "preLaunchTask": "C/C++: gcc.exe 生成活动文件"
+    }
+  ],
+  "version": "2.0.0"
+}
+```
+
+# vs code .c 文件执行run code，中断报错时中文乱码
+
+参见：https://blog.csdn.net/2301_80165396/article/details/147083267
+
