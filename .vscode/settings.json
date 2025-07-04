@@ -1,6 +1,8 @@
 {
     "java.compile.nullAnalysis.mode": "automatic",
     "files.associations": {
-        "stdio.h": "c"
+        "*.drwio": "drawio",
+        "stdio.h": "c",
+        "cmath": "c"
     }
 }
