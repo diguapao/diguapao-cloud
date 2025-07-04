@@ -1,16 +1,16 @@
 #include <stdio.h>
 int main()
- {int max(int,int);                     // º¯ÊıÉùÃ÷
-  int min(int x,int y);                 // º¯ÊıÉùÃ÷      
-  int (*p)(int,int);                    // ¶¨ÒåÖ¸Ïòº¯ÊıµÄÖ¸Õë±äÁ¿
+ {int max(int,int);                     // å‡½æ•°å£°æ˜
+  int min(int x,int y);                 // å‡½æ•°å£°æ˜      
+  int (*p)(int,int);                    // å®šä¹‰æŒ‡å‘å‡½æ•°çš„æŒ‡é’ˆå˜é‡
   int a,b,c,n;
   printf("please enter a and b:");
   scanf("%d,%d",&a,&b);
   printf("please choose 1 or 2:");
-  scanf("%d",&n);                       // ÊäÈë1‘á2
-  if (n==1) p=max;                      // ÈçÊäÈë1£¬Ê¹pÖ¸Ïòmaxº¯Êı          
-  else if (n==2) p=min;                 // ÈçÊäÈë2£¬Ê¹pÖ¸Ïòminº¯Êı   
-  c=(*p)(a,b);                          // µ÷ÓÃpÖ¸ÏòµÄº¯Êı
+  scanf("%d",&n);                       // è¾“å…¥1æˆ“2
+  if (n==1) p=max;                      // å¦‚è¾“å…¥1ï¼Œä½¿pæŒ‡å‘maxå‡½æ•°          
+  else if (n==2) p=min;                 // å¦‚è¾“å…¥2ï¼Œä½¿pæŒ‡å‘minå‡½æ•°   
+  c=(*p)(a,b);                          // è°ƒç”¨pæŒ‡å‘çš„å‡½æ•°
   printf("a=%d,b=%d\n",a,b);
   if (n==1) printf("max=%d\n",c);
   else  printf("min=%d\n",c);

@@ -1,29 +1,29 @@
 #include <stdio.h>
 int main()
-{enum Color {red,yellow,blue,white,black};         //ÉùÃ÷Ã¶¾ÙÀàĞÍenum Color
- enum Color i,j,k,pri;                             //¶¨ÒåÃ¶¾Ù±äÁ¿i,j,k,pri
+{enum Color {red,yellow,blue,white,black};         //å£°æ˜æšä¸¾ç±»å‹enum Color
+ enum Color i,j,k,pri;                             //å®šä¹‰æšä¸¾å˜é‡i,j,k,pri
  int n,loop;
  n=0;
- for (i=red;i<=black;i++)                          //ÍâÑ­»·Ê¹iµÄÖµ´Óred±äµ½black
-   for (j=red;j<=black;j++)                        //ÖĞÑ­»·Ê¹jµÄÖµ´Óred±äµ½black
-     if (i!=j)                                     //Èç¹û¶şÇò²»Í¬É«
-       { for (k=red;k<=black;k++)                  //ƒÈÑ­»·Ê¹kµÄÖµ´Óred±äµ½black
-         if ((k!=i) && (k!=j))                      //Èç¹û3Çò²»Í¬É«
-           {n=n+1;                                 //·ûºÏÌõ¼şµÄ´ÎÊı¼Ó1
-		    printf("%-4d",n);                      //Êä³öµ±Ç°ÊÇµÚ¼¸¸ö·ûºÏÌõ¼şµÄ×éºÏ
-            for (loop=1;loop<=3;loop++)            //ÏÈºó¶ÔÈı¸öÇò·Ö±ğ´¦Àí
-              {switch (loop)                       //loopµÄÖµ´Ó1±äµ½3
-			     {case 1: pri=i;break;             //loopµÄÖµÎª1Ê±£¬°ÑµÚ1ÇòµÄÑÕÉ«¸³¸øpri      
-                  case 2: pri=j;break;             //loopµÄÖµÎª2Ê±£¬°ÑµÚ2ÇòµÄÑÕÉ«¸³¸øpri     
-                  case 3: pri=k;break;             //loopµÄÖµÎª3Ê±£¬°ÑµÚ3ÇòµÄÑÕÉ«¸³¸øpri    
+ for (i=red;i<=black;i++)                          //å¤–å¾ªç¯ä½¿içš„å€¼ä»redå˜åˆ°black
+   for (j=red;j<=black;j++)                        //ä¸­å¾ªç¯ä½¿jçš„å€¼ä»redå˜åˆ°black
+     if (i!=j)                                     //å¦‚æœäºŒçƒä¸åŒè‰²
+       { for (k=red;k<=black;k++)                  //å…§å¾ªç¯ä½¿kçš„å€¼ä»redå˜åˆ°black
+         if ((k!=i) && (k!=j))                      //å¦‚æœ3çƒä¸åŒè‰²
+           {n=n+1;                                 //ç¬¦åˆæ¡ä»¶çš„æ¬¡æ•°åŠ 1
+		    printf("%-4d",n);                      //è¾“å‡ºå½“å‰æ˜¯ç¬¬å‡ ä¸ªç¬¦åˆæ¡ä»¶çš„ç»„åˆ
+            for (loop=1;loop<=3;loop++)            //å…ˆåå¯¹ä¸‰ä¸ªçƒåˆ†åˆ«å¤„ç†
+              {switch (loop)                       //loopçš„å€¼ä»1å˜åˆ°3
+			     {case 1: pri=i;break;             //loopçš„å€¼ä¸º1æ—¶ï¼ŒæŠŠç¬¬1çƒçš„é¢œè‰²èµ‹ç»™pri      
+                  case 2: pri=j;break;             //loopçš„å€¼ä¸º2æ—¶ï¼ŒæŠŠç¬¬2çƒçš„é¢œè‰²èµ‹ç»™pri     
+                  case 3: pri=k;break;             //loopçš„å€¼ä¸º3æ—¶ï¼ŒæŠŠç¬¬3çƒçš„é¢œè‰²èµ‹ç»™pri    
                   default:break;
 				 }
-               switch (pri)                        //¸ù¾İÇòµÄÑÕÉ«Êä³öÏàÓ¦µÄÎÄ×Ö
-				 {case red:printf("%-10s","red"); break;            //priµÄÖµµÈÓÚÃ¶¾Ù³£Á¿redÊ±Êä³ö¡°red¡±
-                  case yellow: printf("%-10s","yellow"); break;     //priµÄÖµµÈÓÚÃ¶¾Ù³£Á¿yellowdÊ±Êä³ö¡°yellow¡±
-                  case blue: printf("%-10s","blue"); break;         //priµÄÖµµÈÓÚÃ¶¾Ù³£Á¿blueÊ±Êä³ö¡°blue¡± 
-                  case white: printf("%-10s","white"); break;       //priµÄÖµµÈÓÚÃ¶¾Ù³£Á¿whiteÊ±Êä³ö¡°white¡±
-                  case black: printf("%-10s","black"); break;       //priµÄÖµµÈÓÚÃ¶¾Ù³£Á¿blackÊ±Êä³ö¡°black¡±
+               switch (pri)                        //æ ¹æ®çƒçš„é¢œè‰²è¾“å‡ºç›¸åº”çš„æ–‡å­—
+				 {case red:printf("%-10s","red"); break;            //priçš„å€¼ç­‰äºæšä¸¾å¸¸é‡redæ—¶è¾“å‡ºâ€œredâ€
+                  case yellow: printf("%-10s","yellow"); break;     //priçš„å€¼ç­‰äºæšä¸¾å¸¸é‡yellowdæ—¶è¾“å‡ºâ€œyellowâ€
+                  case blue: printf("%-10s","blue"); break;         //priçš„å€¼ç­‰äºæšä¸¾å¸¸é‡blueæ—¶è¾“å‡ºâ€œblueâ€ 
+                  case white: printf("%-10s","white"); break;       //priçš„å€¼ç­‰äºæšä¸¾å¸¸é‡whiteæ—¶è¾“å‡ºâ€œwhiteâ€
+                  case black: printf("%-10s","black"); break;       //priçš„å€¼ç­‰äºæšä¸¾å¸¸é‡blackæ—¶è¾“å‡ºâ€œblackâ€
                   default :break;
                  }
 			  }

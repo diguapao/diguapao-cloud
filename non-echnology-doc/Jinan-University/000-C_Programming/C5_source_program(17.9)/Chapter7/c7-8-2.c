@@ -10,7 +10,7 @@ void main()
 
 int max4(int a,int b,int c,int d) 
 {int max2(int a,int b);
- return max2(max2(max2(a,b),c),d);         /* ×ĞÏ¸·ÖÎö´ËĞĞ */
+ return max2(max2(max2(a,b),c),d);         /* ä»”ç»†åˆ†ææ­¤è¡Œ */
   
 }
 
