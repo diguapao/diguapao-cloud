@@ -8,7 +8,25 @@
 
 # 环境配置
 
-参见：
+## 安装 MinGW-w64
+
+下载：https://link.zhihu.com/?target=https%3A//github.com/niXman/mingw-builds-binaries/releases
+
+1、笔者是 AMD 64bit CPU，选择 x86_64-15.1.0-release-win32-seh-ucrt-rt_v12-rev0.7z 下载后解压
+2、配置环境变量：MinGW_HOME，值为：D:\soft\windows\mingw64\，然后 path 添加：%MinGW_HOME%\bin
+3、打开 cmd 窗口验证是否安装成功：
+
+```shell
+gcc -v
+# 或者
+gcc --version
+```
+
+## VS Code 配置
+
+安装插件： C/C++扩展插件 和 Code Runner 插件，安装完成后重启 vs code。
+
+详细参见：
 
 https://zhuanlan.zhihu.com/p/26143367916
 
