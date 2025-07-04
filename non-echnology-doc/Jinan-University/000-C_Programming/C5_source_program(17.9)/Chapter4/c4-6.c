@@ -6,9 +6,9 @@ int main()
   printf("Your score:");
   switch(grade)
   { 
-	 case 'A': printf("85бл100\n");break;
-     case 'B': printf("70бл84\n");break;
-     case 'C': printf("60бл69\n");break;
+	 case 'A': printf("85я╜Ю100\n");break;
+     case 'B': printf("70я╜Ю84\n");break;
+     case 'C': printf("60я╜Ю69\n");break;
      case 'D': printf("<60\n");break;   
      default:  printf("data error!\n");	 
   }

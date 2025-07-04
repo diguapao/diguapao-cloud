@@ -11,7 +11,7 @@ void main()
 int max4(int a,int b,int c,int d) 
 { int max2(int a,int b);
   int m; 
-  m=max2(max2(max2(a,b),c),d);         /* ×ĞÏ¸·ÖÎö´ËĞĞ */
+  m=max2(max2(max2(a,b),c),d);         /* ä»”ç»†åˆ†ææ­¤è¡Œ */
   return(m);
 }
 
