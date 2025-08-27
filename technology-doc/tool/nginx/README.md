@@ -123,7 +123,7 @@ cd /opt/nginx-1.29.0-source || exit
 make && sudo make install
 ```
 
-安装完成回复旧的配置和部署的内容：
+安装完成恢复旧的配置和部署的内容：
 
 ```shell
 mv /opt/nginx-1.29.0/conf /opt/nginx-1.29.0/conf_back
