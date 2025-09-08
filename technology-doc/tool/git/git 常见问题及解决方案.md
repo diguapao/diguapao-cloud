@@ -21,9 +21,9 @@ git config user.email
 ```shell
 # 进入特定的 Git 仓库目录
 cd /d/work/rjgf/project/SmartCenter
-# 设置局部邮箱
+# 设置局部作者
 git config user.name "DiGuaPao"
-# 验证局部设置
+# 验证局部作者
 git config user.name
 ```
 
