@@ -16,6 +16,16 @@ git config user.email "wukong@163.com"
 # 验证局部设置
 git config user.email
 ```
+# 设置项目作者
+
+```shell
+# 进入特定的 Git 仓库目录
+cd /d/work/rjgf/project/SmartCenter
+# 设置局部邮箱
+git config user.name "DiGuaPao"
+# 验证局部设置
+git config user.name
+```
 
 # Git 修改本地提交记录的作者和邮箱（邮箱错误push被拒绝时使用）
 
