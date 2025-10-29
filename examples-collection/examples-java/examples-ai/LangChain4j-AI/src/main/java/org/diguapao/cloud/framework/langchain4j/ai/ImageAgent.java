@@ -1,7 +1,6 @@
 package org.diguapao.cloud.framework.langchain4j.ai;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.concurrent.CompletableFuture;
 
 public class ImageAgent {
@@ -33,11 +32,12 @@ public class ImageAgent {
                 "(生活摄影风格:1.2)，(柔焦光晕:1.1)，(粉彩色调+白色点缀:1.1)，(体积光效:1.1)  \n" +
                 "<lora:addielyn_v1:0.7>, <lora:White_Stone_XL_Glazed_Ceramic:0.5>  \n" +
                 "--ar 16:9 --v 6.0 --style \"cinematic\" --stylize 800 ";
+        prompt = "海滩上着白色高腰吊带白皙皮肤完美身材纯欲性感的美女";
         // prompt = "一幅令人叹为观止的赛里木湖风景画，位于新疆地区，湖水清澈湛蓝，在阳光明媚的天空下反射着周围的山脉。场景设定在黄金时段，温暖的阳光投射出长长的影子，突显了该地区的自然美景。前景是点缀着五彩缤纷野花的郁郁葱葱的草地，延伸至湖边。湖的远端，积雪覆盖的山峰巍峨耸立于地平线上，为构图增添了深度和对比度。湖岸边散布着几座游牧民族的毡房，赋予画面独特的文化元素。风格应为照片写实主义，捕捉环境中每一个细节，从草的纹理到水面的涟漪。图像应当唤起一种宁静与敬畏的感觉，让观者沉浸在这片自然美景中。"
         ;
         //prompt = PromptGenerator.generatePrompt(userQuery);
         System.out.println("生成的提示词: " + prompt);
-        String negativePrompt = "low quality, blurry, cartoon style, anime style, unrealistic colors";
+        String negativePrompt = "低质量，模糊，卡通、动漫、古风风格，不真实的颜色";
         // 2. 生成图片
         String apiUrl = "http://127.0.0.1:8000/generate";
         String finalPrompt = prompt;
@@ -45,7 +45,7 @@ public class ImageAgent {
                 CompletableFuture.runAsync(() -> {
                     for (int i = 0; i < 100000; i++) {
                         try {
-                            ImageGenerator.generateImage(apiUrl, finalPrompt, negativePrompt, 1024, 1024, 30, 12345);
+                            ImageGenerator.generateImage(apiUrl, finalPrompt, negativePrompt, 720, 720, 30, 12345);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
@@ -54,7 +54,7 @@ public class ImageAgent {
                 CompletableFuture.runAsync(() -> {
                     for (int i = 0; i < 10000; i++) {
                         try {
-                            ImageGenerator.generateImage(apiUrl, finalPrompt, negativePrompt, 1024, 1024, 30, 12345);
+                            ImageGenerator.generateImage(apiUrl, finalPrompt, negativePrompt, 720, 720, 30, 12345);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }

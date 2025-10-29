@@ -39,7 +39,7 @@ public class ImageGenerator {
 
         // 保存图片
         Path outputPath = Path.of("E:\\DiGuaPao\\gitee\\diguapao-cloud\\examples-collection\\examples-java\\examples-ai\\LangChain4j-AI\\src\\main\\resources\\script\\output_img\\" + System.currentTimeMillis() + "output_image.png");
-        Files.write(outputPath, response);
+        // Files.write(outputPath, response);
 
         System.out.println(Thread.currentThread().getName() + " + 图片已保存至: " + outputPath.toAbsolutePath());
     }
