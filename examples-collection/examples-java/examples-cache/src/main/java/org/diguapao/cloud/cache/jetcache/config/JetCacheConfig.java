@@ -44,7 +44,8 @@ public class JetCacheConfig {
         localBuilders.put(CacheConsts.DEFAULT_AREA, localBuilder);
 
         Map<String, CacheBuilder> remoteBuilders = Maps.newHashMap();
-        RedissonCacheBuilder<RedissonCacheBuilder.RedissonDataCacheBuilderImpl> remoteCacheBuilder = RedissonCacheBuilder.createBuilder()
+        RedissonCacheBuilder<RedissonCacheBuilder.RedissonDataCacheBuilderImpl> remoteCacheBuilder = RedissonCacheBuilder
+                .createBuilder()
                 .keyConvertor(Fastjson2KeyConvertor.INSTANCE)
                 .valueEncoder(JavaValueEncoder.INSTANCE)
                 .valueDecoder(JavaValueDecoder.INSTANCE)
