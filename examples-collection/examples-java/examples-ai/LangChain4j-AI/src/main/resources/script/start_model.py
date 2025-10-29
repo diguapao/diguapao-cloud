@@ -16,7 +16,7 @@ from diffusers import DiffusionPipeline, BitsAndBytesConfig, StableDiffusionXLPi
 variant = "fp16"
 torch_dtype = torch.float16  # FP16 半精度
 enable_vae_slicing = True  # VAE 分块处理
-enable_sequential_cpu_offload = True  # 顺序 CPU 卸载
+enable_sequential_cpu_offload = False  # 顺序 CPU 卸载
 quantization_config = BitsAndBytesConfig(load_in_8bit=True)  # 启用 8-bit 量化，需安装 bitsandbytes（需支持 XPU）以降低显存占用，需要安装依赖：pip install bitsandbytes
 
 # ===========================
@@ -60,8 +60,8 @@ def load_model():
         if enable_vae_slicing:
             pipe.enable_vae_slicing()  # 降低显存占用
 
-        # if enable_sequential_cpu_offload:
-        #     pipe.enable_sequential_cpu_offload()  # 将非活跃模块移至 CPU
+        if enable_sequential_cpu_offload:
+            pipe.enable_sequential_cpu_offload()  # 将非活跃模块移至 CPU
 
 
     except Exception as e:
