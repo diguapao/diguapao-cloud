@@ -21,7 +21,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = JasyptApplication.class,
         properties = {
                 "spring.profiles.active=local_pl",
-                "jasypt.encryptor.password=examples-jasypt",
+                // 注意：jasypt.encryptor.password的值和ENC(?)加密的值不匹配启动会报崔
+                 "jasypt.encryptor.password=examples-jasypt",
         }
 )
 public class JasyptSecretTest {
