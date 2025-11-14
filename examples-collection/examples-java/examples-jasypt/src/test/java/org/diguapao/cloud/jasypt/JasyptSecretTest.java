@@ -27,7 +27,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class JasyptSecretTest {
     @Autowired
     private StringEncryptor encryptor;
-    @Value("${rabbitmq.config-map.upms-plugin.password}")
+    @Value("${rabbitmq.config-map.upms-plugin.password:}")
     private String pwd;
 
     /**
