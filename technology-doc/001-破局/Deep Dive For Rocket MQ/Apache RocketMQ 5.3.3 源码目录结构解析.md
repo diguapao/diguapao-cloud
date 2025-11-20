@@ -19,7 +19,7 @@
 | **broker**     | `broker [rocketmq-broker]`         | **消息存储与转发核心**。负责消息的存储、投递和查询，并保证高可用。这是最核心、最复杂的模块。 |
 | **controller** | `controller [rocketmq-controller]` | **控制器（用于新一代架构）**。在RocketMQ 5.0引入，用于管理元数据和协调Broker，为取代NameServer做准备，实现主从切换和负载均衡。 |
 | **proxy**      | `proxy [rocketmq-proxy]`           | **代理模块**。作为无状态网关，解耦客户端与Broker，使Broker更专注于存储，便于云原生部署和跨语言客户端支持。 |
-| **store**      | `store [rocketmq-store]`           | **存储层抽象**。提供消息的持久化存储逻辑，可能是Broker模块内部存储机制的基础抽象。 |
+| **store**      | `store [rocketmq-store]`           | **存储层抽象**。提供消息的持久化存储逻辑，是broker和tieredstore模块内部存储机制的基础抽象。 |
 
 ### 2. 客户端与API模块（Client & API Modules）
 
