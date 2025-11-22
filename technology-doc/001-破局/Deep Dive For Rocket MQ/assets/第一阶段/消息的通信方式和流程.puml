@@ -1,0 +1,43 @@
+@startuml
+title RocketMQ Netty异步通信流程
+
+|NettyClientHandler|
+
+
+|#AntiqueWhite|NettyRemotingClient|
+start
+:组装远程命令并生成回调;
+:基于地址创建通信通道;
+:获取信号量许可;
+:为 ResponseFuture 分配 Opaque;
+:调用 writeAndFlush 发送请求;
+
+
+|#LightBlue|NettyServerHandler|
+:读取并处理Netty接收的消息;
+
+
+|NettyRemotingServer|
+:processMessageReceived方法处理消息;
+:根据业务码获取处理器;
+:业务处理器执行并返回结果;
+
+if (判断是否为单向请求？) then (是)
+  :流程结束;
+  stop
+else (否)
+  :设置响应Opaque并发回客户端;
+endif
+
+
+|NettyClientHandler|
+:读取 Netty 接收到的消息并进行处理;
+
+
+|NettyRemotingClient|
+:根据Opaque查找ResponseFuture;
+:执行回调方法;
+
+stop
+
+@enduml

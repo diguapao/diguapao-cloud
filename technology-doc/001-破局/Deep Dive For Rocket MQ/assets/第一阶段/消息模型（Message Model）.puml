@@ -1,0 +1,38 @@
+@startuml
+'https://plantuml.com/use-case-diagram
+
+
+package "RocketMQ"{
+    package "Broker1:每个 Broker 可以存储多个Topic的消息" as Broker1{
+        usecase Topic2 as t2_1
+        usecase Topic1 as t1_1
+        package Topic3 as t3_1 {
+            usecase "Message1Sharding1 存储于 Broker1"
+        }
+    }
+
+    package "Broker2:每个 Broker 可以存储多个Topic的消息" as Broker2{
+        usecase Topic2 as t2_2
+        usecase Topic1 as t1_2
+        package Topic3 as t3_2  {
+            usecase "Message1Sharding2 存储于 Broker2"
+        }
+    }
+
+    usecase Message
+    usecase Producer
+    package ConsumerGroup {
+        usecase Consumer1
+        usecase Consumer2
+    }
+    usecase "Message Queue"
+
+    Producer ..> Message : 生产
+    Consumer1 <.. Message : 消费
+    Consumer2 <.. Message : 消费
+    Broker1 <-right->  Message : 存储
+    Broker2 <-up-> Message : 存储
+    "Message Queue" <-> Message : 存储消息的物理地址
+
+}
+@enduml
