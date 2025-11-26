@@ -1,5 +1,9 @@
 # diguapao-cloud
 
+## 修炼算法
+
+[README.md](technology-doc/修炼算法/README.md)
+
 ## 破局系列
 
 ### Deep Dive For Rocket MQ(RockerMQ深度潜水)
