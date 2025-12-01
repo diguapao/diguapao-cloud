@@ -18,7 +18,7 @@
 
 ### Deep Dive For Rocket MQ(RockerMQ深度潜水)
 
-[README.md](technology-doc%2Fmiddleware%2FRocketMQ%2FDeep%20Dive%20For%20Rocket%20MQ%2FREADME.md)
+[README.md](technology-doc/middleware/RocketMQ/Deep Dive For Rocket MQ/README.md)
 
 ## 技术文档
 
