@@ -1,18 +1,22 @@
 # 项目
 
-[README.md](business-center/README.md)
+[business-center](business-center/README.md)
 
 # 案例集
 
-[README.md](examples-collection/README.md)
+[examples-collection](examples-collection/README.md)
 
 # 技术文章
 
-[README.md](technology-doc/README.md)
+[technology-doc](technology-doc/README.md)
 
 ## 修炼算法
 
 [README.md](technology-doc/修炼算法/README.md)
+
+## work碎片
+
+[iot领域如何应对设备上/下线事件大规模超频上报？](technology-doc/work碎片/IOT领域如何应对设备上下线事件大规模超频上报.md)
 
 ## 破局系列
 
