@@ -1,5 +1,5 @@
 @startuml
-title RocketMQ Netty异步通信流程
+title Namesrv 启动流程
 
 |rocketmq-namesrv|
 start
