@@ -1,0 +1,50 @@
+@startuml
+title RocketMQ Netty异步通信流程
+
+|rocketmq-namesrv|
+start
+:NamesrvStartup#main;
+    :NamesrvStartup#main0;
+        :NamesrvStartup#parseCommandlineAndConfigFile;
+            :解析命令行参数\n(支持 -c conf/namesrv.conf 指定配置文件);
+            :实例化 NamesrvStartup#namesrvConfig;
+            :实例化 NamesrvStartup#nettyServerConfig;
+            :实例化 NamesrvStartup#nettyClientConfig;
+            :实例化 NamesrvStartup#nettyServerConfig;
+            if (有指定配置文件) then (true)
+                :读取配置文件;
+                :实例化并 load NamesrvStartup#properties;
+                if (isEnableControllerInNamesrv) then (true)
+                    :实例化 NamesrvStartup#controllerConfig;
+                endif
+            endif
+            :打印配置信息;
+        :NamesrvStartup#createAndStartNamesrvController;
+            :NamesrvStartup#createNamesrvController;
+                :根据配置实例化 NamesrvController\n(需要namesrvConfig、nettyServerConfig\n、nettyClientConfig);
+                |#AntiqueWhite|rocketmq-remoting|
+                :注册所有配置到 NamesrvController;
+            |rocketmq-namesrv|
+            #palegreen::NamesrvStartup#start(启动 Controller);
+                :NamesrvController#initialize;
+                    :通过 NamesrvController#kvConfigManager \n加载配置到 KVConfigManager#configTable;
+                    :NamesrvController#initiateNetworkComponents;
+                    |#AntiqueWhite|rocketmq-remoting|
+                    :NamesrvController#initiateNetworkComponents\n(初始化 Netty 服务器的各种资源和配置);
+                        :根据 NamesrvController#nettyServerConfig、\nbrokerHousekeepingService\n实例化 NettyRemotingServer;
+                            :初始化 ServerBootstrap、事件循环组\n(linux系统使用 epoll 模型，\nwindows 使用 nio 模型)、\n线程池、定时器等;
+                        :根据 NamesrvController#nettyClientConfig \n实例化 NettyRemotingClient;
+                            :Netty 客户端的各种资源，\n支撑后续与服务器进行交互;
+                    |rocketmq-namesrv|
+                    :NamesrvController#initiateThreadExecutors\n(初始化 NamesrvController 中使用的线程池和\n任务队列：默认的和客户端请求的);
+                    :NamesrvController#initiateSslContext\n(初始化 SSL/TLS 上下文);
+                    :NamesrvController#initiateRpcHooks\n(初始化 RPC 钩子);
+                :注册 JVM 关闭钩子（优雅停机）;
+:NamesrvStartup#controllerManagerMain;
+#palegreen:running;
+|#AntiqueWhite|rocketmq-remoting|
+|#LightBlue|rocketmq-controller|
+
+
+
+@enduml
