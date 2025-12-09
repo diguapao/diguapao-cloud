@@ -1,6 +1,7 @@
 @startuml
 title Namesrv 启动流程
 
+|#LightBlue|rocketmq-controller|
 |rocketmq-namesrv|
 start
 :NamesrvStartup#main;
@@ -25,25 +26,56 @@ start
                 |#AntiqueWhite|rocketmq-remoting|
                 :注册所有配置到 NamesrvController;
             |rocketmq-namesrv|
-            #palegreen::NamesrvStartup#start(启动 Controller);
-                :NamesrvController#initialize;
+            #palegreen:NamesrvStartup#start(启动 Controller);
+                #orange:step1 => NamesrvController#initialize;
                     :通过 NamesrvController#kvConfigManager \n加载配置到 KVConfigManager#configTable;
                     :NamesrvController#initiateNetworkComponents;
                     |#AntiqueWhite|rocketmq-remoting|
                     :NamesrvController#initiateNetworkComponents\n(初始化 Netty 服务器的各种资源和配置);
                         :根据 NamesrvController#nettyServerConfig、\nbrokerHousekeepingService\n实例化 NettyRemotingServer;
-                            :初始化 ServerBootstrap、事件循环组\n(linux系统使用 epoll 模型，\nwindows 使用 nio 模型)、\n线程池、定时器等;
                         :根据 NamesrvController#nettyClientConfig \n实例化 NettyRemotingClient;
                             :Netty 客户端的各种资源，\n支撑后续与服务器进行交互;
                     |rocketmq-namesrv|
                     :NamesrvController#initiateThreadExecutors\n(初始化 NamesrvController 中使用的线程池和\n任务队列：默认的和客户端请求的);
                     :NamesrvController#initiateSslContext\n(初始化 SSL/TLS 上下文);
                     :NamesrvController#initiateRpcHooks\n(初始化 RPC 钩子);
-                :注册 JVM 关闭钩子（优雅停机）;
-:NamesrvStartup#controllerManagerMain;
-#palegreen:running;
-|#AntiqueWhite|rocketmq-remoting|
-|#LightBlue|rocketmq-controller|
+                    if (initResult) then (false)
+                        :NamesrvController#shutdown\n(优雅地关闭 NamesrvController，避免资源泄露\n如：线程池、Netty服务器、释放监听的端口、文件\n句柄、网络链接);
+                    endif
+                #orange:step2 => 注册 JVM 关闭钩子（优雅停机）;
+                #orange:step3 => NamesrvController#start;
+                    |#AntiqueWhite|rocketmq-remoting|
+                    :RemotingService#start;
+                        :实例化 NettyRemotingServer#defaultEventExecutorGroup;
+                        :初始化 ServerBootstrap、事件循环组\n(linux系统使用 epoll 模型，\nwindows 使用 nio 模型)、\n线程池、定时器等;
+                        :启动 NettyRemotingAbstract#nettyEventExecutor;
+                    :设置nettyServer监听端口，更新NameServer地址列表;
+                    |rocketmq-srvutil|
+                    :FileWatchService#start;
+                    |#AntiqueWhite|rocketmq-remoting|
+                    :RemotingClient#start;
+                    |rocketmq-namesrv|
+                    :RouteInfoManager#start;
+if (NamesrvConfig#isEnableControllerInNamesrv) then (true\n内嵌NameSrv的方式启动Controller)
+    :NamesrvStartup#controllerManagerMain;
+        :NamesrvStartup#createControllerManager;
+            :克隆一份 nettyServerConfig;
+            |#LightBlue|rocketmq-controller|
+            :实例化 ControllerManager;
+            :注册所有配置到 ControllerManager;
+            |rocketmq-namesrv|
+        #palegreen:NamesrvStartup#start(controllerManager);
+            |#LightBlue|rocketmq-controller|
+            #orange:step1 => ControllerManager#initialize;
+
+            |rocketmq-namesrv|
+            #orange:step2 => 注册 JVM 关闭钩子（优雅停机）;
+            |#LightBlue|rocketmq-controller|
+            #orange:step3 => ControllerManager#start;
+
+            |rocketmq-namesrv|
+endif
+#palegreen:namesrv running;
 
 
 
