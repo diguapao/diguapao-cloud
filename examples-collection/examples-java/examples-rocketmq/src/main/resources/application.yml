@@ -1,0 +1,15 @@
+server:
+  port: 9898
+spring:
+  application:
+    name: ${app_name:examples-rocketmq}
+
+rocketmq.name-server: 127.0.0.1:9876;127.0.0.1:19876;127.0.0.1:29876
+# mqadmin.cmd updateTopic -n 127.0.0.1:9876;127.0.0.1:19876;127.0.0.1:29876 -t examples-rocketmq-topic -c DefaultCluster
+rocketmq.producer.examples.rocketmq.topic: examples-rocketmq-topic
+# mqadmin.cmd updateSubGroup -n 127.0.0.1:9876;127.0.0.1:19876;127.0.0.1:29876 -g examples-rocketmq-group -c DefaultCluster
+rocketmq.producer.examples.rocketmq.group: examples-rocketmq-group
+#rocketmq.producer.access-key:
+#rocketmq.producer.secret-key:
+
+logging.level.org.apache.rocketmq: debug
