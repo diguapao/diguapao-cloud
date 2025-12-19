@@ -56,8 +56,9 @@ start
                     :RemotingClient#start;
                     |rocketmq-namesrv|
                     :RouteInfoManager#start;
+:NamesrvStartup#controllerManagerMain;
 if (NamesrvConfig#isEnableControllerInNamesrv) then (true\n内嵌NameSrv的方式启动Controller)
-    :NamesrvStartup#controllerManagerMain;
+        :NamesrvStartup#createAndStartControllerManager;
         :NamesrvStartup#createControllerManager;
             :克隆一份 nettyServerConfig;
             |#LightBlue|rocketmq-controller|
@@ -66,12 +67,22 @@ if (NamesrvConfig#isEnableControllerInNamesrv) then (true\n内嵌NameSrv的方�
             |rocketmq-namesrv|
         #palegreen:NamesrvStartup#start(controllerManager);
             |#LightBlue|rocketmq-controller|
-            #orange:step1 => ControllerManager#initialize;
-
+            #orange:step1 => ControllerManager#initialize
+                初始化线程池 controllerRequestExecutor 和队列
+                    controllerRequestThreadPoolQueue。
+                初始化通知服务 notifyService。
+                根据配置类型创建控制器 controller，并设置相关参数；
+                可选JRAFT、DLedger，默认DLedger。
+                初始化心跳管理器 heartbeatManager。
+                注册 Broker 不活跃监听器。
+                注册处理器 ControllerRequestProcessor 到
+                RemotingServer。;
             |rocketmq-namesrv|
             #orange:step2 => 注册 JVM 关闭钩子（优雅停机）;
             |#LightBlue|rocketmq-controller|
-            #orange:step3 => ControllerManager#start;
+            #orange:step3 => ControllerManager#start
+            启动控制器管理器中的各个组件，
+            包括控制器、心跳管理器和远程客户端;
 
             |rocketmq-namesrv|
 endif
