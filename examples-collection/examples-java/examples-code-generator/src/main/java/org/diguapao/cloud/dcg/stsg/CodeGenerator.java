@@ -139,7 +139,7 @@ public class CodeGenerator {
         context.put("className", className);
         context.put("lfClassName", StrUtil.lowerFirst(className));
         context.put("columns", columns);
-        context.put("author", "LiPiao");
+        context.put("author", "diguapao");
         context.put("version", "1.0");
         context.put("since", DateUtil.format(DateUtil.date(), DatePattern.NORM_DATETIME_PATTERN));
         context.put("primaryKeyType", primaryKeyType);
