@@ -16,10 +16,11 @@ import org.springframework.stereotype.Service;
  */
 @Slf4j
 @Service
-// @RocketMQMessageListener(
-//         topic = "${rocketmq.producer.examples.rocketmq.topic:examples-rocketmq-topic}",
-//         consumerGroup = "${rocketmq.producer.examples.rocketmq.topic:examples-rocketmq-group}"
-// )
+ @RocketMQMessageListener(
+         topic = "${rocketmq.consumer.examples.rocketmq.topic:examples-rocketmq-topic}",
+         consumerGroup = "${rocketmq.consumer.examples.rocketmq.group:examples-rocketmq-group}",
+         consumeThreadNumber = 64
+ )
 public class ShuDaoMountConsumer implements RocketMQListener<ShuDaoMountEvent> {
 
     @Override

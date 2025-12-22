@@ -1,8 +1,6 @@
 package org.diguapao.cloud.framework.rocketmq.core.event.bean;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -17,6 +15,8 @@ import java.io.Serializable;
 @Data
 @Builder
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class ShuDaoMountEvent implements Serializable {
     private static final long serialVersionUID = 1L;
 

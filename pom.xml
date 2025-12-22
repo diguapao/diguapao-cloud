@@ -28,7 +28,8 @@
         <module>examples-collection/examples-java/examples-jasypt</module>
         <module>examples-collection/examples-java/examples-ai/LangChain4j-AI</module>
         <module>examples-collection/examples-java/examples-ai/spring-ai</module>
-        <module>examples-collection/examples-java/examples-rocketmq</module>
+        <module>examples-collection/examples-java/examples-rocketmq/e-rocketmq-client</module>
+        <module>examples-collection/examples-java/examples-rocketmq/e-rocketmq-spring-boot-starter</module>
         <module>non-echnology-doc/Jinan-University/001-Python_Programming/源代码</module>
     </modules>
 
@@ -37,8 +38,8 @@
         <!-- Maven 相关 -->
         <java.version>1.8</java.version>
         <lombok.version>1.18.24</lombok.version>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>

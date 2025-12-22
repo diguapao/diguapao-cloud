@@ -5,17 +5,16 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.utils.ThreadUtils;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.diguapao.cloud.framework.rocketmq.core.event.bean.ShuDaoMountEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -32,10 +31,10 @@ import java.util.concurrent.TimeUnit;
 public class ShuDaoMountProducer {
     @Value("${rocketmq.producer.examples.rocketmq.topic:examples-rocketmq-topic}")
     private String topic;
-    // @Resource
+    @Resource
     private RocketMQTemplate rocketMQTemplate;
 
-    private final ScheduledExecutorService scanExecutorService = ThreadUtils.newScheduledThreadPool(1,
+    private final ScheduledExecutorService scanExecutorService = ThreadUtils.newScheduledThreadPool(64,
             new BasicThreadFactory.Builder().namingPattern("ShuDaoMountProducer").daemon(true).build());
 
     public void send(String msg) {
@@ -44,11 +43,26 @@ public class ShuDaoMountProducer {
         log.info("sendResult={}", JSONUtil.toJsonStr(sendResult));
     }
 
+    public void asyncSend(String msg) {
+        ShuDaoMountEvent event = ShuDaoMountEvent.builder().message(StrUtil.isBlank(msg) ? "劳资子数到三：" + System.currentTimeMillis() : msg).keys(IdUtil.getSnowflakeNextIdStr()).build();
+        rocketMQTemplate.asyncSend(topic, event, new SendCallback() {
+            @Override
+            public void onSuccess(SendResult sendResult) {
+                log.info("asyncSendResult={}", JSONUtil.toJsonStr(sendResult));
+            }
+
+            @Override
+            public void onException(Throwable e) {
+                log.warn("asyncSendException", e);
+            }
+        });
+    }
+
     @EventListener(ApplicationReadyEvent.class)
     public void ready() {
         this.scanExecutorService.scheduleAtFixedRate(() -> {
             try {
-                this.send(null);
+                this.asyncSend(null);
             } catch (Exception e) {
                 log.warn("", e);
             }
