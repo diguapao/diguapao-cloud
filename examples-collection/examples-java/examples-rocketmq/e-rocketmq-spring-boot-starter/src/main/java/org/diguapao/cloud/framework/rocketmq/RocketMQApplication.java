@@ -1,10 +1,7 @@
 package org.diguapao.cloud.framework.rocketmq;
 
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import javax.annotation.Resource;
 
 /**
  * @author diguapao
@@ -13,11 +10,7 @@ import javax.annotation.Resource;
  */
 @SpringBootApplication
 public class RocketMQApplication {
-    @Resource
-    private RocketMQTemplate rocketMQTemplate;
-
     public static void main(String[] args) {
         SpringApplication.run(RocketMQApplication.class, args);
     }
-
 }
