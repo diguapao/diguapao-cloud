@@ -13,22 +13,22 @@ rocketmq.name-server: localhost:9876;localhost:19876;localhost:29876
 
 
 #### producer 配置
-# mqadmin.cmd updateTopic -n localhost:9876;localhost:19876;localhost:29876 -t examples-rocketmq-topic -c DefaultCluster
 rocketmq.producer.group: ${spring.application.name}-group
+# mqadmin.cmd updateTopic -n localhost:9876;localhost:19876;localhost:29876 -t examples-rocketmq-topic -c DefaultCluster
 rocketmq.producer.examples.rocketmq.topic: examples-rocketmq-topic
-# mqadmin.cmd updateSubGroup -n localhost:9876;localhost:19876;localhost:29876 -g examples-rocketmq-group -c DefaultCluster
 #rocketmq.producer.access-key:
 #rocketmq.producer.secret-key:
 rocketmq.producer.send-message-timeout: 15000
 # 出现问题：invokeSync call the addr[127.0.0.1:19876] timeout，可添加rocketmq.producer.mq-client-api-timeout参数去解决，只是很奇怪，本地部署的集群，默认的3秒就是会超时
 # 该参数需要二开rocketmq-spring-boot在org.apache.rocketmq.spring.autoconfigure.RocketMQProperties中新增，还需完善org.apache.rocketmq.spring.autoconfigure包下的自动配置
 rocketmq.producer.mq-client-api-timeout: 15000
-
-
 #### consumer 配置
+
+
 rocketmq.consumer.topic: ${spring.application.name}-topic
 rocketmq.consumer.group: ${spring.application.name}-group
 rocketmq.consumer.examples.rocketmq.topic: examples-rocketmq-topic
+# mqadmin.cmd updateSubGroup -n localhost:9876;localhost:19876;localhost:29876 -g examples-rocketmq-group -c DefaultCluster
 rocketmq.consumer.examples.rocketmq.group: examples-rocketmq-group
 # 出现问题：invokeSync call the addr[127.0.0.1:19876] timeout，可添加rocketmq.producer.mq-client-api-timeout参数去解决，只是很奇怪，本地部署的集群，默认的3秒就是会超时
 # 该参数需要二开rocketmq-spring-boot在org.apache.rocketmq.spring.autoconfigure.RocketMQProperties中新增，还需完善org.apache.rocketmq.spring.autoconfigure包下的自动配置
