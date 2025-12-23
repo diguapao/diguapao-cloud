@@ -34,7 +34,7 @@ public class ShuDaoMountProducer {
     @Resource
     private RocketMQTemplate rocketMQTemplate;
 
-    private final ScheduledExecutorService scanExecutorService = ThreadUtils.newScheduledThreadPool(64,
+    private final ScheduledExecutorService scanExecutorService = ThreadUtils.newScheduledThreadPool(32,
             new BasicThreadFactory.Builder().namingPattern("ShuDaoMountProducer").daemon(true).build());
 
     public void send(String msg) {
@@ -66,7 +66,7 @@ public class ShuDaoMountProducer {
             } catch (Exception e) {
                 log.warn("", e);
             }
-        }, 5 * 1000, 2 * 1000, TimeUnit.MILLISECONDS);
+        }, 5 * 1000, 5, TimeUnit.MILLISECONDS);
     }
 
 }
