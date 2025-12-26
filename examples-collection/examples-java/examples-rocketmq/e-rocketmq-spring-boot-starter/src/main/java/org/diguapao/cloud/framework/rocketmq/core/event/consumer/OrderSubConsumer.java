@@ -31,14 +31,18 @@ public class OrderSubConsumer implements RocketMQListener<OrderSubEvent> {
 
     @Override
     public void onMessage(OrderSubEvent event) {
+        boolean exception = false;
         log.info("received message:{} ", JSONUtil.toJsonStr(event));
         Order order = event.getOrder();
         try {
             orderService.save(order);
         } catch (Exception e) {
+            exception = true;
             log.warn("save order error：{}", order.getOrderNo(), e);
         }
-        log.info("save order success：{}", order.getOrderId());
+        if (!exception) {
+            log.info("save order success：{}", order.getOrderId());
+        }
     }
 
 }
