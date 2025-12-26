@@ -7,9 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerIntercept
 import lombok.extern.slf4j.Slf4j;
 import org.diguapao.cloud.framework.rocketmq.utils.SQLiteDatabaseUtil;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 import javax.annotation.PostConstruct;
@@ -17,12 +15,13 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /**
- * 数据库配置类
+ * 数据库SQLite配置类
+ *
  * @author diguapao
  */
 @Slf4j
-@Configuration
-public class DatabaseConfig {
+// @Configuration
+public class DatabaseSQLiteConfig {
 
     @Value("${spring.datasource.url}")
     private String dbUrl;
@@ -35,7 +34,7 @@ public class DatabaseConfig {
      */
     @Primary
     @Bean
-    @ConfigurationProperties(prefix = "spring.datasource.druid")
+    //@ConfigurationProperties(prefix = "spring.datasource.druid")
     public DataSource dataSource() {
         DruidDataSource dataSource = new DruidDataSource();
 
@@ -83,7 +82,6 @@ public class DatabaseConfig {
 
             // 初始化数据库和表
             SQLiteDatabaseUtil.initDatabase(dbPath);
-
         } catch (Exception e) {
             log.error("初始化数据库失败", e);
         }

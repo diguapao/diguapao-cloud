@@ -37,8 +37,8 @@ public class OrderSubConsumer implements RocketMQListener<OrderSubEvent> {
         try {
             orderService.save(order);
         } catch (Exception e) {
-            exception = true;
             log.warn("save order error：{}", order.getOrderNo(), e);
+            exception = true;
         }
         if (!exception) {
             log.info("save order success：{}", order.getOrderId());

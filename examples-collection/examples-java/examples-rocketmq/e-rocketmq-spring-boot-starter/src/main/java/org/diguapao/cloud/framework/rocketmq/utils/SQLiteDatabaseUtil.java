@@ -15,6 +15,8 @@ import java.util.Properties;
 
 /**
  * SQLite数据库初始化工具 (JDK 8兼容版本)
+ * <p>
+ * FIXME 当然，切换到 H2 后，这个工具类基本不再需要！
  *
  * @author diguapao
  */
