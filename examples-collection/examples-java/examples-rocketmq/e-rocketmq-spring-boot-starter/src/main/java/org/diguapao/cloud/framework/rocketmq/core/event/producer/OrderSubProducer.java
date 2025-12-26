@@ -9,7 +9,10 @@ import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.utils.ThreadUtils;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
+import org.diguapao.cloud.framework.rocketmq.core.entity.Order;
+import org.diguapao.cloud.framework.rocketmq.core.event.bean.OrderSubEvent;
 import org.diguapao.cloud.framework.rocketmq.core.event.bean.ShuDaoMountEvent;
+import org.diguapao.cloud.framework.rocketmq.core.service.OrderService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -20,31 +23,33 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * {@link org.diguapao.cloud.framework.rocketmq.core.event.bean.ShuDaoMountEvent} 生产者
+ * {@link OrderSubEvent} 生产者
  *
  * @author diguapao
  * @version 2025.0.1
- * @since 2025-12-19 14:06:27
+ * @since 2025-12-26 14:06:27
  */
 @Slf4j
 @Component
-public class ShuDaoMountProducer {
-    @Value("${rocketmq.producer.examples.rocketmq.topic:examples-rocketmq-topic}")
+public class OrderSubProducer {
+    @Value("${rocketmq.producer.order.sub.topic:order-sub-topic}")
     private String topic;
     @Resource
     private RocketMQTemplate rocketMQTemplate;
+    @Resource
+    private OrderService orderService;
 
     private final ScheduledExecutorService scanExecutorService = ThreadUtils.newScheduledThreadPool(16,
-            new BasicThreadFactory.Builder().namingPattern("ShuDaoMountProducer").daemon(true).build());
+            new BasicThreadFactory.Builder().namingPattern("OrderSubProducer").daemon(true).build());
 
-    public void send(String msg) {
-        ShuDaoMountEvent event = ShuDaoMountEvent.builder().message(StrUtil.isBlank(msg) ? "劳资子数到三" : msg).keys(IdUtil.getSnowflakeNextIdStr()).build();
-        SendResult sendResult = rocketMQTemplate.syncSend(topic, event);
+    public void send(Order order) {
+        SendResult sendResult = rocketMQTemplate.syncSend(topic, OrderSubEvent.builder().order(order).keys(IdUtil.getSnowflakeNextIdStr()).build());
         log.info("sendResult={}", JSONUtil.toJsonStr(sendResult));
     }
 
-    public void asyncSend(String msg) {
-        ShuDaoMountEvent event = ShuDaoMountEvent.builder().message(StrUtil.isBlank(msg) ? "劳资子数到三：" + System.currentTimeMillis() : msg).keys(IdUtil.getSnowflakeNextIdStr()).build();
+    public void asyncSend() {
+        Order order = orderService.createOrder(666666L, "地瓜泡");
+        OrderSubEvent event = OrderSubEvent.builder().order(order).keys(IdUtil.getSnowflakeNextIdStr()).build();
         rocketMQTemplate.asyncSend(topic, event, new SendCallback() {
             @Override
             public void onSuccess(SendResult sendResult) {
@@ -58,11 +63,11 @@ public class ShuDaoMountProducer {
         });
     }
 
-    // @EventListener(ApplicationReadyEvent.class)
+    @EventListener(ApplicationReadyEvent.class)
     public void ready() {
         this.scanExecutorService.scheduleAtFixedRate(() -> {
             try {
-                this.asyncSend(null);
+                this.asyncSend();
             } catch (Exception e) {
                 log.warn("", e);
             }
