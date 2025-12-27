@@ -15,9 +15,16 @@ spring:
     # 或者使用内存数据库
     # url: jdbc:sqlite::memory
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:examples_rocketmq_order_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    url: jdbc:h2:file:D:/DiGuaPao/gitee/diguapao-cloud/examples-collection/examples-java/examples-rocketmq/e-rocketmq-spring-boot-starter/data/examples_rocketmq_order_${server.port}_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     username: sa
     password: ""
+
+#  # 使用H2时可启用 schema.sql 自动执行（必须！）
+#  sql:
+#    init:
+#      mode: always  # 总是执行初始化脚本
+#      schema-locations: classpath:schema.sql
+#       data-locations: classpath:data.sql   # 如果有初始数据
 
     # Druid 连接池配置
     druid:

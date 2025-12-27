@@ -39,7 +39,7 @@ public class OrderSubProducer {
     @Resource
     private OrderService orderService;
 
-    private final ScheduledExecutorService scanExecutorService = ThreadUtils.newScheduledThreadPool(16,
+    private final ScheduledExecutorService scanExecutorService = ThreadUtils.newScheduledThreadPool(32,
             new BasicThreadFactory.Builder().namingPattern("OrderSubProducer").daemon(true).build());
 
     public void send(Order order) {
