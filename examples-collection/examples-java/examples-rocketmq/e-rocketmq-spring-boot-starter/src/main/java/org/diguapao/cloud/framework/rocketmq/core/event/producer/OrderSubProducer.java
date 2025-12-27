@@ -32,6 +32,8 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 public class OrderSubProducer {
+    @Value("${rocketmq.producer.order.sub.topic.corePoolSize:16}")
+    private int corePoolSize ;;
     @Value("${rocketmq.producer.order.sub.topic:order-sub-topic}")
     private String topic;
     @Resource
@@ -39,7 +41,7 @@ public class OrderSubProducer {
     @Resource
     private OrderService orderService;
 
-    private final ScheduledExecutorService scanExecutorService = ThreadUtils.newScheduledThreadPool(32,
+    private final ScheduledExecutorService scanExecutorService = ThreadUtils.newScheduledThreadPool(corePoolSize,
             new BasicThreadFactory.Builder().namingPattern("OrderSubProducer").daemon(true).build());
 
     public void send(Order order) {
