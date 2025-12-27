@@ -35,6 +35,7 @@ spring:
       min-evictable-idle-time-millis: 300000
       # 用来检测连接是否有效的sql
       validation-query: SELECT 1
+      validationQuery: SELECT 1
       # 建议配置为true，不影响性能，并且保证安全性
       test-while-idle: true
       # 申请连接时执行validationQuery检测连接是否有效

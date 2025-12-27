@@ -26,7 +26,7 @@ public class DatabaseH2Config {
      */
     @Primary
     @Bean
-    @ConfigurationProperties(prefix = "spring.datasource.druid")
+    @ConfigurationProperties(prefix = "spring.datasource")
     public DataSource dataSource() {
         // DruidDataSource 会自动读取 spring.datasource.url / username / password 等
         return new DruidDataSource();

@@ -1,7 +1,6 @@
 create table t_order
 (
-    order_id             INTEGER
-        primary key autoincrement,
+    order_id   BIGINT AUTO_INCREMENT PRIMARY KEY,
     order_no             VARCHAR(32)    not null
         unique,
     status               VARCHAR(20)    not null,
@@ -26,15 +25,15 @@ create table t_order
     tracking_no          VARCHAR(100),
     ship_time            DATETIME,
     actual_delivery_time DATETIME,
-    create_time          DATETIME       default (datetime('now', 'localtime')),
-    update_time          DATETIME       default (datetime('now', 'localtime')),
+    create_time          DATETIME        DEFAULT CURRENT_TIMESTAMP,
+    update_time          DATETIME        DEFAULT CURRENT_TIMESTAMP,
     complete_time        DATETIME,
     cancel_time          DATETIME,
     cancel_reason        VARCHAR(200),
     user_remark          VARCHAR(1000),
-    ext_data             TEXT           default '{}',
+    ext_data             TEXT           DEFAULT '{}',
     version              INTEGER        default 0,
-    deleted              TINYINT(1)     default 0
+    deleted              INTEGER        default 0
 );
 
 create index idx_order_cancel_time
@@ -54,8 +53,7 @@ create index idx_order_user_status
 
 create table t_order_item
 (
-    item_id         INTEGER
-        primary key autoincrement,
+    item_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     order_id        BIGINT       not null
         references t_order
             on delete cascade,
@@ -83,8 +81,7 @@ create index idx_order_item_product_id
 
 create table t_order_log
 (
-    log_id            INTEGER
-        primary key autoincrement,
+    log_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     order_id          BIGINT      not null
         references t_order
             on delete cascade,
@@ -98,8 +95,8 @@ create table t_order_log
     operator_id       BIGINT,
     operator_name     VARCHAR(100),
     ip_address        VARCHAR(50),
-    operation_time    DATETIME default (datetime('now', 'localtime')),
-    operation_detail  TEXT     default '{}'
+    operation_time    DATETIME  DEFAULT CURRENT_TIMESTAMP,
+    operation_detail  TEXT           DEFAULT '{}'
 );
 
 create index idx_order_log_operation_time
