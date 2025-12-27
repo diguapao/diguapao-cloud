@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  * @since 2025-12-19 14:06:27
  */
 @Slf4j
-@Component
+// @Component
 public class ShuDaoMountProducer {
     @Value("${rocketmq.producer.examples.rocketmq.topic:examples-rocketmq-topic}")
     private String topic;
