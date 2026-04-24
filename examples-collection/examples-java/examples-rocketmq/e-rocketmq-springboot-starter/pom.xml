@@ -17,7 +17,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.diguapao.cloud.framework.rocketmq</groupId>
-    <artifactId>e-rocketmq-spring-boot-starter</artifactId>
+    <artifactId>e-rocketmq-springboot-starter</artifactId>
     <version>${revision}</version>
     <packaging>jar</packaging>
 
