@@ -1,0 +1,74 @@
+@startuml
+title Netty Reactor模式 + 零拷贝 + Pipeline核心流程
+
+' 定义参与者
+participant "📱 客户端" as Client
+participant "💻 操作系统内核" as Kernel
+participant "🛑 BossGroup" as Boss
+participant "⚙️ WorkerGroup" as Worker
+participant "🔄 ChannelPipeline" as Pipeline
+
+' === 阶段一：连接建立 (Reactor模型) ===
+note over Client, Pipeline: === 阶段一：连接建立 (Reactor模型) ==
+
+Client -> Kernel: 1. TCP三次握手请求
+
+group Boss线程监听 OP_ACCEPT
+  Kernel -> Boss: 2. 触发 Accept 事件
+  note right of Boss: Boss线程监听 OP_ACCEPT
+  Boss -> Worker: 3. 注册新连接 (Register Channel)
+  note left of Worker: 选定一个 Worker线程\n独占处理该连接后续IO
+end
+
+' === 阶段二：数据读取 (零拷贝优化) ===
+note over Client, Pipeline: === 阶段二：数据读取 (零拷贝优化) ==
+
+Client -> Kernel: 4. 发送数据包 "Hello Netty"
+
+group 零拷贝读取流程
+  note right of Kernel: 数据存入内核缓冲区
+  Kernel -> Worker: 5. 触发 Read 事件 (Selector轮询)
+  Worker -> Kernel: 6. 读取数据
+  note left of Worker: <b>零拷贝点1：</b>\nDMA拷贝至<b>堆外内存</b>(DirectBuffer)\n避免进入JVM堆
+end
+
+' === 阶段三：流水线处理 (核心组件协作) ===
+note over Client, Pipeline: === 阶段三：流水线处理 (核心组件协作) ==
+
+Worker -> Pipeline: 7. 驱动数据流转 (Inbound)
+
+group Handler 1: 粘包/拆包
+  note right of Pipeline: <b>Handler 1: 粘包/拆包</b>\nLengthFieldBasedFrameDecoder\n根据协议头长度字段切分数据帧
+end
+
+group Handler 2: 心跳检测
+  note right of Pipeline: <b>Handler 2: 心跳检测</b>\nIdleStateHandler\n重置读空闲计时器 (证明连接存活)
+end
+
+group Handler 3: 业务解码
+  note right of Pipeline: <b>Handler 3: 业务解码</b>\nProtobufDecoder / StringDecoder\nByteBuf -> Java Object
+end
+
+group Handler 4: 业务逻辑
+  note right of Pipeline: <b>Handler 4: 业务逻辑</b>\nBusinessHandler\n执行具体逻辑 (存库/转发)
+end
+
+' === 阶段四：响应回写 (零拷贝与编码) ===
+note over Client, Pipeline: === 阶段四：响应回写 (零拷贝与编码) ==
+
+Worker -> Pipeline: 8. 写入响应 "Success" (Outbound)
+
+group 编码与合并
+  note right of Pipeline: <b>编码与合并</b>\n使用 CompositeByteBuf\n逻辑合并小包，<b>避免内存拷贝</b>
+end
+
+Pipeline --> Worker: 9. 返回 HeadContext
+
+group 零拷贝发送
+  note left of Worker: <b>零拷贝点2：</b>\n调用 write/writev\n直接从堆外内存发送至网卡
+  Worker -> Kernel: 10. 数据推送到内核 Socket Buffer
+end
+
+Kernel --> Client: 11. 接收响应数据
+
+@enduml
