@@ -28,8 +28,7 @@
         <module>examples-collection/examples-java/examples-jasypt</module>
         <module>examples-collection/examples-java/examples-ai/LangChain4j-AI</module>
         <module>examples-collection/examples-java/examples-ai/spring-ai</module>
-        <module>examples-collection/examples-java/examples-rocketmq/e-rocketmq-client</module>
-        <module>examples-collection/examples-java/examples-rocketmq/e-rocketmq-spring-boot-starter</module>
+        <module>examples-collection/examples-java/examples-rocketmq/e-rocketmq-springboot-starter</module>
         <module>non-echnology-doc/Jinan-University/001-Python_Programming/源代码</module>
         <module>examples-collection/examples-java/examples-netty/netty-im-demo</module>
     </modules>
