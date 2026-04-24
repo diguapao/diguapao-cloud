@@ -31,6 +31,7 @@
         <module>examples-collection/examples-java/examples-rocketmq/e-rocketmq-client</module>
         <module>examples-collection/examples-java/examples-rocketmq/e-rocketmq-spring-boot-starter</module>
         <module>non-echnology-doc/Jinan-University/001-Python_Programming/源代码</module>
+        <module>examples-collection/examples-java/examples-netty/netty-im-demo</module>
     </modules>
 
     <properties>
@@ -68,6 +69,7 @@
         <knife4j.version>3.0.3</knife4j.version>
         <jasypt.version>3.0.4</jasypt.version>
         <spring-boot-maven-plugin.version>3.4.3</spring-boot-maven-plugin.version>
+        <netty.version>4.1.84.Final</netty.version>
     </properties>
 
     <dependencyManagement>
@@ -226,6 +228,13 @@
                 <groupId>org.xerial</groupId>
                 <artifactId>sqlite-jdbc</artifactId>
                 <version>3.44.1.0</version>
+            </dependency>
+
+            <!-- Netty 核心依赖 -->
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>${netty.version}</version>
             </dependency>
 
         </dependencies>

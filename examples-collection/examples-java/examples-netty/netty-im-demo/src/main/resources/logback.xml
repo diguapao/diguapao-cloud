@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 定义日志输出格式和颜色 -->
+    <property name="LOG_FORMAT_ONE" value="%red(%d{yyyy-MM-dd HH:mm:ss.SSS}) %green([%thread]) %blue([%-5level]) %cyan(%logger{36}:%line) %msg%n"/>
+
+    <!-- 控制台 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_FORMAT_ONE}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 设置日志级别 -->
+    <root level="debug">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>
