@@ -489,6 +489,94 @@ String city = Optional.ofNullable(user)
 
 # 并发编程深度
 
+并发编程深度
+
+要求不仅会用，更要理解原理和如何写出正确、高效的高并发代码。
+
+**Java内存模型：**volatile关键字（可见性、禁止指令重排）、synchronized锁升级过程（无锁 -> 偏向锁 -> 轻量级锁 -> 重量级锁）。
+
+**AQS：**AbstractQueuedSynchronizer原理，它是ReentrantLock、CountDownLatch、Semaphore等并发工具的基础。
+
+**线程池：**ThreadPoolExecutor核心参数、工作流程、饱和策略。如何合理配置参数，以及CompletableFuture的使用。
+
+**原子类与CAS：**AtomicInteger等原理，CAS的ABA问题及解决方案。
+
+**并发容器：**除ConcurrentHashMap外，ConcurrentSkipListMap、CopyOnWriteArrayList、阻塞队列（ArrayBlockingQueue, LinkedBlockingQueue, SynchronousQueue）等的原理与选型。
+
+
+
+## 参考回答
+
+面试官您好，关于并发编程，我认为仅仅熟练使用 `java.util.concurrent` 包下的 API 是不够的。高并发的核心在于**协调 CPU 缓存、内存与线程上下文切换之间的矛盾**。
+
+在实际生产和底层原理的结合上，我会从以下几个维度来阐述我的理解：
+
+### **1. Java 内存模型 (JMM) 与锁的演进**
+
+**volatile 的底层语义**
+
+很多开发者知道 `volatile` 保证可见性和禁止指令重排，但在底层，这是通过 CPU 的 **MESI 缓存一致性协议** 和 **内存屏障 (Memory Barrier)** 来实现的。
+
+- **可见性**：当写入 `volatile` 变量时，JMM 会强制将该线程工作内存中的数据刷新到主内存，并让其他线程对应缓存行失效（Cache Line Invalidation）。
+- **有序性**：JVM 会在 `volatile` 读写前后插入 LoadLoad、StoreStore 等内存屏障，这在单例模式的双重检查锁 (DCL) 中至关重要，能防止对象分配内存但未初始化就被其他线程引用的“半初始化”问题。
+
+**synchronized 的锁升级与对象头**
+
+JDK 1.6 对 `synchronized` 做了重量级优化，它的本质是对对象头（Mark Word）中状态位的操作。锁并非一上来就是重量级的，而是按场景按需升级：
+
+- **无锁 -> 偏向锁**：大多数情况下，锁不仅不存在多线程竞争，而且总是由同一线程多次获得。此时只需用 CAS 将线程 ID 记录在 Mark Word 中，后续进出同步块无需额外开销。
+- **偏向锁 -> 轻量级锁**：一旦有其他线程尝试获取锁，偏向锁撤销。JVM 会在当前线程栈帧中创建锁记录 (Lock Record)，多线程通过 **自旋 (CAS)** 尝试将 Mark Word 指向自己的锁记录。这适用于竞争不激烈且持有锁时间极短的场景。
+- **轻量级锁 -> 重量级锁**：如果轻量级锁自旋失败，说明竞争激烈，JVM 会**立刻**启动锁膨胀流程，轻量级锁升级为基于操作系统 Mutex 互斥量实现的重量级锁。此时未获取到锁的线程会被挂起，产生用户态到内核态的上下文切换开销。
+  - 这个过程在 HotSpot 源码中大致如下：
+    1. **CAS 失败**：线程尝试用 CAS 操作将对象头（Mark Word）替换为指向自己栈中 Lock Record 的指针，但失败了。这说明已经有其他线程持有了该锁。
+    2. **立即膨胀**：一旦 CAS 失败，JVM 就会判断出现了竞争，直接进入膨胀（Inflating）流程。
+    3. **创建 Monitor**：膨胀过程会创建一个 `ObjectMonitor` 对象（这就是重量级锁的核心），并将原来持有锁的线程和当前竞争的线程都加入到这个 Monitor 的管理中。
+    4. **进入阻塞**：竞争失败的线程会被放入 `ObjectMonitor` 的入口队列（EntryList），然后被**挂起（park）**，进入 `BLOCKED` 状态，等待被唤醒。流程：**竞争重量级锁失败 → 自适应自旋** (30-100次左右，会根据 CPU 核心数、锁的竞争激烈程度等因素动态调整) **→ 自旋失败 → 线程阻塞**。
+
+### **2. AQS (AbstractQueuedSynchronizer) 原理**
+
+AQS 是整个 JUC 体系的基石。如果让我来设计一个同步器，我也需要考虑状态管理、线程排队和阻塞唤醒，AQS 完美封装了这些逻辑。
+
+- **核心组件**：它包含一个 `volatile int state`（同步状态）和一个双向的 **CLH 虚拟队列**。
+- **工作机制**：当线程尝试获取资源失败时，AQS 会将其包装成一个 `Node` 节点，通过 CAS 自旋加入队尾，并调用 `LockSupport.park()` 将线程挂起。当释放资源时，会唤醒头节点的后继节点。
+- **扩展性**：基于**模板方法设计模式**。`ReentrantLock` 利用 `state` 记录重入次数（独占模式，即独占锁，也常被称为排他锁或互斥锁）；`CountDownLatch` 用 `state` 记录倒数次数（共享模式，切记 ≠ 共享锁）；`Semaphore` 用 `state` 记录可用许可证数量。
+
+### **3. 线程池配置与异步编排**
+
+**核心参数与工作流**
+
+`ThreadPoolExecutor` 的设计体现了“缓冲与防御”的哲学。提交任务时的流转顺序是：**核心线程 -> 阻塞队列 -> 非核心线程 -> 拒绝策略**。
+
+- **核心配置逻辑**：我不会死记硬背参数，而是根据业务画像推导。
+  - 计算密集型：减少上下文切换，核心线程数设为 CPU核心数加1。
+  - IO 密集型（如频繁调 RPC 或查 DB）：线程绝大部分时间在阻塞，公式为 CPU核心数×目标CPU利用率×(1+计算/等待时间)，通常设为 CPU核心数x2 甚至更高。
+- **饱和策略选型**：绝大部分线上业务不能使用无界队列，必须指定拒绝策略。核心业务我通常会自定义拒绝策略，将溢出任务落入 Redis 或死信队列进行补偿；非核心业务则使用 `CallerRunsPolicy` 让提交任务的线程自己执行，天然起到限流降级的作用。
+
+**CompletableFuture 的降维打击**
+
+在复杂的微服务聚合场景中，传统的 `Future.get()` 会导致线程阻塞，违背了异步非阻塞的初衷。`CompletableFuture` 真正实现了基于事件驱动的流式编排。我通常用它配合线程池，利用 `thenCombine` 处理并行依赖，利用 `allOf` 处理多分支汇聚，大幅提升接口吞吐量。
+
+### **4. 原子类与 CAS 操作**
+
+**底层实现**
+
+`AtomicInteger` 等原子类依赖于 `Unsafe` 类，底层直接调用 CPU 硬件级别的 `cmpxchg` 指令。这是一种无锁的**乐观策略**，性能极高，但在极高并发下会导致大量线程自旋，消耗 CPU。对于单纯的高并发计数，我现在更倾向于使用 JDK 1.8 的 `LongAdder`，它通过“分段分散并发冲突”的思想，将竞争压力分摊到多个 Cell 数组上。
+
+**ABA 问题**
+
+CAS 只能判断值有没有变，如果一个值从 A 变成 B 又变回 A，CAS 会认为它没被修改过。这在链表节点并发替换等场景下是致命的。解决方案是引入版本号机制，JDK 提供的 `AtomicStampedReference` 会维护一个 `(Reference, Integer)` 的二元组，每次修改引用时一并递增版本号，彻底解决 ABA 问题。
+
+### **5. 并发容器的实战选型**
+
+除了熟知的 `ConcurrentHashMap`（分段锁/CAS+ synchronized），在特定场景下我会选用更合适的容器：
+
+- **ConcurrentSkipListMap**：当业务需要**线程安全的有序 Map** 时，它是唯一的选择。底层基于跳表，利用多层级链表和 CAS 保证了 $O(\log n)$ 的查询和写入复杂度，性能远超同步包装的 `TreeMap`。
+- **CopyOnWriteArrayList**：体现了 **RCU (Read-Copy-Update)** 思想。在写操作时复制一个新数组进行修改，修改完成后将引用指向新数组。由于读操作完全无锁，它极度适合**读多写极少**的场景（如本地缓存的黑白名单规则、路由表），但要警惕写操作带来的内存抖动和 Full GC。
+- **阻塞队列的博弈**：
+  - **ArrayBlockingQueue**：基于数组，有界，但入队和出队共用一把大锁，并发度一般。
+  - **LinkedBlockingQueue**：基于链表，内部设计了“两把锁”（putLock 和 takeLock），读写完全分离，吞吐量远高于 Array，但必须注意手动设置容量，避免引发 OOM。
+  - **SynchronousQueue**：容量为 0 的特殊队列，核心作用是“直接交付”。它非常适合那些需要极低延迟、生产者与消费者处理能力匹配的场景（例如 `Executors.newCachedThreadPool` 的默认队列）。
+
 
 
 
