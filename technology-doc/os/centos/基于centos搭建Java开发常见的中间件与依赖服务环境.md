@@ -1952,3 +1952,72 @@ sudo rm -rf /var/log/socat/
 sudo rm -rf /etc/socat/
 
 ```
+
+### 部署GitLab(CentOS7)
+
+下载安装包：https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el7/gitlab-ce-17.1.1-ce.0.el7.x86_64.rpm
+```shell
+#git bash 上传安装包到服务器
+scp -P 22 -p -r -v -C /d/soft/Program/GitLab/ root@192.168.11.66:/opt/apps
+
+# 使用 rpm 命令安装
+rpm -ivh gitlab-ce-17.1.1-ce.0.el7.x86_64.rpm
+
+#我这里差这个依赖，下载下来船服务器上
+https://vault.centos.org/7.9.2009/os/x86_64/Packages/policycoreutils-python-2.5-34.el7.x86_64.rpm
+https://vault.centos.org/7.9.2009/os/x86_64/Packages/audit-libs-python-2.8.5-4.el7.x86_64.rpm
+https://vault.centos.org/7.9.2009/os/x86_64/Packages/checkpolicy-2.5-8.el7.x86_64.rpm
+https://vault.centos.org/7.9.2009/os/x86_64/Packages/libcgroup-0.41-21.el7.x86_64.rpm
+https://vault.centos.org/7.9.2009/os/x86_64/Packages/libsemanage-python-2.5-14.el7.x86_64.rpm
+https://vault.centos.org/7.9.2009/os/x86_64/Packages/python-IPy-0.75-6.el7.noarch.rpm
+https://vault.centos.org/7.9.2009/os/x86_64/Packages/setools-libs-3.3.8-4.el7.x86_64.rpm
+# 执行安装命令
+rpm -ivh audit-libs-python-2.8.5-4.el7.x86_64.rpm checkpolicy-2.5-8.el7.x86_64.rpm libcgroup-0.41-21.el7.x86_64.rpm  libsemanage-python-2.5-14.el7.x86_64.rpm policycoreutils-python-2.5-34.el7.x86_64.rpm python-IPy-0.75-6.el7.noarch.rpm setools-libs-3.3.8-4.el7.x86_64.rpm
+#验证安装
+rpm -qa | grep policycoreutils-python
+
+# 备份配置文件
+cp /etc/gitlab/gitlab.rb /etc/gitlab/gitlab.rb.bak
+
+#修改配置文件
+vi /etc/gitlab/gitlab.rb
+
+# 示例：使用 IP 地址
+external_url 'http://192.168.11.66:1010'
+
+# 重新配置（此过程较慢，约5-10分钟）
+sudo gitlab-ctl reconfigure
+
+# 启动所有服务
+sudo gitlab-ctl start
+
+# 查看状态
+sudo gitlab-ctl status
+
+# 查看初始 root 密码（请妥善保存）
+sudo cat /etc/gitlab/initial_root_password
+
+#常用管理命令
+# 启动/停止/重启
+sudo gitlab-ctl start
+sudo gitlab-ctl stop
+sudo gitlab-ctl restart
+
+# 查看日志
+sudo gitlab-ctl tail          # 查看所有日志
+sudo gitlab-ctl tail nginx    # 查看 Nginx 日志
+
+# 检查服务状态
+sudo gitlab-rake gitlab:check
+
+#卸载 GitLab（如需）
+# 停止服务
+#gitlab-ctl stop
+# 卸载包
+#rpm -e gitlab-ce
+# 删除残留文件
+#rm -rf /opt/apps/GitLab
+#rm -rf /var/opt/gitlab
+#rm -rf /etc/gitlab
+
+```
