@@ -76,6 +76,19 @@ git config --global http.sslVerify false
 ```shell
 # 每隔 60 秒发送一次心跳包，最多发送 999999 次心跳包
 ssh root@192.168.11.66 -o ServerAliveInterval=60 -o ServerAliveCountMax=999999
+
+# 上传文件到服务器
+# 上传当前目录的 /d/soft/Program/GitLab/gitlab-ce-17.1.1-ce.0.el7.x86_64.rpm 到远程服务器的 /opt/apps 目录，保留文件属性（加 -p 参数）,使用非标准端口（加 -P 参数）
+scp -P 22 -p -v -C /d/soft/Program/GitLab/gitlab-ce-17.1.1-ce.0.el7.x86_64.rpm root@192.168.11.66:/opt/apps
+#上传整个目录（加 -r 参数）
+scp -P 22 -p -r -v -C /d/soft/Program/GitLab/ root@192.168.11.66:/opt/apps
+# 参数说明：
+# -r：递归复制整个目录
+# -v：显示详细过程（调试用）
+# -C：压缩传输（节省带宽）
+# -P：指定端口
+# -p：保留文件属性
+# -i：指定私钥文件
 ```
 
 
