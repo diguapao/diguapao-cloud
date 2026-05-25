@@ -1,0 +1,6 @@
+server:
+  port: 8080
+
+ai:
+  api-key: anything
+  url:  http://127.0.0.1:8903/v1/chat/completions
