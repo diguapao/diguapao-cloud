@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Chat</title>
+
+    <style>
+
+        body {
+            width: 900px;
+            margin: 30px auto;
+            font-family: Arial;
+            background: #f5f5f5;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        #chatBox {
+            background: white;
+            height: 600px;
+            overflow-y: auto;
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #ddd;
+        }
+
+        .user {
+            margin-top: 20px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .ai {
+            margin-top: 10px;
+            color: #0a66c2;
+            white-space: pre-wrap;
+            line-height: 1.8;
+        }
+
+        #inputArea {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        #msg {
+            flex: 1;
+            height: 80px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-size: 16px;
+            resize: none;
+        }
+
+        button {
+            width: 120px;
+            border: none;
+            border-radius: 8px;
+            background: #1677ff;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<h2>AI Chat Demo</h2>
+
+<div id="chatBox"></div>
+
+<div id="inputArea">
+
+    <textarea
+            id="msg"
+            placeholder="请输入内容..."
+    ></textarea>
+
+    <button onclick="sendMsg()">
+        发送
+    </button>
+
+</div>
+
+<script>
+
+    let currentEventSource = null;
+
+    function sendMsg() {
+
+        const msgInput = document.getElementById("msg");
+
+        const msg = msgInput.value.trim();
+
+        if (!msg) {
+            return;
+        }
+
+        const chatBox = document.getElementById("chatBox");
+
+        // 用户消息
+        chatBox.innerHTML += `
+            <div class="user">
+                👨 用户：
+            </div>
+            <div>
+                ${msg}
+            </div>
+        `;
+
+        // AI消息容器
+        const aiId = "ai_" + Date.now();
+
+        chatBox.innerHTML += `
+            <div class="ai">
+                🤖 AI：
+                <span id="${aiId}"></span>
+            </div>
+        `;
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        // 清空输入框
+        msgInput.value = "";
+
+        // 关闭旧连接
+        if (currentEventSource) {
+            currentEventSource.close();
+        }
+
+        // 创建SSE连接
+        currentEventSource = new EventSource(
+            "/ai/chat/stream/analysisSse?msg=" + encodeURIComponent(msg)
+        );
+
+        const aiSpan = document.getElementById(aiId);
+
+        currentEventSource.onmessage = function (event) {
+
+            aiSpan.innerHTML += event.data;
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+        };
+
+        currentEventSource.onerror = function () {
+
+            currentEventSource.close();
+
+        };
+
+    }
+
+    // Enter发送
+    document.getElementById("msg")
+        .addEventListener("keydown", function (e) {
+
+            if (e.key === "Enter" && !e.shiftKey) {
+
+                e.preventDefault();
+
+                sendMsg();
+
+            }
+
+        });
+
+</script>
+
+</body>
+</html>
