@@ -63,46 +63,49 @@ public class AIService {
                 // 开始解析
                 .flatMap(chunk -> {
                     try {
-                        // 去掉 data:
-                        chunk = chunk.replace("data:", "").trim();
+                        // 1. 打印看看：此时 log 出来的应该已经是纯 {} 包裹的 JSON 了，没有 data: 前缀
+                        log.info("WebFlux 收到切片: {}", chunk);
 
-                        // 结束标记
-                        if ("[DONE]".equals(chunk)) {
+                        if (StrUtil.isBlank(chunk) || "null".equals(chunk) || "[DONE]".equals(chunk)) {
                             return Flux.empty();
                         }
 
-                        // 空数据
-                        if (chunk.isBlank()) {
-                            return Flux.empty();
-                        }
-
-                        // JSON解析
+                        // 2. 解析 JSON
                         JSONObject json = JSONUtil.parseObj(chunk);
-
                         JSONArray choices = json.getJSONArray("choices");
-
                         if (choices == null || choices.isEmpty()) {
                             return Flux.empty();
                         }
 
                         JSONObject choice = choices.getJSONObject(0);
 
-                        JSONObject delta = choice.getJSONObject("delta");
+                        // 3. 🌟 通过 Python 新加的 finish_reason 优雅判断结束
+                        String finishReason = choice.getStr("finish_reason");
+                        if ("stop".equals(finishReason)) {
+                            log.info("👉 模型输出流正常结束");
+                            return Flux.empty();
+                        }
 
+                        JSONObject delta = choice.getJSONObject("delta");
                         if (delta == null) {
                             return Flux.empty();
                         }
 
                         String content = delta.getStr("content");
-
                         if (content == null) {
                             return Flux.empty();
                         }
-                        log.info(content);
+
+                        // 清理 DeepSeek 思维链可能遗留的特殊分行符
+                        if (content.contains("k>\\n")) {
+                            content = content.replace("k>\\\\n", StrUtil.EMPTY);
+                        }
+
                         return Flux.just(content);
 
                     } catch (Exception e) {
-                        log.error(e.getMessage(), e);
+                        // 💡 把 chunk 打印出来，能一眼看清谁不合规
+                        log.error("解析切片异常，当前内容为: " + chunk, e);
                         return Flux.empty();
                     }
                 })
@@ -113,13 +116,13 @@ public class AIService {
     private static ChatRequest buildRequest(String prompt) {
         List<Message> messages = new ArrayList<>();
         messages.add(Message.builder().role("system").content("你是一个资深Java架构师").build());
-        messages.add(Message.builder().role("role").content(prompt).build());
+        messages.add(Message.builder().role("user").content(prompt).build());
 
         return ChatRequest.builder()
                 .model("DeepSeek-R1-Distill-Qwen-7B")
                 .messages(messages)
                 .temperature(0.7)
-                .max_tokens(2048)
+                .max_new_tokens(2048)
                 .top_p(0.95)
                 .do_sample("True")
                 .build();
