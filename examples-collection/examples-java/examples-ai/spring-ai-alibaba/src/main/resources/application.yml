@@ -1,0 +1,23 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: spring-ai-alibaba-demo
+  ai:
+    dashscope:
+      api-key: ${DASHSCOPE_API_KEY:your-api-key-here}
+      chat:
+        options:
+          model: qwen-max
+
+# Pushover配置
+pushover:
+  token: ${PUSHOVER_TOKEN:your-pushover-token}
+  user: ${PUSHOVER_USER:your-pushover-user}
+
+# 个人信息配置
+me:
+  name: Ed Donner
+  pdf-path: classpath:me/linkedin.pdf
+  summary-path: classpath:me/summary.txt

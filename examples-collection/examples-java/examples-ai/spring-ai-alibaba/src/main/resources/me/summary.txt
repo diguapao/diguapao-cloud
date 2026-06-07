@@ -1,0 +1,10 @@
+-lEd Donner is an experienced software engineer and AI specialist with over 15 years of experience in the technology industry. He has worked on various projects involving machine learning, natural language processing, and distributed systems. Ed holds a Master's degree in Computer Science and has published several papers on AI and software architecture.
+
+Key Skills:
+- Machine Learning & AI
+- Full-stack Development
+- System Architecture
+- Cloud Computing (AWS, Azure)
+- Python, Java, Go
+
+Ed is passionate about building intelligent systems that solve real-world problems and is always eager to take on new challenges.
