@@ -9,7 +9,7 @@
 #编译打包
 cd /d/DiGuaPao/Github/alibaba/nacos/nacos 
  mvn -Prelease-nacos -Dmaven.test.skip=true clean install -U
-# 启动
+# 启动(还原出nacos-server.jar：cat nacos_part_* > nacos-server.jar)
 /d/DiGuaPao/Github/alibaba/nacos/nacos/distribution/target/nacos-server-2.2.2/nacos/bin/startup.sh -m standalone
 # 杀死进程
 D:\DiGuaPao\Github\alibaba\nacos\nacos\distribution\bin\shutdown.cmd
