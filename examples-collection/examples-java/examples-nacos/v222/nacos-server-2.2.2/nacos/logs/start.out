@@ -1,0 +1,39 @@
+C:\soft\jdks\jdk-8u431\jdk-1.8/bin/java -Djava.ext.dirs=C:\soft\jdks\jdk-8u431\jdk-1.8/jre/lib/ext:C:\soft\jdks\jdk-8u431\jdk-1.8/lib/ext  -Xms512m -Xmx512m -Xmn256m -Dnacos.standalone=true -Dnacos.member.list= -Xloggc:/d/DiGuaPao/Github/alibaba/nacos/nacos/distribution/target/nacos-server-2.2.2/nacos/logs/nacos_gc.log -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=10 -XX:GCLogFileSize=100M -Dloader.path=/d/DiGuaPao/Github/alibaba/nacos/nacos/distribution/target/nacos-server-2.2.2/nacos/plugins,/d/DiGuaPao/Github/alibaba/nacos/nacos/distribution/target/nacos-server-2.2.2/nacos/plugins/health,/d/DiGuaPao/Github/alibaba/nacos/nacos/distribution/target/nacos-server-2.2.2/nacos/plugins/cmdb,/d/DiGuaPao/Github/alibaba/nacos/nacos/distribution/target/nacos-server-2.2.2/nacos/plugins/selector -Dnacos.home=/d/DiGuaPao/Github/alibaba/nacos/nacos/distribution/target/nacos-server-2.2.2/nacos -jar /d/DiGuaPao/Github/alibaba/nacos/nacos/distribution/target/nacos-server-2.2.2/nacos/target/nacos-server.jar  --spring.config.additional-location=/d/DiGuaPao/Github/alibaba/nacos/nacos/distribution/target/nacos-server-2.2.2/nacos/conf/ --logging.config=/d/DiGuaPao/Github/alibaba/nacos/nacos/distribution/target/nacos-server-2.2.2/nacos/conf/nacos-logback.xml --server.max-http-header-size=524288
+
+         ,--.
+       ,--.'|
+   ,--,:  : |                                           Nacos 2.2.2
+,`--.'`|  ' :                       ,---.               Running in stand alone mode, All function modules
+|   :  :  | |                      '   ,'\   .--.--.    Port: 8848
+:   |   \ | :  ,--.--.     ,---.  /   /   | /  /    '   Pid: 1704
+|   : '  '; | /       \   /     \.   ; ,. :|  :  /`./   Console: http://192.168.43.5:8848/nacos/index.html
+'   ' ;.    ;.--.  .-. | /    / ''   | |: :|  :  ;_
+|   | | \   | \__\/: . ..    ' / '   | .; : \  \    `.      https://nacos.io
+'   : |  ; .' ," .--.; |'   ; :__|   :    |  `----.   \
+|   | '`--'  /  /  ,.  |'   | '.'|\   \  /  /  /`--'  /
+'   : |     ;  :   .'   \   :    : `----'  '--'.     /
+;   |.'     |  ,     .-./\   \  /            `--'---'
+'---'        `--`---'     `----'
+
+2026-06-02 23:21:24,097 INFO Tomcat initialized with port(s): 8848 (http)
+
+2026-06-02 23:21:24,145 INFO Root WebApplicationContext: initialization completed in 2170 ms
+
+2026-06-02 23:21:30,845 INFO Adding welcome page: class path resource [static/index.html]
+
+2026-06-02 23:21:31,109 WARN You are asking Spring Security to ignore Ant [pattern='/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+
+2026-06-02 23:21:31,109 INFO Will not secure Ant [pattern='/**']
+
+2026-06-02 23:21:31,124 INFO Will secure any request with [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@47311277, org.springframework.security.web.context.SecurityContextPersistenceFilter@5377414a, org.springframework.security.web.header.HeaderWriterFilter@6ba060f3, org.springframework.security.web.csrf.CsrfFilter@56382bc9, org.springframework.security.web.authentication.logout.LogoutFilter@56f730b2, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@17aa8a11, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@5d5b9ecb, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@7930ffa9, org.springframework.security.web.session.SessionManagementFilter@411a5965, org.springframework.security.web.access.ExceptionTranslationFilter@591a4f8e]
+
+2026-06-02 23:21:31,139 INFO Exposing 1 endpoint(s) beneath base path '/actuator'
+
+2026-06-02 23:21:31,166 INFO Tomcat started on port(s): 8848 (http) with context path '/nacos'
+
+2026-06-02 23:21:31,186 INFO Nacos started successfully in stand alone mode. use embedded storage
+
+2026-06-02 23:25:58,398 INFO Initializing Servlet 'dispatcherServlet'
+
+2026-06-02 23:25:58,398 INFO Completed initialization in 0 ms
+
