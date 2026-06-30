@@ -1085,7 +1085,7 @@ java -version
 
 ```shell
 # ！！！ 不宜部署在 root 目录下
-sudo mkdir -p /usr/local/maven && cd /usr/local/maven
+sudo mkdir -p /root/soft/maven && cd /root/soft/maven
 
 curl -o apache-maven-3.9.9-bin.tar.gz https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz
 
@@ -1094,14 +1094,14 @@ cd apache-maven-3.9.9
 
 sudo vi /etc/profile
 #在文件末尾添加：
-export M2_HOME=/usr/local/maven/apache-maven-3.9.9
+export M2_HOME=/root/soft/maven/apache-maven-3.9.9
 export PATH=$M2_HOME/bin:$PATH
 #使配置生效
 source /etc/profile
 
 vi ~/.bashrc
 #在文件末尾添加：
-export M2_HOME=/usr/local/maven/apache-maven-3.9.9
+export M2_HOME=/root/soft/maven/apache-maven-3.9.9
 export PATH=$M2_HOME/bin:$PATH
 #使配置生效
 source ~/.bashrc
@@ -1110,9 +1110,9 @@ source ~/.bashrc
 mvn -version
 
 #设置 localRepository 
-vi /usr/local/maven/apache-maven-3.9.9/conf/settings.xml
+vi /root/soft/maven/apache-maven-3.9.9/conf/settings.xml
 #调整为如下内容
-<localRepository>/usr/local/maven/apache-maven-3.9.9/.m2/repository</localRepository>
+<localRepository>/root/soft/maven/apache-maven-3.9.9/.m2/repository</localRepository>
 ```
 
 ## 部署 Nacos 2.4.3
@@ -1248,7 +1248,7 @@ Type=forking
 User=root
 WorkingDirectory=/usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin
 Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
-ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
+ExecStart=/root/soft/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
 ExecStop=/bin/kill -s TERM $MAINPID
 # Restart=on-failure
 StandardOutput=file:/usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log
@@ -1267,7 +1267,7 @@ Type=forking
 User=root
 WorkingDirectory=/usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot
 Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
-ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
+ExecStart=/root/soft/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
 ExecStop=/bin/kill -s TERM $MAINPID
 # Restart=on-failure
 ExecStartPre=/bin/sleep 30
@@ -1287,9 +1287,9 @@ sudo systemctl enable xxl_job_admin     && sudo systemctl restart xxl_job_admin 
 sudo systemctl enable xxl_job_executor  && sudo systemctl restart xxl_job_executor  && sudo systemctl status xxl_job_executor
 
 #如果启不来，则可手动启动
-cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin                                                && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log 2>&1 &
+cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin                                                && nohup /root/soft/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log 2>&1 &
 # xxl-job-admin 启动成功后在启动 xxl-job-executor
-cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot  && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log 2>&1 &
+cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot  && nohup /root/soft/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log 2>&1 &
 
 #查看日志
 tail /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log -f -n 500
@@ -1299,7 +1299,7 @@ tail /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-s
 ## 部署 RocketMQ 5.x
 
 ```shell
-sudo mkdir -p /usr/local/rocketmq && cd /usr/local/rocketmq
+sudo mkdir -p /root/soft/rocketmq && cd /root/soft/rocketmq
 
 curl -o rocketmq-all-5.3.1-bin-release.zip https://dist.apache.org/repos/dist/release/rocketmq/5.3.1/rocketmq-all-5.3.1-bin-release.zip
 
@@ -1310,14 +1310,14 @@ unzip rocketmq-all-5.3.1-bin-release.zip
 cd rocketmq-all-5.3.1-bin-release
 
 #权限设置
-chmod a+x /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqnamesrv
-chmod a+x /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqbroker
+chmod a+x /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqnamesrv
+chmod a+x /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqbroker
 
 #仪表盘部署
 yum install -y git
 git clone https://github.com/apache/rocketmq-dashboard.git
-cd /usr/local/rocketmq/rocketmq-dashboard
-vi /usr/local/rocketmq/rocketmq-dashboard/src/main/resources/application.yml
+cd /root/soft/rocketmq/rocketmq-dashboard
+vi /root/soft/rocketmq/rocketmq-dashboard/src/main/resources/application.yml
 #端口改为 8080
 #nameser 地址改为自己的IP地址
 rocketmq:
@@ -1337,17 +1337,17 @@ After=network.target remote-fs.target nss-lookup.target
 Type=forking
 #Type=simple
 User=root
-WorkingDirectory=/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/
+WorkingDirectory=/root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/
 Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
-ExecStart=/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqnamesrv
+ExecStart=/root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqnamesrv
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s QUIT $MAINPID
 #Restart=on-failure
 StartLimitInterval=60
 StartLimitBurst=5
 TimeoutStartSec=0
-StandardOutput=file:/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log
-StandardError=file:/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/error.log
+StandardOutput=file:/root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log
+StandardError=file:/root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/error.log
 LimitNOFILE=65536
 
 [Install]
@@ -1363,9 +1363,9 @@ After=network.target rocketmq_namesrv
 [Service]
 Type=forking
 User=root
-WorkingDirectory=/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/
+WorkingDirectory=/root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/
 Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
-ExecStart=/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqbroker -c /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/conf/broker.conf -n 192.168.11.66:9876
+ExecStart=/root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqbroker -c /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/conf/broker.conf -n 192.168.11.66:9876
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s QUIT $MAINPID
 #Restart=on-failure
@@ -1373,8 +1373,8 @@ StartLimitInterval=60
 StartLimitBurst=5
 TimeoutStartSec=0
 ExecStartPre=/bin/sleep 10
-StandardOutput=file:/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log
-StandardError=file:/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/error.log
+StandardOutput=file:/root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log
+StandardError=file:/root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/error.log
 LimitNOFILE=65536
 
 [Install]
@@ -1390,27 +1390,27 @@ After=network.target rocketmq_namesrv rocketmq_broker
 [Service]
 Type=forking
 User=root
-WorkingDirectory=/usr/local/rocketmq/rocketmq-dashboard
+WorkingDirectory=/root/soft/rocketmq/rocketmq-dashboard
 Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
-ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run
+ExecStart=/root/soft/maven/apache-maven-3.9.9/bin/mvn spring-boot:run
 ExecStop=/bin/kill -s TERM $MAINPID
 #Restart=on-failure
 StartLimitInterval=60
 StartLimitBurst=5
 TimeoutStartSec=0
 ExecStartPre=/bin/sleep 30
-StandardOutput=file:/usr/local/rocketmq/rocketmq-dashboard/logs/output.log
-StandardError=file:/usr/local/rocketmq/rocketmq-dashboard/logs/error.log
+StandardOutput=file:/root/soft/rocketmq/rocketmq-dashboard/logs/output.log
+StandardError=file:/root/soft/rocketmq/rocketmq-dashboard/logs/error.log
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
 #创建好日志文件
-sudo chmod -R 755 /usr/local/rocketmq
-touch /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log && touch /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/error.log
-touch /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log && touch /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/error.log
-touch /usr/local/rocketmq/rocketmq-dashboard/logs/output.log && touch /usr/local/rocketmq/rocketmq-dashboard/logs/error.log
+sudo chmod -R 755 /root/soft/rocketmq
+touch /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log && touch /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/error.log
+touch /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log && touch /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/error.log
+touch /root/soft/rocketmq/rocketmq-dashboard/logs/output.log && touch /root/soft/rocketmq/rocketmq-dashboard/logs/error.log
 
 #重新加载服务的配置文件
 sudo systemctl daemon-reload
