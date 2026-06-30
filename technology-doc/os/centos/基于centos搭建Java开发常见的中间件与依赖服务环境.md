@@ -1427,11 +1427,11 @@ systemctl stop rocketmq_dashboard
 
 #如果无法自动启动，则可手动启动
 #打开一个新的ssh窗口执行
-nohup /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqnamesrv > /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log 2>&1 &
+nohup /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqnamesrv > /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log 2>&1 &
 #打开一个新的ssh窗口执行
-nohup /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqbroker -c /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/conf/broker.conf -n 192.168.11.66:9876 > /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log 2>&1 &
+nohup /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqbroker -c /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/conf/broker.conf -n 192.168.11.66:9876 > /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log 2>&1 &
 #打开一个新的ssh窗口执行
-cd /usr/local/rocketmq/rocketmq-dashboard && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run > /usr/local/rocketmq/rocketmq-dashboard/logs/output.log 2>&1 &
+cd /root/soft/rocketmq/rocketmq-dashboard && nohup /root/soft/maven/apache-maven-3.9.9/bin/mvn spring-boot:run > /root/soft/rocketmq/rocketmq-dashboard/logs/output.log 2>&1 &
 
 #查看 rocketmq 相关进程
 ps -ef | grep rocketmq
@@ -1446,14 +1446,14 @@ ps -p 21941 -o pid,comm,user
 kill -9 21941
 
 #查看 rocketmq 相关日志
-tail /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log -f -n 500
-tail /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log -f -n 500
-tail /usr/local/rocketmq/rocketmq-dashboard/logs/output.log -f -n 500
+tail /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log -f -n 500
+tail /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log -f -n 500
+tail /root/soft/rocketmq/rocketmq-dashboard/logs/output.log -f -n 500
 
 # 停止 mqnamesrv
-/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqshutdown mqnamesrv
+/root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqshutdown mqnamesrv
 # 停止 broker
-/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqshutdown broker
+/root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqshutdown broker
 
 #卸载服务(如果需要的话)
 sudo systemctl disable rocketmq_broker
