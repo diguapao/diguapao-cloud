@@ -2624,7 +2624,75 @@
       const w3 = words[3] || ["support", "支持"];
       const w4 = words[4] || ["method", "方法"];
       const w5 = words[5] || ["problem", "问题"];
-      const base = [
+      const simple = [
+        {
+          en: `I review "${w0[0]}" every day.`,
+          cn: `我每天复习 "${w0[0]}"。`,
+          pattern: "S + V + O",
+          parts: [
+            ["主语 S", "I", "谁：我"],
+            ["谓语 V", "review", "做什么：复习"],
+            ["宾语 O", `"${w0[0]}"`, "复习的对象：今日词"],
+            ["时间状语", "every day", "说明频率：每天"]
+          ],
+          steps: ["先找主语 I。", "再找动作 review。", "最后加宾语和时间：复习什么、什么时候复习。"],
+          trap: "一般现在时里 I 后面用 review，不要加 s。"
+        },
+        {
+          en: `"${w1[0]}" is useful.`,
+          cn: `"${w1[0]}" 很有用。`,
+          pattern: "S + be + Adj",
+          parts: [
+            ["主语 S", `"${w1[0]}"`, "句子说的是这个今日词"],
+            ["系动词", "is", "表示“是/很”"],
+            ["表语", "useful", "说明主语的特点：有用"]
+          ],
+          steps: ["先译主语：这个词。", "is + 形容词译成“很……/是……的”。", "最后合成：这个词很有用。"],
+          trap: "be 动词后面接形容词 useful，不要写 is use。"
+        },
+        {
+          en: `There is a "${w2[0]}" in this sentence.`,
+          cn: `这个句子里有一个 "${w2[0]}"。`,
+          pattern: "There be + 名词 + 地点",
+          parts: [
+            ["There be", "There is", "表示“有”"],
+            ["名词", `a "${w2[0]}"`, "有什么：一个今日词"],
+            ["地点状语", "in this sentence", "在哪里：这个句子里"]
+          ],
+          steps: ["There is 先译“有”。", "再译名词：一个……。", "最后译地点：在这个句子里。"],
+          trap: "There is 后面接单数；复数要用 There are。"
+        }
+      ];
+      const intermediate = [
+        {
+          en: `We can use "${w3[0]}" in a short sentence.`,
+          cn: `我们可以在短句中使用 "${w3[0]}"。`,
+          pattern: "S + can + V + O",
+          parts: [
+            ["主语 S", "We", "谁：我们"],
+            ["情态动词", "can", "表示可以/能够"],
+            ["谓语 V", "use", "can 后面接动词原形"],
+            ["宾语 O", `"${w3[0]}"`, "使用的对象"],
+            ["地点状语", "in a short sentence", "在短句中"]
+          ],
+          steps: ["先译 We can：我们可以。", "再译 use 和宾语。", "最后补地点：在短句中。"],
+          trap: "can 后面用 use，不要写 uses。"
+        },
+        {
+          en: `The word "${w4[0]}" is simple, and I can remember it.`,
+          cn: `单词 "${w4[0]}" 很简单，而且我能记住它。`,
+          pattern: "简单句 + and + 简单句",
+          parts: [
+            ["第一分句", `The word "${w4[0]}" is simple`, "第一件事：这个词简单"],
+            ["连词", "and", "连接两个并列信息"],
+            ["第二分句", "I can remember it", "第二件事：我能记住它"],
+            ["代词", "it", `指前面的 "${w4[0]}"`]
+          ],
+          steps: ["先分别译两个简单句。", "and 译成“而且/并且”。", "确认 it 指代前面的词。"],
+          trap: "and 连接的两边都要能独立表达一个意思。"
+        }
+      ];
+      const advanced = [
         {
           en: `Learning the word "${w0[0]}" can improve a learner's confidence.`,
           cn: `学习单词 "${w0[0]}" 可以提高学习者的信心。`,
@@ -2709,7 +2777,19 @@
           trap: "likely 后面常接 to do，不要漏掉 to。"
         }
       ];
-      if (day > 35) {
+      let base = simple.slice();
+      if (day >= 15) base = base.concat(intermediate);
+      if (day >= 29) {
+        base = base.concat(advanced.filter(item => [
+          "S + V + O",
+          "S + need to do + before 从句"
+        ].includes(item.pattern)));
+      }
+      if (day >= 43) {
+        base = base.concat(advanced.filter(item => [
+          "S + V + that 宾语从句",
+          "If 条件从句 + 主句"
+        ].includes(item.pattern)));
         base.push({
           en: `This is especially true when people meet "${w3[0]}" in a new passage.`,
           cn: `当人们在新文章中遇到 "${w3[0]}" 时，这一点尤其正确。`,
@@ -2724,19 +2804,33 @@
           trap: "This 指上一句的观点，阅读里要往前找指代内容。"
         });
       }
+      if (day >= 57) {
+        base = base.concat(advanced.filter(item => [
+          "S + 定语从句 + V + O",
+          "Although 从句 + 主句"
+        ].includes(item.pattern)));
+      }
       return base;
     }
 
+    function sentenceStageLabel(day) {
+      if (day < 15) return "简单句";
+      if (day < 29) return "简单句 + 情态动词/并列句";
+      if (day < 43) return "基础复合句";
+      if (day < 57) return "宾语/条件/时间从句";
+      return "考试常见复杂句";
+    }
+
     function dailySentences(day) {
-      const n = Math.min(8, 3 + Math.floor(day / 12));
       const words = dailyFocusWords(day, 8);
       const patterns = sentencePatterns(day, words);
+      const n = Math.min(Math.min(8, 3 + Math.floor(day / 12)), patterns.length);
       return Array.from({ length: n }, (_, i) => {
         const item = patterns[seededIndex(day, i, patterns.length)];
         const keyword = words[i % words.length] || ["practice", "练习"];
         return {
           ...item,
-          meta: `句型：${item.pattern}；今日词：${keyword[0]}（${keyword[1]}）`
+          meta: `难度：${sentenceStageLabel(day)}；句型：${item.pattern}；今日词：${keyword[0]}（${keyword[1]}）`
         };
       });
     }
