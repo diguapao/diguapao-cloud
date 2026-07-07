@@ -355,7 +355,7 @@
       display: grid;
       grid-template-columns: minmax(0, 1.35fr) minmax(260px, .65fr);
       gap: 18px;
-      align-items: stretch;
+      align-items: start;
       margin-bottom: 18px;
     }
 
@@ -367,10 +367,11 @@
     }
 
     .hero-panel {
-      min-height: 220px;
+      min-height: 172px;
       padding: 24px;
       display: grid;
-      align-content: space-between;
+      gap: 22px;
+      align-content: start;
       overflow: hidden;
       position: relative;
     }
@@ -380,8 +381,8 @@
       position: absolute;
       right: 18px;
       bottom: 16px;
-      width: 180px;
-      height: 112px;
+      width: 150px;
+      height: 92px;
       background:
         linear-gradient(90deg, rgba(23, 32, 42, .08) 1px, transparent 1px),
         linear-gradient(180deg, rgba(23, 32, 42, .08) 1px, transparent 1px),
@@ -395,7 +396,8 @@
     .hero-content {
       position: relative;
       z-index: 1;
-      max-width: 680px;
+      max-width: 760px;
+      padding-right: 156px;
     }
 
     .hero h2 {
@@ -537,6 +539,11 @@
       gap: 8px;
       padding: 12px;
       min-height: 128px;
+    }
+
+    .hero-panel .chips {
+      margin-top: 0;
+      padding-right: 164px;
     }
 
     .word-top {
@@ -991,6 +998,7 @@
       main { padding: 18px; }
       .hero { grid-template-columns: 1fr; }
       .hero-panel:after { opacity: .55; }
+      .hero-content, .hero-panel .chips { padding-right: 0; }
       .nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .nav button { justify-content: center; text-align: center; }
       .library-toolbar {
@@ -1011,6 +1019,7 @@
       .list { grid-template-columns: 1fr; }
       .hero h2 { font-size: 30px; }
       .hero-panel { padding: 18px; }
+      .hero-panel:after { opacity: .18; }
       .library-toolbar { grid-template-columns: 1fr; }
       .library-pager { justify-content: space-between; }
       .drill-ledger { grid-template-columns: 1fr; }
