@@ -684,6 +684,39 @@
 
     .step-list li { margin: 4px 0; }
 
+    .drill-ledger {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .drill-ledger h3 {
+      margin-bottom: 8px;
+    }
+
+    .drill-ledger-panel {
+      min-width: 0;
+    }
+
+    .drill-ledger-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .drill-ledger-card {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+    }
+
+    .drill-ledger-card strong {
+      display: block;
+      font-size: 16px;
+      overflow-wrap: anywhere;
+    }
+
     .pager {
       display: flex;
       gap: 8px;
@@ -842,6 +875,7 @@
       .hero-panel { padding: 18px; }
       .library-toolbar { grid-template-columns: 1fr; }
       .library-pager { justify-content: space-between; }
+      .drill-ledger { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -1011,9 +1045,9 @@
           </div>
         </div>
         <div class="toolbox">
+          <button class="secondary" data-drill-mode="listen-en-cn" type="button">听英文 → 答中文</button>
           <button class="secondary" data-drill-mode="en-cn" type="button">看英文 → 答中文</button>
           <button class="secondary" data-drill-mode="zh-en" type="button">听中文 → 答英文</button>
-          <button class="secondary" data-drill-mode="listen-en-cn" type="button">听英文 → 答中文</button>
           <select id="drillTagFilter" class="wide-select" aria-label="复习标签"></select>
         </div>
         <div id="drillBox"></div>
@@ -1414,7 +1448,7 @@
       quizHistory: JSON.parse(localStorage.getItem("pets3-quiz-history") || "{}"),
       wordStats: JSON.parse(localStorage.getItem("pets3-word-stats") || "{}"),
       activeStat: localStorage.getItem("pets3-active-stat") || "today",
-      drillMode: localStorage.getItem("pets3-drill-mode") || "en-cn",
+      drillMode: localStorage.getItem("pets3-drill-mode") || "listen-en-cn",
       drillFocus: localStorage.getItem("pets3-drill-focus") || "all",
       drillTag: localStorage.getItem("pets3-drill-tag") || "all",
       drillIndex: Number(localStorage.getItem("pets3-drill-index") || 0),
@@ -1697,6 +1731,14 @@
         .filter(Boolean);
     }
 
+    function correctWordEntries() {
+      return Object.entries(state.wordStats)
+        .filter(([, stat]) => (stat.correct || 0) > 0)
+        .sort((a, b) => String(b[1].lastCorrect || "").localeCompare(String(a[1].lastCorrect || "")))
+        .map(([word]) => findWordEntry(word))
+        .filter(Boolean);
+    }
+
     function markWordResult(entry, correct) {
       if (!entry) return;
       const stat = state.wordStats[entry.word] || { correct: 0, wrong: 0 };
@@ -1778,7 +1820,7 @@
       state.quizHistory = data.quizHistory && typeof data.quizHistory === "object" ? data.quizHistory : {};
       state.wordStats = data.wordStats && typeof data.wordStats === "object" ? data.wordStats : {};
       state.activeStat = data.activeStat || "today";
-      state.drillMode = data.drillMode || "en-cn";
+      state.drillMode = data.drillMode || "listen-en-cn";
       state.drillFocus = data.drillFocus || "all";
       state.drillTag = data.drillTag || "all";
       state.drillIndex = Number(data.drillIndex || 0);
@@ -2665,6 +2707,7 @@
       const current = state.drillWord || pickDrillWord();
       state.drillWord = current;
       const wrong = wrongWordEntries();
+      const correct = correctWordEntries();
       const entries = allWordEntries();
       const tagPool = entries.filter(item => state.drillTag === "all" || item.tag === state.drillTag);
       const activePoolSize = state.drillFocus === "wrong"
@@ -2695,17 +2738,41 @@
       if ($("drillTagFilter")) {
         $("drillTagFilter").innerHTML = tags.map(tag => `<option value="${tag}" ${tag === state.drillTag ? "selected" : ""}>${dayTagLabel(tag)}</option>`).join("");
       }
-      $("wrongWordBox").innerHTML = `
-        <h3 style="margin:16px 0 8px">错词本</h3>
-        <div class="list">${wrong.slice(0, 24).map(item => `<article class="word-card">
-          <div class="word">${item.word}</div>
-          <p>${item.meaning}</p>
-          <p class="small muted">${item.example}</p>
-        </article>`).join("") || `<div class="item"><p class="muted">还没有错词。快复习答错后会自动加入。</p></div>`}</div>
-      `;
+      renderDrillLedger(wrong, correct);
       document.querySelectorAll("[data-drill-mode]").forEach(btn => {
         btn.classList.toggle("active", btn.dataset.drillMode === state.drillMode);
       });
+    }
+
+    function drillLedgerCards(items, emptyText, type) {
+      if (!items.length) return `<div class="item"><p class="muted">${emptyText}</p></div>`;
+      return items.slice(0, 18).map(item => {
+        const stat = state.wordStats[item.word] || {};
+        const detail = type === "correct"
+          ? `正确 ${stat.correct || 0} 次`
+          : `错误 ${stat.wrong || 0} 次`;
+        return `<article class="drill-ledger-card">
+          <strong>${item.word}</strong>
+          <p>${item.meaning}</p>
+          <p class="small muted">${detail}</p>
+        </article>`;
+      }).join("");
+    }
+
+    function renderDrillLedger(wrong = wrongWordEntries(), correct = correctWordEntries()) {
+      if (!$("wrongWordBox")) return;
+      $("wrongWordBox").innerHTML = `
+        <div class="drill-ledger">
+          <section class="drill-ledger-panel">
+            <h3>错误词</h3>
+            <div class="drill-ledger-list">${drillLedgerCards(wrong, "还没有错误词。答错后会显示在这里。", "wrong")}</div>
+          </section>
+          <section class="drill-ledger-panel">
+            <h3>答对词</h3>
+            <div class="drill-ledger-list">${drillLedgerCards(correct, "还没有答对词。答对后会显示在这里。", "correct")}</div>
+          </section>
+        </div>
+      `;
     }
 
     function renderReview() {
@@ -2955,12 +3022,16 @@
         markWordResult(current, correct);
         $("drillResult").classList.remove("hidden");
         $("drillResult").innerHTML = correct
-          ? `<strong>答对了</strong><span class="muted">${current.word} = ${current.meaning}</span>`
-          : `<strong>答错，已加入错词本</strong><span class="muted">${current.word} = ${current.meaning}</span>`;
+          ? `<strong>答对了：${current.word} = ${current.meaning}</strong><span class="muted">已加入右侧答对词。点击“换一个”继续。</span>`
+          : `<strong>答错：${current.word} = ${current.meaning}</strong><span class="muted">已加入左侧错误词。点击“换一个”继续。</span>`;
+        if ($("drillAnswer")) $("drillAnswer").disabled = true;
+        if ($("checkDrill")) $("checkDrill").disabled = true;
+        if ($("skipDrill")) $("skipDrill").textContent = "下一个";
         state.drillWord = null;
         state.drillIndex += 1;
         saveProgressLocal();
-        setTimeout(renderDrill, 700);
+        renderDrillLedger();
+        renderStatsDetail();
       }
     });
     $("translationList").addEventListener("input", (e) => {
@@ -3065,7 +3136,7 @@
       state.quizHistory = {};
       state.wordStats = {};
       state.activeStat = "today";
-      state.drillMode = "en-cn";
+      state.drillMode = "listen-en-cn";
       state.drillFocus = "all";
       state.drillWord = null;
       state.day = 1;
