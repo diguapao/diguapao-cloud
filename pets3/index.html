@@ -2847,6 +2847,29 @@
       $("drillMetrics").innerHTML = `<span>剩余 ${remaining}</span><span>错 ${wrongWordEntries().length}</span><span>对 ${correctWordEntries().length}</span>`;
     }
 
+    function speakDrillWord(entry, mode = "en") {
+      if (!entry) return;
+      const isChinese = mode === "zh";
+      speakQueue([isChinese ? entry.meaning : entry.word], isChinese ? "zh-CN" : "en-US", isChinese ? .9 : .82, {
+        buttonId: mode === "zh" ? "drillSpeakChinese" : "drillSpeakEnglish",
+        defaultText: isChinese ? "▶ 中文" : "▶ 英文",
+        pauseText: "⏸ 暂停",
+        resumeText: "▶ 继续"
+      });
+    }
+
+    function autoplayCurrentDrillPrompt() {
+      const current = state.drillWord;
+      if (!current) return;
+      const shouldSpeakChinese = state.drillMode === "zh-en";
+      speakQueue([shouldSpeakChinese ? current.meaning : current.word], shouldSpeakChinese ? "zh-CN" : "en-US", shouldSpeakChinese ? .9 : .82, {
+        buttonId: "drillSpeakPrompt",
+        defaultText: shouldSpeakChinese ? "▶ 听中文" : "▶ 听英文",
+        pauseText: "⏸ 暂停",
+        resumeText: "▶ 继续"
+      });
+    }
+
     function drillLedgerCards(items, emptyText, type) {
       if (!items.length) return `<div class="item"><p class="muted">${emptyText}</p></div>`;
       return items.slice(0, 30).map(item => {
@@ -2888,17 +2911,31 @@
         : current.meaning.toLowerCase().includes(answer) && answer.length > 0;
       markWordResult(current, correct);
       $("drillResult").classList.remove("hidden");
-      $("drillResult").innerHTML = correct
-        ? `<strong>答对了：${current.word} = ${current.meaning}</strong><span class="muted">已加入右侧答对词。按回车或点“下一个”继续。</span>`
-        : `<strong>答错：${current.word} = ${current.meaning}</strong><span class="muted">已加入左侧错误词。按回车或点“下一个”继续。</span>`;
-      if ($("drillAnswer")) $("drillAnswer").readOnly = true;
-      if ($("checkDrill")) $("checkDrill").disabled = true;
-      if ($("skipDrill")) $("skipDrill").textContent = "下一个";
       state.drillIndex += 1;
       saveProgressLocal();
       renderDrillLedger();
       updateDrillMetrics();
       renderStatsDetail();
+      if (correct) {
+        state.drillWord = null;
+        renderDrill();
+        setTimeout(() => {
+          if ($("drillAnswer")) $("drillAnswer").focus();
+          autoplayCurrentDrillPrompt();
+        }, 120);
+        return;
+      }
+      $("drillResult").innerHTML = `
+        <strong>答错：${current.word} = ${current.meaning}</strong>
+        <span class="muted">已加入左侧错误词。可继续听这个词，再点“下一个”。</span>
+        <div class="actions" style="margin-top:8px">
+          <button class="secondary" id="drillSpeakEnglish" data-speak-drill="en" type="button">▶ 英文</button>
+          <button class="secondary" id="drillSpeakChinese" data-speak-drill="zh" type="button">▶ 中文</button>
+        </div>
+      `;
+      if ($("drillAnswer")) $("drillAnswer").readOnly = true;
+      if ($("checkDrill")) $("checkDrill").disabled = true;
+      if ($("skipDrill")) $("skipDrill").textContent = "下一个";
     }
 
     function skipCurrentDrillWord() {
@@ -3143,15 +3180,10 @@
         });
       }
       if (e.target.id === "drillSpeakPrompt") {
-        const current = state.drillWord;
-        if (!current) return;
-        const isChinese = state.drillMode === "zh-en";
-        speakQueue([isChinese ? current.meaning : current.word], isChinese ? "zh-CN" : "en-US", isChinese ? .9 : .82, {
-          buttonId: "drillSpeakPrompt",
-          defaultText: isChinese ? "▶ 听中文" : "▶ 听英文",
-          pauseText: "⏸ 暂停",
-          resumeText: "▶ 继续"
-        });
+        autoplayCurrentDrillPrompt();
+      }
+      if (e.target.dataset && e.target.dataset.speakDrill) {
+        speakDrillWord(state.drillWord, e.target.dataset.speakDrill);
       }
       if (e.target.id === "skipDrill") {
         skipCurrentDrillWord();
