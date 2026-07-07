@@ -171,7 +171,7 @@
       margin: 18px 0;
     }
 
-    .nav button, .icon-btn, .primary, .secondary {
+    .nav button, .icon-btn, .primary, .secondary, .stat {
       border: 1px solid var(--line);
       border-radius: 8px;
       background: white;
@@ -189,7 +189,7 @@
       text-align: left;
     }
 
-    .nav button:hover, .icon-btn:hover, .primary:hover, .secondary:hover {
+    .nav button:hover, .icon-btn:hover, .primary:hover, .secondary:hover, .stat:hover {
       transform: translateY(-1px);
       box-shadow: 0 8px 20px rgba(24, 42, 70, .09);
     }
@@ -210,11 +210,71 @@
     .stat {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       gap: 10px;
       padding: 9px 10px;
       border-radius: 8px;
       background: #f4f7fa;
       font-size: 13px;
+      text-align: left;
+      width: 100%;
+    }
+
+    .stat.active {
+      border-color: #9bb7ff;
+      background: var(--blue-soft);
+      color: #1747ad;
+      font-weight: 700;
+    }
+
+    .stats-detail {
+      margin-top: 10px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      display: grid;
+      gap: 9px;
+      font-size: 13px;
+    }
+
+    .stats-detail h3 {
+      font-size: 15px;
+    }
+
+    .stats-detail-list {
+      display: grid;
+      gap: 6px;
+      max-height: 220px;
+      overflow: auto;
+    }
+
+    .stats-detail-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 6px 7px;
+      border-radius: 8px;
+      background: #f8fafc;
+    }
+
+    .stats-detail-row span {
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+
+    .mini-progress {
+      height: 8px;
+      border-radius: 999px;
+      background: #e8edf2;
+      overflow: hidden;
+    }
+
+    .mini-progress span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--green), var(--blue));
     }
 
     .mentor-plan {
@@ -267,6 +327,29 @@
       color: var(--muted);
       font-size: 12px;
     }
+
+    .memory-rule {
+      display: grid;
+      gap: 7px;
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+    }
+
+    .memory-rule strong {
+      font-size: 15px;
+      color: var(--ink);
+    }
+
+    .memory-rule ol {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .memory-rule li { margin: 3px 0; }
 
     .hero {
       display: grid;
@@ -453,7 +536,7 @@
       display: grid;
       gap: 8px;
       padding: 12px;
-      min-height: 152px;
+      min-height: 128px;
     }
 
     .word-top {
@@ -809,13 +892,14 @@
       </nav>
 
       <div class="stats">
-        <div class="stat"><span>今日词汇</span><strong id="wordCount">30</strong></div>
-        <div class="stat"><span>核心目标</span><strong id="coreTotal">1400</strong></div>
-        <div class="stat"><span>词库总量</span><strong id="libraryTotal">0</strong></div>
-        <div class="stat"><span>错词数</span><strong id="wrongWordCount">0</strong></div>
-        <div class="stat"><span>难度</span><strong id="difficulty">入门</strong></div>
-        <div class="stat"><span>已完成天数</span><strong id="doneDays">0</strong></div>
+        <button class="stat active" data-stat="today" type="button"><span>今日词汇</span><strong id="wordCount">30</strong></button>
+        <button class="stat" data-stat="core" type="button"><span>核心目标</span><strong id="coreTotal">1400</strong></button>
+        <button class="stat" data-stat="library" type="button"><span>词库总量</span><strong id="libraryTotal">0</strong></button>
+        <button class="stat" data-stat="wrong" type="button"><span>错词数</span><strong id="wrongWordCount">0</strong></button>
+        <button class="stat" data-stat="stage" type="button"><span>难度</span><strong id="difficulty">入门</strong></button>
+        <button class="stat" data-stat="done" type="button"><span>已完成天数</span><strong id="doneDays">0</strong></button>
       </div>
+      <div id="statsDetail" class="stats-detail"></div>
     </aside>
 
     <main>
@@ -838,7 +922,18 @@
           <p class="muted small">题型覆盖：词汇语法、完形倾向、阅读理解、英汉互译、短文写作。内容为原创练习，按近年 PETS3 笔试常见能力点设计。</p>
           <div id="missionBox"></div>
           <div class="mentor-plan">
-            <h3>导师词库策略</h3>
+            <h3>程序员背词口诀</h3>
+            <div class="memory-rule">
+              <strong>三看两测一回滚</strong>
+              <ol>
+                <li>看词形：先会认，不急着拼。</li>
+                <li>看发音：点朗读，嘴巴跟一次。</li>
+                <li>看中文钩子：只记最常考义。</li>
+                <li>测英文→中文，错了进快复习。</li>
+                <li>测中文→英文，只测核心词。</li>
+                <li>回滚错词：当天、隔2天、隔7天。</li>
+              </ol>
+            </div>
             <div class="progress" aria-label="核心1400词进度"><span id="coreProgressBar"></span></div>
             <p id="coreProgressText" class="muted small"></p>
             <div class="layer-grid" id="layerGrid"></div>
@@ -1318,6 +1413,7 @@
       wordCounts: JSON.parse(localStorage.getItem("pets3-word-counts") || "{}"),
       quizHistory: JSON.parse(localStorage.getItem("pets3-quiz-history") || "{}"),
       wordStats: JSON.parse(localStorage.getItem("pets3-word-stats") || "{}"),
+      activeStat: localStorage.getItem("pets3-active-stat") || "today",
       drillMode: localStorage.getItem("pets3-drill-mode") || "en-cn",
       drillFocus: localStorage.getItem("pets3-drill-focus") || "all",
       drillTag: localStorage.getItem("pets3-drill-tag") || "all",
@@ -1450,7 +1546,8 @@
     const LIBRARY_PAGE_SIZE = 40;
 
     function baseWordTarget(day) {
-      return day <= 47 ? 30 : 20;
+      if (day < 47) return 30;
+      return 20;
     }
 
     function wordTarget(day) {
@@ -1470,6 +1567,7 @@
       localStorage.setItem("pets3-word-counts", JSON.stringify(state.wordCounts));
       localStorage.setItem("pets3-quiz-history", JSON.stringify(state.quizHistory));
       localStorage.setItem("pets3-word-stats", JSON.stringify(state.wordStats));
+      localStorage.setItem("pets3-active-stat", state.activeStat);
       localStorage.setItem("pets3-drill-mode", state.drillMode);
       localStorage.setItem("pets3-drill-focus", state.drillFocus);
       localStorage.setItem("pets3-drill-tag", state.drillTag);
@@ -1541,7 +1639,8 @@
         theme: item.theme || "official",
         source: item.sourceName || item.source || "official",
         tag: item.tag || item.dayTag || dayTagForIndex(index),
-        verified: item.verified !== false
+        verified: item.verified !== false,
+        rank: Number(item.rank || item.number || index + 1)
       };
     }
 
@@ -1576,6 +1675,18 @@
 
     function findWordEntry(word) {
       return allWordEntries().find(item => item.word === word) || allWordEntries()[0];
+    }
+
+    function learningWordEntries() {
+      return allWordEntries()
+        .slice()
+        .sort((a, b) => {
+          const rankA = Number(a.rank || 999999);
+          const rankB = Number(b.rank || 999999);
+          if (rankA !== rankB) return rankA - rankB;
+          if (a.layer !== b.layer) return a.layer - b.layer;
+          return a.word.localeCompare(b.word);
+        });
     }
 
     function wrongWordEntries() {
@@ -1642,6 +1753,7 @@
         wordCounts: state.wordCounts,
         quizHistory: state.quizHistory,
         wordStats: state.wordStats,
+        activeStat: state.activeStat,
         drillMode: state.drillMode,
         drillFocus: state.drillFocus,
         drillTag: state.drillTag,
@@ -1665,6 +1777,7 @@
       state.wordCounts = data.wordCounts && typeof data.wordCounts === "object" ? data.wordCounts : {};
       state.quizHistory = data.quizHistory && typeof data.quizHistory === "object" ? data.quizHistory : {};
       state.wordStats = data.wordStats && typeof data.wordStats === "object" ? data.wordStats : {};
+      state.activeStat = data.activeStat || "today";
       state.drillMode = data.drillMode || "en-cn";
       state.drillFocus = data.drillFocus || "all";
       state.drillTag = data.drillTag || "all";
@@ -1960,25 +2073,50 @@
       const mode = dayWordMode(day);
       const start = mode === "new" ? plannedNewWordsBefore(day) : (day - 48) * count;
       const reviewLimit = Math.max(plannedNewWordsThrough(47), 1);
-      const entries = allWordEntries();
+      const entries = learningWordEntries();
+      const coreEntries = entries.filter(item => item.layer <= 2).slice(0, 1400);
+      const pool = mode === "new" ? coreEntries : coreEntries.slice(0, reviewLimit);
       return Array.from({ length: count }, (_, i) => {
         const position = mode === "new"
           ? start + i + 1
           : ((start + i * 7) % reviewLimit) + 1;
-        const entry = entries[seededIndex(position, i, entries.length)];
-        const layer = wordLayer(position);
+        const entry = pool[(position - 1) % Math.max(pool.length, 1)] || entries[0];
+        const layer = wordLayer(Math.min(position, 1400));
         return [
           entry.word,
           entry.meaning,
-          entry.example || `PETS3 vocabulary word: ${entry.word}.`,
+          entry.example || "",
           entry.phonetic ? `${entry.pos || ""} ${entry.phonetic}`.trim() : entry.pos,
           entry.layerName || layer.name,
           entry.stars || layer.stars,
           layer.must,
           entry.theme || themeForDay(day),
-          position
+          Math.min(position, 1400),
+          entry.layer,
+          entry.rank
         ];
       });
+    }
+
+    function conciseMeaning(text) {
+      return String(text || "核心词")
+        .replace(/\b(?:abbr\.|adj\.|adv\.|conj\.|int\.|n\.|num\.|prep\.|pron\.|v\.|vi\.|vt\.|aux\.|art\.|a\.)/g, "")
+        .replace(/[；;，,].*$/, "")
+        .replace(/\s+/g, " ")
+        .trim() || "核心词";
+    }
+
+    function isApplicationWord(word) {
+      const stop = new Set(["a", "an", "the", "to", "of", "in", "on", "at", "for", "from", "by", "and", "or", "but", "if", "as", "be", "am", "is", "are", "was", "were", "do"]);
+      return word && word.length > 2 && !stop.has(String(word).toLowerCase());
+    }
+
+    function dailyFocusWords(day, count = 8) {
+      const picked = dailyWords(day)
+        .filter(item => isApplicationWord(item[0]))
+        .map(item => [item[0], conciseMeaning(item[1]), item[3], item[4]]);
+      const fallback = dailyWords(day).map(item => [item[0], conciseMeaning(item[1]), item[3], item[4]]);
+      return (picked.length ? picked : fallback).slice(0, count);
     }
 
     const speechState = {
@@ -2074,7 +2212,7 @@
       $("heroText").textContent = `${focus}。今日主题：${theme}。`;
       $("coreProgressBar").style.width = `${Math.min(coreDone / 1400 * 100, 100)}%`;
       $("coreProgressText").textContent = `核心1400词进度：${coreDone}/1400 · 全词库 ${libraryTotal} 词 · 当前：${currentLayer.name} · ${modeText}`;
-      $("vocabTotalHint").textContent = `核心目标 1400 词；当前正式词库共 ${libraryTotal} 词。每日只推该学的核心词，低频词留给检索查阅。`;
+      $("vocabTotalHint").textContent = `核心目标 1400 词；当前正式词库共 ${libraryTotal} 词。基础薄弱先不看例句：认词形、听发音、记常考义、做快测。`;
       $("libraryTotalHint").textContent = `全词库共 ${libraryTotal} 词，支持英文/中文检索。低频词用于查阅，不强迫每天硬背。`;
       $("layerGrid").innerHTML = [
         ["第一层", "800词 · 阅读反复出现 · 必须会"],
@@ -2100,6 +2238,96 @@
       document.querySelectorAll(".module").forEach(section => {
         section.classList.toggle("active", section.id === state.tab);
       });
+      renderStatsDetail();
+    }
+
+    function statRows(rows) {
+      return `<div class="stats-detail-list">${rows.map(([left, right]) => `
+        <div class="stats-detail-row"><strong>${left}</strong><span>${right}</span></div>
+      `).join("")}</div>`;
+    }
+
+    function layerCounts() {
+      return allWordEntries().reduce((counts, item) => {
+        counts[item.layer] = (counts[item.layer] || 0) + 1;
+        return counts;
+      }, {});
+    }
+
+    function renderStatsDetail() {
+      if (!$("statsDetail")) return;
+      document.querySelectorAll(".stat").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.stat === state.activeStat);
+      });
+      const coreDone = plannedNewWordsThrough(state.day);
+      const words = dailyWords(state.day);
+      const wrong = wrongWordEntries();
+      const counts = layerCounts();
+      const percent = Math.round(coreDone / 1400 * 100);
+      const completed = state.completed.slice().sort((a, b) => a - b);
+      const quizDone = Object.keys(state.quizHistory).length;
+      const detailMap = {
+        today: {
+          title: `今日词汇 ${words.length} 个`,
+          summary: `第${state.day}天 · ${dayWordMode(state.day) === "new" ? "新词推进" : "核心复现"} · ${themeForDay(state.day)}`,
+          body: statRows(words.slice(0, 12).map((w, index) => [`${index + 1}. ${w[0]}`, `${w[1]} · ${w[4]}`]))
+            + (words.length > 12 ? `<p class="muted small">只预览前12个；完整列表见“词汇”模块。</p>` : "")
+        },
+        core: {
+          title: "核心目标 1400",
+          summary: `已规划推进 ${coreDone}/1400 · ${percent}%`,
+          body: `<div class="mini-progress"><span style="width:${percent}%"></span></div>`
+            + statRows([
+              ["第一层", `800词 · 当前${Math.min(coreDone, 800)}/800`],
+              ["第二层", `600词 · 当前${Math.max(0, Math.min(coreDone - 800, 600))}/600`],
+              ["今日默认", `${baseWordTarget(state.day)}词${state.wordCounts[state.day] ? " · 已自定义为 " + wordTarget(state.day) : ""}`],
+              ["阶段", planStage(state.day)]
+            ])
+        },
+        library: {
+          title: `词库总量 ${allWordEntries().length}`,
+          summary: wordbankStatus,
+          body: statRows([
+            ["第一层核心", `${counts[1] || 0} 个`],
+            ["第二层高频", `${counts[2] || 0} 个`],
+            ["第三层一般", `${counts[3] || 0} 个`],
+            ["第四层低频", `${counts[4] || 0} 个`]
+          ])
+        },
+        wrong: {
+          title: `错词数 ${wrong.length}`,
+          summary: wrong.length ? "按错误次数高到低显示。" : "目前没有错词；快复习答错后会自动出现。",
+          body: wrong.length
+            ? statRows(wrong.slice(0, 10).map(item => {
+              const stat = state.wordStats[item.word] || {};
+              return [item.word, `${item.meaning} · 错${stat.wrong || 0}/对${stat.correct || 0}`];
+            }))
+            : `<p class="muted small">建议每天做一次“快复习”，错词会进入这里。</p>`
+        },
+        stage: {
+          title: `难度 ${stage(state.day)[0]}`,
+          summary: stage(state.day)[1],
+          body: statRows([
+            ["当前日", `第${state.day}/70天`],
+            ["当前层级", planStage(state.day)],
+            ["今日主题", themeForDay(state.day)],
+            ["小测记录", `${quizDone} 天有记录`]
+          ])
+        },
+        done: {
+          title: `已完成 ${completed.length} 天`,
+          summary: completed.length ? `最近完成：第${completed.slice(-5).join("、")}天` : "还没有标记完成的日期。",
+          body: `<div class="mini-progress"><span style="width:${completed.length / 70 * 100}%"></span></div>`
+            + statRows([
+              ["完成率", `${completed.length}/70 天`],
+              ["重学中", `${state.relearning.length} 天`],
+              ["最近小测", state.quizHistory[state.day] ? `${state.quizHistory[state.day].score}/${state.quizHistory[state.day].total}` : "今天未交卷"],
+              ["JSON状态", progressSaveStatus]
+            ])
+        }
+      };
+      const item = detailMap[state.activeStat] || detailMap.today;
+      $("statsDetail").innerHTML = `<h3>${item.title}</h3><p class="muted small">${item.summary}</p>${item.body}`;
     }
 
     function renderVocab() {
@@ -2117,7 +2345,6 @@
           </div>
           <span class="tag ${color}">${w[5] || layer.stars} · ${w[4] || layer.name}</span>
           <span class="tag green">${w[7] || themeForDay(state.day)}</span>
-          <p class="small">${w[2]}</p>
         </article>`;
       }).join("");
     }
@@ -2131,84 +2358,84 @@
       const w5 = words[5] || ["problem", "问题"];
       const base = [
         {
-          en: `Regular ${w0[0]} can ${w1[0]} a learner's confidence.`,
-          cn: `规律的${w0[1]}可以${w1[1]}学习者的信心。`,
+          en: `Learning the word "${w0[0]}" can improve a learner's confidence.`,
+          cn: `学习单词 "${w0[0]}" 可以提高学习者的信心。`,
           pattern: "S + V + O",
           parts: [
-            ["主语 S", `Regular ${w0[0]}`, "谁/什么：规律的练习或行动"],
-            ["谓语 V", `can ${w1[0]}`, "做什么：情态动词 can + 动词原形"],
+            ["主语 S", `Learning the word "${w0[0]}"`, "动名词短语作主语：学习这个词"],
+            ["谓语 V", "can improve", "做什么：情态动词 can + 动词原形"],
             ["宾语 O", "a learner's confidence", "动作影响的对象"],
-            ["修饰", "Regular", "形容词放在名词前，说明“什么样的”"]
+            ["修饰", `the word "${w0[0]}"`, "说明具体学习哪个今日词"]
           ],
-          steps: ["先译主语：规律的……", "再译谓语：可以……", "最后译宾语：学习者的信心。"],
+          steps: ["先译主语：学习单词……", "再译谓语：可以提高……", "最后译宾语：学习者的信心。"],
           trap: "can 后面必须接动词原形，不要写 can improves。"
         },
         {
-          en: `Students who review new words regularly usually remember them longer.`,
-          cn: "经常复习新单词的学生通常记得更久。",
+          en: `Students who review "${w1[0]}" regularly usually remember it longer.`,
+          cn: `经常复习 "${w1[0]}" 的学生通常记得更久。`,
           pattern: "S + 定语从句 + V + O",
           parts: [
             ["主语 S", "Students", "句子真正说的是 students"],
-            ["定语从句", "who review new words regularly", "修饰 students：什么样的学生"],
+            ["定语从句", `who review "${w1[0]}" regularly`, "修饰 students：什么样的学生"],
             ["谓语 V", "usually remember", "主句动作：通常记得"],
-            ["宾语 O", "them", "指前面的 new words"],
+            ["宾语 O", "it", `指前面的 "${w1[0]}"`],
             ["状语", "longer", "说明记住的时间更长"]
           ],
-          steps: ["先抓主干：Students remember them.", "把 who 从句提前译成“……的学生”。", "最后加 usually 和 longer。"],
+          steps: ["先抓主干：Students remember it.", "把 who 从句提前译成“……的学生”。", "最后加 usually 和 longer。"],
           trap: "who 从句不是新句子的开头，它是在修饰前面的 Students。"
         },
         {
-          en: `Although the ${w4[0]} seems simple, it can solve a real ${w5[0]}.`,
-          cn: `虽然这个${w4[1]}看起来简单，但它可以解决一个真实的${w5[1]}。`,
+          en: `Although the word "${w4[0]}" seems simple, it may appear in a real exam.`,
+          cn: `虽然单词 "${w4[0]}" 看起来简单，但它可能出现在真实考试中。`,
           pattern: "Although 从句 + 主句",
           parts: [
-            ["让步从句", `Although the ${w4[0]} seems simple`, "虽然……，先交代背景"],
-            ["从句主语", `the ${w4[0]}`, "这个方法/事物"],
+            ["让步从句", `Although the word "${w4[0]}" seems simple`, "虽然……，先交代背景"],
+            ["从句主语", `the word "${w4[0]}"`, "这个今日词"],
             ["从句系动词", "seems simple", "看起来简单"],
             ["主句主语 S", "it", `指 the ${w4[0]}`],
-            ["主句谓语+宾语", `can solve a real ${w5[0]}`, "可以解决一个真实问题"]
+            ["主句谓语+状语", "may appear in a real exam", "可能出现在真实考试中"]
           ],
           steps: ["看到 Although 先译“虽然……”。", "逗号后是主句，中文可以自然加“但是”。", "英语里有 Although 时，后面不要再写 but。"],
           trap: "Although 和 but 不要在同一个英文句子里同时连接主从句。"
         },
         {
-          en: `People need to understand the purpose before they make a decision.`,
-          cn: "人们在做决定之前，需要理解目的。",
+          en: `People need to understand "${w2[0]}" before they use it in writing.`,
+          cn: `人们在写作中使用 "${w2[0]}" 之前，需要先理解它。`,
           pattern: "S + need to do + before 从句",
           parts: [
             ["主语 S", "People", "谁：人们"],
             ["谓语 V", "need to understand", "需要理解；need to + 动词原形"],
-            ["宾语 O", "the purpose", "理解的对象：目的"],
-            ["时间从句", "before they make a decision", "在他们做决定之前"]
+            ["宾语 O", `"${w2[0]}"`, "理解的对象：今日词"],
+            ["时间从句", "before they use it in writing", "在写作中使用它之前"]
           ],
-          steps: ["先译主干：人们需要理解目的。", "before 从句表示时间，放前放后都可以。", "合成自然中文：在……之前，需要……。"],
-          trap: "before 后面是一整个小句：they make a decision，不是只有一个单词。"
+          steps: ["先译主干：人们需要理解……。", "before 从句表示时间，放前放后都可以。", "it 指代前面的今日词。"],
+          trap: "before 后面是一整个小句：they use it in writing，不是只有一个单词。"
         },
         {
-          en: `The report shows that clear rules can protect personal safety.`,
-          cn: "这份报告表明，清晰的规则可以保护个人安全。",
+          en: `The note shows that "${w3[0]}" is one of today's core words.`,
+          cn: `这条笔记表明，"${w3[0]}" 是今天的核心词之一。`,
           pattern: "S + V + that 宾语从句",
           parts: [
-            ["主语 S", "The report", "谁表明：这份报告"],
+            ["主语 S", "The note", "谁表明：这条笔记"],
             ["谓语 V", "shows", "表明；第三人称单数加 s"],
-            ["宾语从句", "that clear rules can protect personal safety", "show 的内容"],
-            ["从句主语", "clear rules", "清晰的规则"],
-            ["从句谓语+宾语", "can protect personal safety", "可以保护个人安全"]
+            ["宾语从句", `that "${w3[0]}" is one of today's core words`, "show 的内容"],
+            ["从句主语", `"${w3[0]}"`, "今日词"],
+            ["从句表语", "one of today's core words", "今天核心词之一"]
           ],
-          steps: ["先译主句：报告表明……。", "that 后面是一件完整的事，整体作 shows 的宾语。", "再译从句主干：规则可以保护安全。"],
+          steps: ["先译主句：笔记表明……。", "that 后面是一件完整的事，整体作 shows 的宾语。", "one of... 表“……之一”。"],
           trap: "that 在这里通常不译出来，它的作用是引出“表明的内容”。"
         },
         {
-          en: `If workers communicate patiently, customers are more likely to accept the solution.`,
-          cn: "如果工作人员耐心沟通，顾客更可能接受这个解决方案。",
+          en: `If learners review "${w5[0]}" today, they are more likely to remember it tomorrow.`,
+          cn: `如果学习者今天复习 "${w5[0]}"，他们明天更可能记住它。`,
           pattern: "If 条件从句 + 主句",
           parts: [
-            ["条件从句", "If workers communicate patiently", "如果工作人员耐心沟通"],
-            ["从句主语+谓语", "workers communicate", "工作人员沟通"],
-            ["方式状语", "patiently", "怎样沟通：耐心地"],
-            ["主句主语 S", "customers", "顾客"],
-            ["主句谓语", "are more likely to accept", "更可能接受"],
-            ["宾语 O", "the solution", "解决方案"]
+            ["条件从句", `If learners review "${w5[0]}" today`, "如果学习者今天复习这个词"],
+            ["从句主语+谓语", "learners review", "学习者复习"],
+            ["时间状语", "today", "今天"],
+            ["主句主语 S", "they", "指 learners"],
+            ["主句谓语", "are more likely to remember", "更可能记住"],
+            ["宾语 O", "it", `指 "${w5[0]}"`]
           ],
           steps: ["If 放句首，先译“如果……”。", "逗号后找主句：customers are more likely to accept...", "be likely to do 表“可能做某事”。"],
           trap: "likely 后面常接 to do，不要漏掉 to。"
@@ -2216,14 +2443,14 @@
       ];
       if (day > 35) {
         base.push({
-          en: `This is especially true when people need to ${w3[0]} others in a changing situation.`,
-          cn: `当人们需要在变化的情况中${w3[1]}他人时，这一点尤其正确。`,
+          en: `This is especially true when people meet "${w3[0]}" in a new passage.`,
+          cn: `当人们在新文章中遇到 "${w3[0]}" 时，这一点尤其正确。`,
           pattern: "主句 + when 时间从句",
           parts: [
             ["主句", "This is especially true", "这一点尤其正确"],
-            ["时间从句", `when people need to ${w3[0]} others`, "当人们需要……他人时"],
-            ["地点/背景状语", "in a changing situation", "在变化的情况中"],
-            ["重点结构", `need to ${w3[0]}`, "need to + 动词原形"]
+            ["时间从句", `when people meet "${w3[0]}"`, "当人们遇到这个词时"],
+            ["地点/背景状语", "in a new passage", "在新文章中"],
+            ["重点结构", "meet a word", "在阅读中“遇到一个词”"]
           ],
           steps: ["先译主句 This is true。", "especially 表“尤其”。", "when 后面整体译成“当……时”。"],
           trap: "This 指上一句的观点，阅读里要往前找指代内容。"
@@ -2234,7 +2461,7 @@
 
     function dailySentences(day) {
       const n = Math.min(8, 3 + Math.floor(day / 12));
-      const words = dailyWords(day).slice(0, 8);
+      const words = dailyFocusWords(day, 8);
       const patterns = sentencePatterns(day, words);
       return Array.from({ length: n }, (_, i) => {
         const item = patterns[seededIndex(day, i, patterns.length)];
@@ -2281,13 +2508,13 @@
     }
 
     function renderTranslation() {
-      const w = dailyWords(state.day);
+      const w = dailyFocusWords(state.day, 8);
       const hard = state.day > 35;
       const items = [
-        [`中译英`, `越来越多的人意识到，${w[0][1]}和${w[1][1]}会影响他们的学习效率。`, `提示：use “more and more people realize that...”`, `结构：More and more people realize that + 一个完整句子。先写“越来越多人意识到”，再写 that 后面的事实。`],
-        [`英译中`, `${hard ? "Although the method may seem ordinary, " : ""}regular practice can improve a learner's confidence and help him avoid simple mistakes.`, `提示：先找主干，再处理让步或并列结构。`, `主干：regular practice can improve confidence and help him avoid mistakes。两个动作用 and 并列。`],
-        [`中译英`, `如果我们能合理安排时间，就更有可能实现目标。`, `提示：if-clause + be more likely to...`, `结构：If we can arrange time properly, we are more likely to achieve our goals. If 从句放前面，主句说明结果。`],
-        [`英译中`, `The passage suggests that public rules are necessary because they protect both personal safety and social order.`, `提示：suggest 在这里可译为“表明”。`, `主干：The passage suggests that... because... 表原因。先译“文章表明……”，再译 because 后面的原因。`]
+        [`中译英`, `请翻译：我们今天先掌握 "${w[0][0]}" 和 "${w[1][0]}" 的基本意思，再把它们放进短句。`, `提示：master the basic meanings of... / put them into short sentences`, `结构：先写 We should first...，再用 and 连接第二个动作。them 指代前面的两个单词。`],
+        [`英译中`, `${hard ? "Although this method looks simple, " : ""}the word "${w[2][0]}" means "${w[2][1]}", and learners should review it in reading and writing.`, `今日词：${w[2][0]}。it 指代前面的 the word。`, `主干：the word means... and learners should review it...。两个分句用 and 连接。`],
+        [`中译英`, `请翻译：如果我忘记了 "${w[3][0]}"，我会回到错词本并重新复习。`, `提示：If I forget..., I will...`, `结构：If 条件从句 + 主句。forget 后直接接忘记的内容。`],
+        [`英译中`, `The passage uses "${w[4][0]}" and "${w[5][0]}" again because repeated contact helps weak learners remember core words.`, `今日词：${w[4][0]}、${w[5][0]}。because 后面解释原因。`, `主干：The passage uses... because...。repeated contact 可译为“反复接触”。`]
       ];
       $("translationList").innerHTML = items.map(([type, text, tip, grammar], i) => `
         <div class="item">
@@ -2302,15 +2529,15 @@
 
     function reading(day) {
       const topic = sentenceThemes[day % sentenceThemes.length][0];
-      const w = dailyWords(day);
-      const base = `In many cities, people are trying to improve the quality of daily life. One common method is to make public services more convenient. For example, local libraries now provide online information, quiet study areas and community activities. These changes may look ordinary, but they help citizens save time and develop better habits.`;
-      const middle = ` However, a useful service will not produce good results by itself. People need to understand its purpose and use it responsibly. When residents are willing to communicate with workers and follow public rules, small improvements can gradually influence the whole community.`;
-      const advanced = ` Recent discussions also show that technology should support human needs instead of replacing careful judgement. A service that increases speed but reduces trust may create new problems. Therefore, decision makers should compare different solutions and consider whether each plan is fair, affordable and sustainable.`;
+      const w = dailyFocusWords(day, 8);
+      const base = `A learner does not need to remember every word at once. A better method is to study a small group of core words and use them in short tasks. For example, when a student meets the word "${w[0][0]}", he should connect it with "${w[0][1]}" first. Then he can compare it with "${w[1][0]}" and "${w[2][0]}" in the same day's practice. This simple connection can help him read faster and feel less afraid.`;
+      const middle = ` However, vocabulary will soon be forgotten if it only stays on a word card. Learners should meet "${w[3][0]}" and "${w[4][0]}" again in translation, reading and writing. When they make mistakes, they should write down the reason and review the words again two days later.`;
+      const advanced = ` This approach is especially useful for busy adults. It does not ask them to study for many hours, but it requires clear steps. They compare old and new words, choose useful meanings, and build a small daily routine. Therefore, words such as "${w[5][0]}" appear many times before the exam.`;
       const passage = base + (day > 18 ? middle : "") + (day > 42 ? advanced : "");
       const questions = [
-        ["What is the main idea of the passage?", ["Public services can improve daily life when used well.", "Libraries should stop online services.", "Technology always causes problems.", "Citizens should avoid community activities."], 0],
-        ["According to the passage, residents should ______.", ["communicate and follow rules", "depend only on workers", "refuse new services", "compare cities every day"], 0],
-        ["The word “sustainable” is closest in meaning to ______.", ["able to continue", "very expensive", "easy to forget", "strictly private"], 0]
+        ["What is the main idea of the passage?", ["Core words should be reused in several small tasks.", "Learners should memorize every word at once.", "Word cards are enough for exam preparation.", "Adults should avoid reading practice."], 0],
+        [`In the passage, "${w[2][0]}" is connected with ______.`, [w[2][1], w[0][1], w[1][1], w[3][1]], 0],
+        ["According to the passage, learners should review mistakes ______.", ["two days later", "only before the exam", "after one year", "before learning any word"], 0]
       ];
       return { topic, passage, questions, words: w.slice(0, 6) };
     }
@@ -2333,11 +2560,19 @@
       const task = writingTypes[state.day % writingTypes.length];
       const minWords = state.day < 20 ? 80 : state.day < 50 ? 100 : 120;
       const key = `pets3-writing-${state.day}`;
+      const words = dailyFocusWords(state.day, 8);
       $("writingBox").innerHTML = `
         <div class="prompt-box">
           <span class="tag amber">今日题目</span>
           <h3>${task}</h3>
-          <p class="muted">要求：不少于 ${minWords} 词；结构清楚；包含至少 3 个今日词汇；结尾给出明确态度或行动。</p>
+          <p class="muted">要求：不少于 ${minWords} 词；结构清楚；至少自然使用 4 个今日词；结尾给出明确态度或行动。</p>
+          <div class="chips">${words.map(w => `<span class="chip">${w[0]} · ${w[1]}</span>`).join("")}</div>
+          <div class="grammar-box">
+            <strong>今日词写作骨架</strong>
+            <p>开头：In my opinion, learning core words such as "${words[0][0]}" and "${words[1][0]}" is useful.</p>
+            <p>主体：We should read, translate and write with these words, because repeated use improves memory.</p>
+            <p>结尾：Therefore, we should review these words and use them again in daily practice.</p>
+          </div>
           <textarea id="writingDraft" placeholder="写下你的作文草稿...">${localStorage.getItem(key) || ""}</textarea>
         </div>
         <div class="rubric">
@@ -2350,17 +2585,25 @@
     }
 
     function quiz(day) {
-      const words = dailyWords(day);
+      const words = dailyFocusWords(day, 8);
+      const choices = (correct, offset = 1) => {
+        const pool = words.map(w => w[0]).filter(word => word !== correct);
+        return [correct, ...pool.slice(offset, offset + 3)];
+      };
+      const meaningChoices = (correct, offset = 1) => {
+        const pool = words.map(w => w[1]).filter(text => text !== correct);
+        return [correct, ...pool.slice(offset, offset + 3)];
+      };
       const qs = [
-        [`The city has made great ______ in public transport.`, ["progress", "problem", "passenger", "pollution"], 0, "词汇搭配：make progress"],
-        [`It is necessary to ______ the environment for future generations.`, ["protect", "borrow", "attend", "complain"], 0, "protect the environment 是高频表达"],
-        [`Choose the best translation: “他设法按时完成了任务。”`, ["He managed to finish the task on time.", "He avoided to finish the task on time.", "He suggested finish the task on time.", "He afforded finishing the task on time."], 0, "manage to do sth."],
+        [`${words[0][0]} 最接近的中文意思是 ______。`, meaningChoices(words[0][1], 1), 0, `今日词：${words[0][0]} = ${words[0][1]}`],
+        [`选择英文：${words[1][1]}`, choices(words[1][0], 2), 0, `看到中文先回忆英文词形：${words[1][0]}`],
+        [`阅读句子：The word "${words[2][0]}" means "${words[2][1]}". 句中 "${words[2][0]}" 是什么？`, ["今日核心词", "地名", "人名", "标点符号"], 0, `把今日词放进句子里认，而不是孤立背。`],
+        [`Choose the best translation: “我们需要复习单词 ${words[3][0]}。”`, [`We need to review the word "${words[3][0]}".`, `We need review the word "${words[3][0]}".`, `We are need to review "${words[3][0]}".`, `We need reviewing "${words[3][0]}".`], 0, "need to + 动词原形"],
         [`Which sentence is grammatically correct?`, ["Although it was raining, we continued our work.", "Although it was raining, but we continued our work.", "Because he was ill, so he stayed home.", "The news are important."], 0, "although 不与 but 连用"],
-        [`The writer's purpose in a passage is usually found by looking at ______.`, ["the main idea and tone", "only the longest sentence", "only the first word", "punctuation marks"], 0, "阅读主旨与态度题策略"]
+        [`今天阅读中，这些词反复出现的目的是什么？`, ["把词义转成阅读、翻译和写作能力", "增加低频词数量", "替代语法学习", "只训练发音"], 0, "核心词要多场景复现，才记得牢。"]
       ];
       if (day > 25) qs.push([`The word “therefore” is used to show ______.`, ["result", "contrast", "time order", "example"], 0, "therefore 表结果"]);
       if (day > 50) qs.push([`A good PETS3 composition should first be judged by whether it ______.`, ["answers the task clearly", "uses very rare words", "has many long sentences", "copies the prompt"], 0, "写作第一位是切题"]);
-      qs[0][1][2] = words[0][0];
       return qs;
     }
 
@@ -2485,7 +2728,7 @@
           <strong>今日复习词</strong>
           <button class="secondary" id="speakReviewWords" type="button">▶ 连读复习词</button>
         </div>
-        <div class="list" style="margin-top:12px">${unique.map(w => `<article class="word-card"><div class="word">${w[0]}</div><p>${w[1]}</p><p class="small muted">${w[2]}</p></article>`).join("")}</div>
+        <div class="list" style="margin-top:12px">${unique.map(w => `<article class="word-card"><div class="word">${w[0]}</div><p>${w[1]}</p><p class="small muted">${w[3] || ""}</p></article>`).join("")}</div>
         ${state.wrong.length ? `<h3 style="margin:16px 0 8px">错题回看</h3>${state.wrong.slice(-8).reverse().map(x => `<div class="item"><strong>第${x.day}天：</strong>${x.question}<p class="muted small">${x.explain}</p></div>`).join("")}` : ""}
       `;
     }
@@ -2554,8 +2797,16 @@
       });
     });
 
+    document.querySelectorAll(".stat").forEach(btn => {
+      btn.addEventListener("click", () => {
+        state.activeStat = btn.dataset.stat || "today";
+        saveProgressLocal();
+        renderStatsDetail();
+      });
+    });
+
     $("speakWords").addEventListener("click", () => speakQueue(
-      dailyWords(state.day).map(w => `${w[0]}. ${w[2]}`),
+      dailyWords(state.day).map(w => w[0]),
       "en-US",
       .88,
       {
@@ -2813,6 +3064,7 @@
       state.wordCounts = {};
       state.quizHistory = {};
       state.wordStats = {};
+      state.activeStat = "today";
       state.drillMode = "en-cn";
       state.drillFocus = "all";
       state.drillWord = null;
