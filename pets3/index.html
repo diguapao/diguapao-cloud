@@ -1837,23 +1837,40 @@
       saveProgressLocal();
     }
 
+    function matchesDrillTag(entry) {
+      return state.drillTag === "all" || entry.tag === state.drillTag;
+    }
+
+    function isWordAnsweredCorrectly(entry) {
+      const stat = entry && state.wordStats[entry.word];
+      return Boolean(stat && (stat.correct || 0) > 0);
+    }
+
+    function drillWordPool() {
+      const taggedWrong = wrongWordEntries().filter(matchesDrillTag);
+      if (state.drillFocus === "wrong" && taggedWrong.length) return taggedWrong;
+      return allWordEntries()
+        .filter(matchesDrillTag)
+        .filter(entry => !isWordAnsweredCorrectly(entry));
+    }
+
+    function normalizeDrillIndex(pool) {
+      if (!pool.length) {
+        state.drillIndex = 0;
+        return 0;
+      }
+      if (state.drillIndex < 0) state.drillIndex = 0;
+      if (state.drillIndex >= pool.length) state.drillIndex = pool.length - 1;
+      return state.drillIndex;
+    }
+
     function pickDrillWord() {
-      const wrong = wrongWordEntries();
-      const filtered = allWordEntries().filter(item => state.drillTag === "all" || item.tag === state.drillTag);
-      const pool = state.drillFocus === "wrong" && wrong.length
-        ? wrong.filter(item => state.drillTag === "all" || item.tag === state.drillTag)
-        : filtered;
-      const finalPool = pool.length ? pool : allWordEntries();
-      return finalPool[state.drillIndex % finalPool.length] || allWordEntries()[0];
+      const pool = drillWordPool();
+      return pool[normalizeDrillIndex(pool)] || null;
     }
 
     function drillActivePoolSize() {
-      const wrong = wrongWordEntries();
-      const filtered = allWordEntries().filter(item => state.drillTag === "all" || item.tag === state.drillTag);
-      const pool = state.drillFocus === "wrong" && wrong.length
-        ? wrong.filter(item => state.drillTag === "all" || item.tag === state.drillTag)
-        : filtered;
-      return (pool.length ? pool : allWordEntries()).length;
+      return drillWordPool().length;
     }
 
     function writingDraftsFromStorage() {
@@ -2802,12 +2819,31 @@
       const wrong = wrongWordEntries();
       const correct = correctWordEntries();
       const entries = allWordEntries();
-      const tagPool = entries.filter(item => state.drillTag === "all" || item.tag === state.drillTag);
-      const activePoolSize = state.drillFocus === "wrong"
-        ? wrong.filter(item => state.drillTag === "all" || item.tag === state.drillTag).length
-        : tagPool.length;
+      const taggedWrong = wrong.filter(matchesDrillTag);
+      const activePoolSize = drillActivePoolSize();
       const tags = ["all", ...new Set(entries.map(item => item.tag).filter(Boolean))].slice(0, 72);
-      const title = state.drillFocus === "wrong" ? `专攻错词（${wrong.length} 个）` : "练全部词";
+      const title = state.drillFocus === "wrong" && taggedWrong.length ? `专攻错词（${taggedWrong.length} 个）` : "练未答对词";
+      if (!current) {
+        $("drillBox").innerHTML = `
+        <div class="item">
+          <span class="tag">${title}</span>
+          <p class="muted small">当前范围已没有待做词；可切换词层，或选择专攻错词继续补弱。</p>
+          <div class="toolbox">
+            <strong>本范围已完成</strong>
+            <span class="muted">答对过的词不会再进入普通快复习池，刷新后会停在当前待做状态。</span>
+          </div>
+        </div>
+      `;
+        if ($("drillTagFilter")) {
+          $("drillTagFilter").innerHTML = tags.map(tag => `<option value="${tag}" ${tag === state.drillTag ? "selected" : ""}>${dayTagLabel(tag)}</option>`).join("");
+        }
+        renderDrillLedger(wrong, correct);
+        document.querySelectorAll("[data-drill-mode]").forEach(btn => {
+          btn.classList.toggle("active", btn.dataset.drillMode === state.drillMode);
+        });
+        saveProgressLocal();
+        return;
+      }
       const prompt = state.drillMode === "en-cn"
         ? `<div class="word">${current.word}</div><span class="muted">请输入中文意思</span>`
         : state.drillMode === "zh-en"
@@ -2911,13 +2947,11 @@
         : current.meaning.toLowerCase().includes(answer) && answer.length > 0;
       markWordResult(current, correct);
       $("drillResult").classList.remove("hidden");
-      state.drillIndex += 1;
-      saveProgressLocal();
       renderDrillLedger();
-      updateDrillMetrics();
       renderStatsDetail();
       if (correct) {
         state.drillWord = null;
+        saveProgressLocal();
         renderDrill();
         setTimeout(() => {
           if ($("drillAnswer")) $("drillAnswer").focus();
@@ -2925,6 +2959,9 @@
         }, 120);
         return;
       }
+      state.drillIndex += 1;
+      saveProgressLocal();
+      updateDrillMetrics();
       $("drillResult").innerHTML = `
         <strong>答错：${current.word} = ${current.meaning}</strong>
         <span class="muted">已加入左侧错误词。可继续听这个词，再点“下一个”。</span>
