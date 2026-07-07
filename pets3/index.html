@@ -576,9 +576,13 @@
     .sentence {
       display: flex;
       gap: 8px;
-      justify-content: space-between;
+      justify-content: flex-start;
       align-items: flex-start;
       margin-bottom: 8px;
+    }
+
+    .sentence-text {
+      min-width: 0;
     }
 
     .en {
@@ -2741,11 +2745,11 @@
       $("sentenceList").innerHTML = dailySentences(state.day).map((item, i) => `
         <div class="item">
           <div class="sentence">
-            <div>
+            <button class="icon-btn" id="speakSentence-${i}" data-sentence-index="${i}" type="button" title="朗读第${i + 1}句">▶</button>
+            <div class="sentence-text">
               <p class="en">${i + 1}. ${item.en}</p>
               <p class="cn">${item.cn}</p>
             </div>
-            <button class="icon-btn" type="button" title="朗读句子" onclick="speak('${item.en.replace(/'/g, "\\'")}')">▶</button>
           </div>
           <div class="grammar-box">
             <strong>成分拆解</strong>
@@ -3380,6 +3384,18 @@
           if ($("drillAnswer")) $("drillAnswer").focus();
           autoplayCurrentDrillPrompt();
         }, 120);
+      }
+      const sentenceButton = e.target.closest("[data-sentence-index]");
+      if (sentenceButton) {
+        const index = Number(sentenceButton.dataset.sentenceIndex);
+        const sentence = dailySentences(state.day)[index];
+        if (!sentence) return;
+        speakQueue([sentence.en], "en-US", .88, {
+          buttonId: sentenceButton.id,
+          defaultText: "▶",
+          pauseText: "⏸",
+          resumeText: "▶"
+        });
       }
       if (e.target.id === "checkDrill") {
         checkCurrentDrillAnswer();
