@@ -2162,6 +2162,35 @@
       saveProgressLocal();
     }
 
+    function resetWordsForDay(day) {
+      const scopedWords = new Set(dailyWords(day).map(item => item[0]));
+      Object.entries(state.wordStats).forEach(([word, stat]) => {
+        if (!scopedWords.has(word)) return;
+        const next = { ...stat, correct: 0 };
+        delete next.lastCorrect;
+        delete next.reviewCorrect;
+        delete next.reviewPassed;
+        delete next.lastReviewPassed;
+        state.wordStats[word] = next;
+      });
+      state.drillReviewQueue = state.drillReviewQueue.filter(word => !scopedWords.has(word));
+    }
+
+    function resetDayModuleProgress(day) {
+      const safeDay = clamp(Number(day || state.day), 1, 70);
+      resetWordsForDay(safeDay);
+      Object.keys(localStorage)
+        .filter(key => key.startsWith(`pets3-translation-${safeDay}-`))
+        .forEach(key => localStorage.removeItem(key));
+      localStorage.removeItem(`pets3-writing-${safeDay}`);
+      delete state.quizHistory[safeDay];
+      state.wrong = state.wrong.filter(item => Number(item && item.day) !== safeDay);
+      state.drillFocus = "unanswered";
+      state.drillTag = `day-${safeDay}`;
+      state.drillIndex = 0;
+      state.drillWord = null;
+    }
+
     function normalizeDrillIndex(pool) {
       if (!pool.length) {
         state.drillIndex = 0;
@@ -3910,6 +3939,7 @@
       if (state.completed.includes(state.day)) {
         state.completed = state.completed.filter(day => day !== state.day);
         if (!state.relearning.includes(state.day)) state.relearning.push(state.day);
+        resetDayModuleProgress(state.day);
       } else {
         if (!state.completed.includes(state.day)) state.completed.push(state.day);
         state.relearning = state.relearning.filter(day => day !== state.day);
