@@ -1,0 +1,21 @@
+{
+  "app": "pets3-70-day-plan",
+  "version": 1,
+  "plan": "mentor-1400-core-v1",
+  "savedAt": "2026-07-07T00:00:00.000Z",
+  "day": 1,
+  "tab": "vocab",
+  "completed": [],
+  "relearning": [],
+  "wrong": [],
+  "wordCounts": {},
+  "quizHistory": {},
+  "wordStats": {},
+  "drillMode": "en-cn",
+  "drillFocus": "all",
+  "drillTag": "all",
+  "drillIndex": 0,
+  "libraryPage": 1,
+  "translationDrafts": {},
+  "writingDrafts": {}
+}
