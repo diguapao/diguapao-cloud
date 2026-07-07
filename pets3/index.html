@@ -687,34 +687,60 @@
     .drill-ledger {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 16px;
+      gap: 10px;
+      margin-top: 12px;
     }
 
     .drill-ledger h3 {
-      margin-bottom: 8px;
+      margin-bottom: 6px;
+      font-size: 15px;
     }
 
     .drill-ledger-panel {
       min-width: 0;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
     }
 
     .drill-ledger-list {
       display: grid;
-      gap: 8px;
+      gap: 5px;
+      max-height: 210px;
+      overflow: auto;
     }
 
     .drill-ledger-card {
-      padding: 10px;
+      display: grid;
+      grid-template-columns: minmax(72px, .75fr) minmax(0, 1fr) auto;
+      gap: 7px;
+      align-items: center;
+      padding: 6px 8px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: white;
+      font-size: 13px;
     }
 
     .drill-ledger-card strong {
-      display: block;
-      font-size: 16px;
+      font-size: 14px;
       overflow-wrap: anywhere;
+    }
+
+    .drill-ledger-card span {
+      min-width: 0;
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .drill-ledger-card em {
+      color: var(--muted);
+      font-style: normal;
+      font-size: 12px;
+      white-space: nowrap;
     }
 
     .pager {
@@ -2746,16 +2772,16 @@
 
     function drillLedgerCards(items, emptyText, type) {
       if (!items.length) return `<div class="item"><p class="muted">${emptyText}</p></div>`;
-      return items.slice(0, 18).map(item => {
+      return items.slice(0, 30).map(item => {
         const stat = state.wordStats[item.word] || {};
         const detail = type === "correct"
           ? `正确 ${stat.correct || 0} 次`
           : `错误 ${stat.wrong || 0} 次`;
-        return `<article class="drill-ledger-card">
+        return `<div class="drill-ledger-card" title="${item.word} = ${item.meaning}">
           <strong>${item.word}</strong>
-          <p>${item.meaning}</p>
-          <p class="small muted">${detail}</p>
-        </article>`;
+          <span>${item.meaning}</span>
+          <em>${detail}</em>
+        </div>`;
       }).join("");
     }
 
@@ -2773,6 +2799,28 @@
           </section>
         </div>
       `;
+    }
+
+    function checkCurrentDrillAnswer() {
+      const current = state.drillWord;
+      const answer = ($("drillAnswer") && $("drillAnswer").value || "").trim().toLowerCase();
+      if (!current || !$("drillResult") || ($("checkDrill") && $("checkDrill").disabled)) return;
+      const correct = state.drillMode === "zh-en"
+        ? answer === current.word.toLowerCase()
+        : current.meaning.toLowerCase().includes(answer) && answer.length > 0;
+      markWordResult(current, correct);
+      $("drillResult").classList.remove("hidden");
+      $("drillResult").innerHTML = correct
+        ? `<strong>答对了：${current.word} = ${current.meaning}</strong><span class="muted">已加入右侧答对词。按回车或点“下一个”继续。</span>`
+        : `<strong>答错：${current.word} = ${current.meaning}</strong><span class="muted">已加入左侧错误词。按回车或点“下一个”继续。</span>`;
+      if ($("drillAnswer")) $("drillAnswer").readOnly = true;
+      if ($("checkDrill")) $("checkDrill").disabled = true;
+      if ($("skipDrill")) $("skipDrill").textContent = "下一个";
+      state.drillWord = null;
+      state.drillIndex += 1;
+      saveProgressLocal();
+      renderDrillLedger();
+      renderStatsDetail();
     }
 
     function renderReview() {
@@ -3013,26 +3061,19 @@
         $("drillResult").innerHTML = `<strong>${current.word} = ${current.meaning}</strong><span class="muted">${current.example}</span>`;
       }
       if (e.target.id === "checkDrill") {
-        const current = state.drillWord;
-        const answer = ($("drillAnswer") && $("drillAnswer").value || "").trim().toLowerCase();
-        if (!current || !$("drillResult")) return;
-        const correct = state.drillMode === "zh-en"
-          ? answer === current.word.toLowerCase()
-          : current.meaning.toLowerCase().includes(answer) && answer.length > 0;
-        markWordResult(current, correct);
-        $("drillResult").classList.remove("hidden");
-        $("drillResult").innerHTML = correct
-          ? `<strong>答对了：${current.word} = ${current.meaning}</strong><span class="muted">已加入右侧答对词。点击“换一个”继续。</span>`
-          : `<strong>答错：${current.word} = ${current.meaning}</strong><span class="muted">已加入左侧错误词。点击“换一个”继续。</span>`;
-        if ($("drillAnswer")) $("drillAnswer").disabled = true;
-        if ($("checkDrill")) $("checkDrill").disabled = true;
-        if ($("skipDrill")) $("skipDrill").textContent = "下一个";
-        state.drillWord = null;
-        state.drillIndex += 1;
-        saveProgressLocal();
-        renderDrillLedger();
-        renderStatsDetail();
+        checkCurrentDrillAnswer();
       }
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" || e.target.id !== "drillAnswer") return;
+      e.preventDefault();
+      if ($("checkDrill") && $("checkDrill").disabled) {
+        state.drillWord = null;
+        saveProgressLocal();
+        renderDrill();
+        return;
+      }
+      checkCurrentDrillAnswer();
     });
     $("translationList").addEventListener("input", (e) => {
       if (!e.target.matches("textarea[data-translation-key]")) return;
