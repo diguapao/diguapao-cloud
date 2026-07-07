@@ -1787,7 +1787,7 @@
       const match = String(value || "").match(/^day-(\d+)$/);
       return match ? drillDayTag(match[1]) : drillDayTag(day);
     }
-    state.drillTag = normalizeDrillTag(state.drillTag, state.day);
+    state.drillTag = drillDayTag(state.day);
 
     const escapeAttr = (value) => String(value || "")
       .replace(/&/g, "&amp;")
@@ -2162,8 +2162,7 @@
     }
 
     function drillScopeDay() {
-      const match = String(state.drillTag || "").match(/^day-(\d+)$/);
-      return clamp(Number(match ? match[1] : state.day), 1, 70);
+      return clamp(Number(state.day || 1), 1, 70);
     }
 
     function dailyWordEntries(day = state.day) {
@@ -2347,7 +2346,7 @@
       state.activeStat = data.activeStat || "today";
       state.drillMode = data.drillMode || "listen-en-cn";
       state.drillFocus = normalizeDrillFocus(data.drillFocus);
-      state.drillTag = normalizeDrillTag(data.drillTag, state.day);
+      state.drillTag = drillDayTag(state.day);
       state.drillIndex = Number(data.drillIndex || 0);
       state.drillReviewQueue = Array.isArray(data.drillReviewQueue) ? [...new Set(data.drillReviewQueue.map(String).filter(Boolean))].slice(0, 80) : [];
       state.libraryPage = Number(data.libraryPage || 1);
@@ -3501,10 +3500,10 @@
     }
 
     function renderDrill() {
+      state.drillTag = drillDayTag(state.day);
       const current = state.drillWord || pickDrillWord();
       state.drillWord = current;
       const entries = allWordEntries();
-      state.drillTag = normalizeDrillTag(state.drillTag, state.day);
       const scopeDay = drillScopeDay();
       const dailyEntries = drillScopeEntries();
       const queued = reviewQueueEntries().filter(matchesDrillTag);
@@ -3917,11 +3916,9 @@
       renderDrill();
     });
     $("drillTagFilter").addEventListener("change", (e) => {
-      state.drillTag = normalizeDrillTag(e.target.value, state.day);
-      state.drillIndex = 0;
-      state.drillWord = null;
-      saveProgressLocal();
-      renderDrill();
+      const nextTag = normalizeDrillTag(e.target.value, state.day);
+      const nextDay = clamp(Number(nextTag.replace("day-", "")), 1, 70);
+      switchDay(nextDay);
     });
     document.addEventListener("click", (e) => {
       if (e.target.id === "speakReviewWords") {
