@@ -706,40 +706,43 @@
 
     .drill-ledger-list {
       display: grid;
-      gap: 5px;
+      grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+      gap: 7px;
       max-height: 210px;
       overflow: auto;
     }
 
     .drill-ledger-card {
       display: grid;
-      grid-template-columns: minmax(72px, .75fr) minmax(0, 1fr) auto;
-      gap: 7px;
-      align-items: center;
-      padding: 6px 8px;
+      grid-template-rows: auto 1fr auto;
+      gap: 4px;
+      min-height: 82px;
+      padding: 8px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: white;
-      font-size: 13px;
+      font-size: 12px;
     }
 
     .drill-ledger-card strong {
       font-size: 14px;
+      line-height: 1.15;
       overflow-wrap: anywhere;
     }
 
     .drill-ledger-card span {
       min-width: 0;
       color: var(--muted);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
       overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
     }
 
     .drill-ledger-card em {
       color: var(--muted);
       font-style: normal;
-      font-size: 12px;
+      font-size: 11px;
       white-space: nowrap;
     }
 
@@ -2777,9 +2780,10 @@
         const detail = type === "correct"
           ? `正确 ${stat.correct || 0} 次`
           : `错误 ${stat.wrong || 0} 次`;
+        const meaning = conciseMeaning(item.meaning);
         return `<div class="drill-ledger-card" title="${item.word} = ${item.meaning}">
           <strong>${item.word}</strong>
-          <span>${item.meaning}</span>
+          <span>${meaning}</span>
           <em>${detail}</em>
         </div>`;
       }).join("");
