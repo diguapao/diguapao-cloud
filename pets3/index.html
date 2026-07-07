@@ -2927,24 +2927,65 @@
       `).join("");
     }
 
+    function readingStageLabel(day) {
+      if (day < 15) return "简单句短阅读";
+      if (day < 29) return "简单句 + 情态动词/并列";
+      if (day < 43) return "基础复合句阅读";
+      if (day < 57) return "从句定位阅读";
+      return "考试短文阅读";
+    }
+
     function reading(day) {
       const topic = sentenceThemes[day % sentenceThemes.length][0];
       const w = dailyFocusWords(day, 8);
-      const base = `A learner does not need to remember every word at once. A better method is to study a small group of core words and use them in short tasks. For example, when a student meets the word "${w[0][0]}", he should connect it with "${w[0][1]}" first. Then he can compare it with "${w[1][0]}" and "${w[2][0]}" in the same day's practice. This simple connection can help him read faster and feel less afraid.`;
-      const middle = ` However, vocabulary will soon be forgotten if it only stays on a word card. Learners should meet "${w[3][0]}" and "${w[4][0]}" again in translation, reading and writing. When they make mistakes, they should write down the reason and review the words again two days later.`;
-      const advanced = ` This approach is especially useful for busy adults. It does not ask them to study for many hours, but it requires clear steps. They compare old and new words, choose useful meanings, and build a small daily routine. Therefore, words such as "${w[5][0]}" appear many times before the exam.`;
-      const passage = base + (day > 18 ? middle : "") + (day > 42 ? advanced : "");
-      const questions = [
-        ["What is the main idea of the passage?", ["Core words should be reused in several small tasks.", "Learners should memorize every word at once.", "Word cards are enough for exam preparation.", "Adults should avoid reading practice."], 0],
-        [`In the passage, "${w[2][0]}" is connected with ______.`, [w[2][1], w[0][1], w[1][1], w[3][1]], 0],
-        ["According to the passage, learners should review mistakes ______.", ["two days later", "only before the exam", "after one year", "before learning any word"], 0]
+      const simplePassage = `I am a learner. I review the word "${w[0][0]}" every day. The word means "${w[0][1]}". I write one short sentence with it.`;
+      const simpleQuestions = [
+        ["What does the learner review every day?", [`the word "${w[0][0]}"`, "a long article", "a grammar book", "a test paper"], 0],
+        [`The word "${w[0][0]}" means ______.`, [w[0][1], w[1][1], w[2][1], w[3][1]], 0],
+        ["What does the learner write?", ["one short sentence", "a long report", "a novel", "a notice"], 0]
       ];
-      return { topic, passage, questions, words: w.slice(0, 6) };
+      if (day < 15) return { topic, stage: readingStageLabel(day), passage: simplePassage, questions: simpleQuestions, words: w.slice(0, 4) };
+
+      const intermediatePassage = `A learner can read "${w[0][0]}" and write it. The word "${w[1][0]}" is useful. This method is simple, and it helps memory. The learner uses the words in short tasks.`;
+      const intermediateQuestions = [
+        ["What can the learner do with the word?", ["read it and write it", "forget it", "hide it", "delete it"], 0],
+        [`Which word is useful in the passage?`, [w[1][0], w[2][0], w[3][0], w[4][0]], 0],
+        ["The method helps ______.", ["memory", "sleep", "travel", "shopping"], 0]
+      ];
+      if (day < 29) return { topic, stage: readingStageLabel(day), passage: intermediatePassage, questions: intermediateQuestions, words: w.slice(0, 5) };
+
+      const compoundPassage = `A learner reviews "${w[0][0]}" because it is a core word. Before he writes, he checks the meaning of "${w[1][0]}". He uses both words in one short paragraph. This practice helps him read faster.`;
+      const compoundQuestions = [
+        [`Why does the learner review "${w[0][0]}"?`, ["because it is a core word", "because it is very rare", "because it is a name", "because it is a number"], 0],
+        ["What does he check before writing?", [`the meaning of "${w[1][0]}"`, "the weather", "the price", "the address"], 0],
+        ["What does this practice help him do?", ["read faster", "sleep longer", "buy books", "watch films"], 0]
+      ];
+      if (day < 43) return { topic, stage: readingStageLabel(day), passage: compoundPassage, questions: compoundQuestions, words: w.slice(0, 5) };
+
+      const clausePassage = `If learners meet "${w[2][0]}" in reading, they should look at the sentence first. The teacher says that context can help them choose the right meaning. When they make a mistake, they write it down and review it later.`;
+      const clauseQuestions = [
+        [`What should learners do if they meet "${w[2][0]}"?`, ["look at the sentence first", "stop reading", "copy the whole book", "guess without context"], 0],
+        ["What can context help learners choose?", ["the right meaning", "the page number", "the author's name", "the title color"], 0],
+        ["When learners make a mistake, they should ______.", ["write it down", "forget it", "close the book", "skip all words"], 0]
+      ];
+      if (day < 57) return { topic, stage: readingStageLabel(day), passage: clausePassage, questions: clauseQuestions, words: w.slice(0, 6) };
+
+      const examPassage = `A learner does not need to remember every word at once. A better method is to study a small group of core words and use them in short tasks. For example, when a student meets the word "${w[0][0]}", he should connect it with "${w[0][1]}" first. Learners should meet "${w[3][0]}" and "${w[4][0]}" again in translation, reading and writing. Therefore, repeated contact helps weak learners remember core words before the exam.`;
+      const examQuestions = [
+        ["What is the main idea of the passage?", ["Core words should be reused in several small tasks.", "Learners should memorize every word at once.", "Word cards are enough for exam preparation.", "Adults should avoid reading practice."], 0],
+        [`In the passage, "${w[0][0]}" is connected with ______.`, [w[0][1], w[1][1], w[2][1], w[3][1]], 0],
+        ["According to the passage, repeated contact helps learners ______.", ["remember core words", "avoid writing", "skip reading", "learn fewer words"], 0]
+      ];
+      return { topic, stage: readingStageLabel(day), passage: examPassage, questions: examQuestions, words: w.slice(0, 6) };
     }
 
     function renderReading() {
       const r = reading(state.day);
       $("readingBox").innerHTML = `
+        <div class="chips" style="margin-top:0">
+          <span class="tag amber">难度：${r.stage}</span>
+          <span class="chip">先读短句，再圈今日词，最后定位答案</span>
+        </div>
         <div class="passage">${r.passage}</div>
         <div class="chips">${r.words.map(w => `<span class="chip">${w[0]} · ${w[1]}</span>`).join("")}</div>
         <div style="margin-top:14px">
@@ -2956,22 +2997,103 @@
       `;
     }
 
+    function writingStageLabel(day) {
+      if (day < 15) return "简单句";
+      if (day < 29) return "简单短段";
+      if (day < 43) return "基础复合句";
+      if (day < 57) return "短邮件/短建议";
+      return "PETS3完整写作";
+    }
+
+    function writingTask(day, words) {
+      const stage = writingStageLabel(day);
+      if (day < 15) {
+        return {
+          stage,
+          title: "用今日词写 4 个简单句",
+          minWords: 30,
+          requirement: "每句只保留一个主干：S + V + O 或 S + be + adj.；至少使用 2 个今日词。",
+          skeleton: [
+            `I review "${words[0][0]}" every day.`,
+            `"${words[1][0]}" is useful.`,
+            `I write "${words[2][0]}" in my notebook.`,
+            `This word means "${words[3][1]}".`
+          ]
+        };
+      }
+      if (day < 29) {
+        return {
+          stage,
+          title: "写一个 5 句简单短段",
+          minWords: 50,
+          requirement: "每句先写清主语和动词；可以用 and / but 连接两句；至少使用 3 个今日词。",
+          skeleton: [
+            `I learn "${words[0][0]}" today.`,
+            `It means "${words[0][1]}".`,
+            `"${words[1][0]}" is also important.`,
+            `I use these words in reading and writing.`,
+            `This simple method helps me remember them.`
+          ]
+        };
+      }
+      if (day < 43) {
+        return {
+          stage,
+          title: "写一个带 because / before 的短段",
+          minWords: 70,
+          requirement: "先写 3 个简单句，再加入 1 个 because 原因句和 1 个 before 时间句；至少使用 4 个今日词。",
+          skeleton: [
+            `I review "${words[0][0]}" because it is a core word.`,
+            `Before I write, I check the meaning of "${words[1][0]}".`,
+            `I use "${words[2][0]}" in a short sentence.`,
+            `This practice improves my reading speed.`,
+            `Therefore, I will review these words again tomorrow.`
+          ]
+        };
+      }
+      if (day < 57) {
+        return {
+          stage,
+          title: "写一封短邮件或短建议",
+          minWords: 90,
+          requirement: "按称呼、目的、建议、结尾四步写；句子可以短，但信息点要完整；至少使用 4 个今日词。",
+          skeleton: [
+            "Dear Tom,",
+            `I am writing to give you some advice about learning "${words[0][0]}".`,
+            `First, you should remember its meaning: "${words[0][1]}".`,
+            `Second, you can use "${words[1][0]}" and "${words[2][0]}" in short sentences.`,
+            "I hope my advice can help you."
+          ]
+        };
+      }
+      return {
+        stage,
+        title: writingTypes[day % writingTypes.length],
+        minWords: 110,
+        requirement: "结构清楚；至少自然使用 4 个今日词；开头表明主题，主体给理由或例子，结尾给出态度或行动。",
+        skeleton: [
+          `In my opinion, learning core words such as "${words[0][0]}" and "${words[1][0]}" is useful.`,
+          "First, these words often appear in reading and translation tasks.",
+          "Second, repeated use can improve memory and writing accuracy.",
+          "Therefore, we should review core words and use them in daily practice."
+        ]
+      };
+    }
+
     function renderWriting() {
-      const task = writingTypes[state.day % writingTypes.length];
-      const minWords = state.day < 20 ? 80 : state.day < 50 ? 100 : 120;
       const key = `pets3-writing-${state.day}`;
       const words = dailyFocusWords(state.day, 8);
+      const task = writingTask(state.day, words);
       $("writingBox").innerHTML = `
         <div class="prompt-box">
           <span class="tag amber">今日题目</span>
-          <h3>${task}</h3>
-          <p class="muted">要求：不少于 ${minWords} 词；结构清楚；至少自然使用 4 个今日词；结尾给出明确态度或行动。</p>
+          <span class="tag green">难度：${task.stage}</span>
+          <h3>${task.title}</h3>
+          <p class="muted">要求：不少于 ${task.minWords} 词；${task.requirement}</p>
           <div class="chips">${words.map(w => `<span class="chip">${w[0]} · ${w[1]}</span>`).join("")}</div>
           <div class="grammar-box">
             <strong>今日词写作骨架</strong>
-            <p>开头：In my opinion, learning core words such as "${words[0][0]}" and "${words[1][0]}" is useful.</p>
-            <p>主体：We should read, translate and write with these words, because repeated use improves memory.</p>
-            <p>结尾：Therefore, we should review these words and use them again in daily practice.</p>
+            ${task.skeleton.map(line => `<p>${line}</p>`).join("")}
           </div>
           <textarea id="writingDraft" placeholder="写下你的作文草稿...">${localStorage.getItem(key) || ""}</textarea>
         </div>
