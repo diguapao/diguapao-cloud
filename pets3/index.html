@@ -746,6 +746,27 @@
       white-space: nowrap;
     }
 
+    .drill-prompt-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin: 12px 0 10px;
+    }
+
+    .drill-prompt-main {
+      min-width: 0;
+    }
+
+    .drill-prompt-main .word {
+      font-size: 28px;
+    }
+
+    .drill-actions {
+      margin-top: 0;
+      flex: 0 0 auto;
+    }
+
     .pager {
       display: flex;
       gap: 8px;
@@ -905,6 +926,8 @@
       .library-toolbar { grid-template-columns: 1fr; }
       .library-pager { justify-content: space-between; }
       .drill-ledger { grid-template-columns: 1fr; }
+      .drill-prompt-row { display: grid; }
+      .drill-actions { justify-content: flex-start; }
     }
   </style>
 </head>
@@ -2754,13 +2777,15 @@
           <span class="tag">${title}</span>
           <span class="tag green">${dayTagLabel(current.tag)}</span>
           <p class="muted small">复习进度：第 ${Math.min(state.drillIndex + 1, Math.max(activePoolSize, 1))}/${Math.max(activePoolSize, 1)} 个；全词库 ${entries.length} 词。切换设备导入进度后会继续从这里练。</p>
-          <div style="margin:12px 0">${prompt}</div>
-          <input id="drillAnswer" class="word-count-input" type="text" placeholder="输入答案">
-          <div class="actions" style="margin-top:10px">
-            <button class="primary" id="checkDrill" type="button">✓ 检查</button>
-            <button class="secondary" id="skipDrill" type="button">换一个</button>
-            <button class="secondary" id="showDrillAnswer" type="button">看答案</button>
+          <div class="drill-prompt-row">
+            <div class="drill-prompt-main">${prompt}</div>
+            <div class="actions drill-actions">
+              <button class="primary" id="checkDrill" type="button">✓ 检查</button>
+              <button class="secondary" id="skipDrill" type="button">换一个</button>
+              <button class="secondary" id="showDrillAnswer" type="button">看答案</button>
+            </div>
           </div>
+          <input id="drillAnswer" class="word-count-input" type="text" placeholder="输入答案">
           <div id="drillResult" class="toolbox hidden"></div>
         </div>
       `;
