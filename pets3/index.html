@@ -784,11 +784,13 @@
     }
 
     .drill-answer-input {
-      flex: 0 1 22ch;
-      width: 22ch;
+      flex: 0 0 55ch;
+      width: 55ch;
+      min-width: 55ch;
       max-width: 100%;
       text-align: left;
       font-weight: 700;
+      pointer-events: auto;
     }
 
     .drill-prompt-main .word {
@@ -977,7 +979,11 @@
       .library-pager { justify-content: space-between; }
       .drill-ledger { grid-template-columns: 1fr; }
       .drill-prompt-row { gap: 6px; flex-wrap: wrap; }
-      .drill-answer-input { width: min(22ch, 100%); }
+      .drill-answer-input {
+        flex-basis: min(55ch, 100%);
+        width: min(55ch, 100%);
+        min-width: min(55ch, 100%);
+      }
       .drill-actions { flex-wrap: wrap; justify-content: flex-start; }
     }
   </style>
@@ -2972,6 +2978,10 @@
           <div id="drillResult" class="toolbox hidden"></div>
         </div>
       `;
+      if ($("drillAnswer")) {
+        $("drillAnswer").readOnly = false;
+        $("drillAnswer").disabled = false;
+      }
       if ($("drillTagFilter")) {
         $("drillTagFilter").innerHTML = tags.map(tag => `<option value="${tag}" ${tag === state.drillTag ? "selected" : ""}>${dayTagLabel(tag)}</option>`).join("");
       }
