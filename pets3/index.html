@@ -748,13 +748,18 @@
 
     .drill-prompt-row {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
+      flex-wrap: wrap;
       margin: 12px 0 10px;
     }
 
     .drill-prompt-main {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
       min-width: 0;
     }
 
@@ -765,6 +770,7 @@
     .drill-actions {
       margin-top: 0;
       flex: 0 0 auto;
+      justify-content: flex-start;
     }
 
     .pager {
@@ -1805,6 +1811,17 @@
       saveProgressLocal();
     }
 
+    function markWordUnanswered(entry) {
+      if (!entry) return;
+      const stat = state.wordStats[entry.word] || { correct: 0, wrong: 0 };
+      stat.wrong = (stat.wrong || 0) + 1;
+      stat.unanswered = (stat.unanswered || 0) + 1;
+      stat.lastWrong = new Date().toISOString();
+      stat.lastUnanswered = stat.lastWrong;
+      state.wordStats[entry.word] = stat;
+      saveProgressLocal();
+    }
+
     function pickDrillWord() {
       const wrong = wrongWordEntries();
       const filtered = allWordEntries().filter(item => state.drillTag === "all" || item.tag === state.drillTag);
@@ -2768,10 +2785,10 @@
       const tags = ["all", ...new Set(entries.map(item => item.tag).filter(Boolean))].slice(0, 72);
       const title = state.drillFocus === "wrong" ? `专攻错词（${wrong.length} 个）` : "练全部词";
       const prompt = state.drillMode === "en-cn"
-        ? `<div class="word">${current.word}</div><p class="muted">请输入中文意思</p>`
+        ? `<div class="word">${current.word}</div><span class="muted">请输入中文意思</span>`
         : state.drillMode === "zh-en"
-          ? `<button class="primary" id="drillSpeakPrompt" type="button">▶ 听中文</button><p class="muted">听中文，输入英文单词</p>`
-          : `<button class="primary" id="drillSpeakPrompt" type="button">▶ 听英文</button><p class="muted">听英文，输入中文意思</p>`;
+          ? `<button class="primary" id="drillSpeakPrompt" type="button">▶ 听中文</button><span class="muted">输入英文单词</span>`
+          : `<button class="primary" id="drillSpeakPrompt" type="button">▶ 听英文</button><span class="muted">输入中文意思</span>`;
       $("drillBox").innerHTML = `
         <div class="item">
           <span class="tag">${title}</span>
@@ -2804,7 +2821,7 @@
         const stat = state.wordStats[item.word] || {};
         const detail = type === "correct"
           ? `正确 ${stat.correct || 0} 次`
-          : `错误 ${stat.wrong || 0} 次`;
+          : (stat.unanswered ? `未答 ${stat.unanswered} · 错 ${stat.wrong || 0}` : `错误 ${stat.wrong || 0} 次`);
         const meaning = conciseMeaning(item.meaning);
         return `<div class="drill-ledger-card" title="${item.word} = ${item.meaning}">
           <strong>${item.word}</strong>
@@ -2850,6 +2867,27 @@
       saveProgressLocal();
       renderDrillLedger();
       renderStatsDetail();
+    }
+
+    function skipCurrentDrillWord() {
+      const current = state.drillWord;
+      if (!current) {
+        state.drillWord = null;
+        saveProgressLocal();
+        renderDrill();
+        return;
+      }
+      markWordUnanswered(current);
+      if ($("drillResult")) {
+        $("drillResult").classList.remove("hidden");
+        $("drillResult").innerHTML = `<strong>未答：${current.word} = ${current.meaning}</strong><span class="muted">已计入左侧错误词。正在切换下一个。</span>`;
+      }
+      state.drillWord = null;
+      state.drillIndex += 1;
+      saveProgressLocal();
+      renderDrillLedger();
+      renderStatsDetail();
+      renderDrill();
     }
 
     function renderReview() {
@@ -3078,10 +3116,7 @@
         });
       }
       if (e.target.id === "skipDrill") {
-        state.drillIndex += 1;
-        state.drillWord = null;
-        saveProgressLocal();
-        renderDrill();
+        skipCurrentDrillWord();
       }
       if (e.target.id === "showDrillAnswer") {
         const current = state.drillWord;
