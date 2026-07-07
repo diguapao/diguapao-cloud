@@ -773,6 +773,21 @@
       justify-content: flex-start;
     }
 
+    .drill-metrics {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .drill-metrics span {
+      padding: 4px 7px;
+      border-radius: 999px;
+      background: #eef3f8;
+    }
+
     .pager {
       display: flex;
       gap: 8px;
@@ -1832,6 +1847,15 @@
       return finalPool[state.drillIndex % finalPool.length] || allWordEntries()[0];
     }
 
+    function drillActivePoolSize() {
+      const wrong = wrongWordEntries();
+      const filtered = allWordEntries().filter(item => state.drillTag === "all" || item.tag === state.drillTag);
+      const pool = state.drillFocus === "wrong" && wrong.length
+        ? wrong.filter(item => state.drillTag === "all" || item.tag === state.drillTag)
+        : filtered;
+      return (pool.length ? pool : allWordEntries()).length;
+    }
+
     function writingDraftsFromStorage() {
       return Object.keys(localStorage)
         .filter(key => key.startsWith("pets3-writing-"))
@@ -2800,6 +2824,7 @@
               <button class="primary" id="checkDrill" type="button">✓ 检查</button>
               <button class="secondary" id="skipDrill" type="button">换一个</button>
               <button class="secondary" id="showDrillAnswer" type="button">看答案</button>
+              <span class="drill-metrics" id="drillMetrics"></span>
             </div>
           </div>
           <input id="drillAnswer" class="word-count-input" type="text" placeholder="输入答案">
@@ -2810,9 +2835,16 @@
         $("drillTagFilter").innerHTML = tags.map(tag => `<option value="${tag}" ${tag === state.drillTag ? "selected" : ""}>${dayTagLabel(tag)}</option>`).join("");
       }
       renderDrillLedger(wrong, correct);
+      updateDrillMetrics(activePoolSize);
       document.querySelectorAll("[data-drill-mode]").forEach(btn => {
         btn.classList.toggle("active", btn.dataset.drillMode === state.drillMode);
       });
+    }
+
+    function updateDrillMetrics(poolSize = drillActivePoolSize()) {
+      if (!$("drillMetrics")) return;
+      const remaining = Math.max(poolSize - state.drillIndex, 0);
+      $("drillMetrics").innerHTML = `<span>剩余 ${remaining}</span><span>错 ${wrongWordEntries().length}</span><span>对 ${correctWordEntries().length}</span>`;
     }
 
     function drillLedgerCards(items, emptyText, type) {
@@ -2836,11 +2868,11 @@
       $("wrongWordBox").innerHTML = `
         <div class="drill-ledger">
           <section class="drill-ledger-panel">
-            <h3>错误词</h3>
+            <h3>错误词（${wrong.length}）</h3>
             <div class="drill-ledger-list">${drillLedgerCards(wrong, "还没有错误词。答错后会显示在这里。", "wrong")}</div>
           </section>
           <section class="drill-ledger-panel">
-            <h3>答对词</h3>
+            <h3>答对词（${correct.length}）</h3>
             <div class="drill-ledger-list">${drillLedgerCards(correct, "还没有答对词。答对后会显示在这里。", "correct")}</div>
           </section>
         </div>
@@ -2862,14 +2894,20 @@
       if ($("drillAnswer")) $("drillAnswer").readOnly = true;
       if ($("checkDrill")) $("checkDrill").disabled = true;
       if ($("skipDrill")) $("skipDrill").textContent = "下一个";
-      state.drillWord = null;
       state.drillIndex += 1;
       saveProgressLocal();
       renderDrillLedger();
+      updateDrillMetrics();
       renderStatsDetail();
     }
 
     function skipCurrentDrillWord() {
+      if ($("checkDrill") && $("checkDrill").disabled) {
+        state.drillWord = null;
+        saveProgressLocal();
+        renderDrill();
+        return;
+      }
       const current = state.drillWord;
       if (!current) {
         state.drillWord = null;
