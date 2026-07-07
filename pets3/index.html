@@ -2869,15 +2869,53 @@
       `).join("");
     }
 
-    function renderTranslation() {
-      const w = dailyFocusWords(state.day, 8);
-      const hard = state.day > 35;
-      const items = [
-        [`中译英`, `请翻译：我们今天先掌握 "${w[0][0]}" 和 "${w[1][0]}" 的基本意思，再把它们放进短句。`, `提示：master the basic meanings of... / put them into short sentences`, `结构：先写 We should first...，再用 and 连接第二个动作。them 指代前面的两个单词。`],
-        [`英译中`, `${hard ? "Although this method looks simple, " : ""}the word "${w[2][0]}" means "${w[2][1]}", and learners should review it in reading and writing.`, `今日词：${w[2][0]}。it 指代前面的 the word。`, `主干：the word means... and learners should review it...。两个分句用 and 连接。`],
-        [`中译英`, `请翻译：如果我忘记了 "${w[3][0]}"，我会回到错词本并重新复习。`, `提示：If I forget..., I will...`, `结构：If 条件从句 + 主句。forget 后直接接忘记的内容。`],
-        [`英译中`, `The passage uses "${w[4][0]}" and "${w[5][0]}" again because repeated contact helps weak learners remember core words.`, `今日词：${w[4][0]}、${w[5][0]}。because 后面解释原因。`, `主干：The passage uses... because...。repeated contact 可译为“反复接触”。`]
+    function translationStageLabel(day) {
+      if (day < 15) return "简单句";
+      if (day < 29) return "简单句 + 情态动词/并列句";
+      if (day < 43) return "基础复合句";
+      if (day < 57) return "宾语/条件从句";
+      return "考试常见复杂句";
+    }
+
+    function translationItems(day) {
+      const w = dailyFocusWords(day, 8);
+      const simple = [
+        [`中译英`, `请翻译：我每天复习 "${w[0][0]}"。`, `提示：I review... every day.`, `难度：${translationStageLabel(day)}；结构：S + V + O + 时间。先写主语 I，再写动作 review，最后写复习的词和 every day。`],
+        [`英译中`, `"${w[1][0]}" is useful.`, `今日词：${w[1][0]}。is + 形容词表示“很……”`, `难度：${translationStageLabel(day)}；结构：S + be + Adj。先译主语，再把 is useful 译成“很有用”。`],
+        [`中译英`, `请翻译：这个句子里有一个 "${w[2][0]}"。`, `提示：There is... in this sentence.`, `难度：${translationStageLabel(day)}；结构：There be + 名词 + 地点。单数用 There is。`],
+        [`英译中`, `I know the meaning of "${w[3][0]}".`, `今日词：${w[3][0]}。the meaning of... 表“……的意思”。`, `难度：${translationStageLabel(day)}；结构：S + V + O。主干是 I know the meaning。`]
       ];
+      const intermediate = [
+        [`中译英`, `请翻译：我们可以在短句中使用 "${w[4][0]}"。`, `提示：We can use... in a short sentence.`, `难度：${translationStageLabel(day)}；结构：S + can + V + O。can 后面必须接动词原形 use。`],
+        [`英译中`, `The word "${w[5][0]}" is simple, and I can remember it.`, `今日词：${w[5][0]}。and 连接两个简单句。`, `难度：${translationStageLabel(day)}；结构：简单句 + and + 简单句。it 指前面的 the word。`],
+        [`中译英`, `请翻译：我先读 "${w[0][0]}"，然后写一个短句。`, `提示：I read... first, and then write a short sentence.`, `难度：${translationStageLabel(day)}；结构：两个动作按顺序连接。first 表“先”，then 表“然后”。`],
+        [`英译中`, `This method helps me review "${w[1][0]}".`, `今日词：${w[1][0]}。help sb. do sth. 表“帮助某人做某事”。`, `难度：${translationStageLabel(day)}；结构：S + V + O + do。主干是 This method helps me。`]
+      ];
+      const compound = [
+        [`中译英`, `请翻译：人们在写作中使用 "${w[2][0]}" 之前，需要先理解它。`, `提示：People need to understand... before they use it in writing.`, `难度：${translationStageLabel(day)}；结构：主句 + before 时间从句。先写 People need to understand...，再加 before...。`],
+        [`英译中`, `I review "${w[3][0]}" because it is important.`, `今日词：${w[3][0]}。because 后面解释原因。`, `难度：${translationStageLabel(day)}；结构：主句 + because 原因从句。it 指今日词。`],
+        [`中译英`, `请翻译：这个例句帮助我记住 "${w[4][0]}"。`, `提示：This example helps me remember...`, `难度：${translationStageLabel(day)}；结构：S + help + sb. + do。remember 前不加 to。`],
+        [`英译中`, `Learners often meet "${w[5][0]}" in short passages.`, `今日词：${w[5][0]}。meet a word 可译为“遇到一个词”。`, `难度：${translationStageLabel(day)}；结构：S + V + O + 地点。in short passages 是地点/范围。`]
+      ];
+      const clauses = [
+        [`中译英`, `请翻译：如果我忘记了 "${w[0][0]}"，我会回到错词本并重新复习。`, `提示：If I forget..., I will...`, `难度：${translationStageLabel(day)}；结构：If 条件从句 + 主句。先写 If I forget...，再写 I will...。`],
+        [`英译中`, `The note shows that "${w[1][0]}" is one of today's core words.`, `今日词：${w[1][0]}。that 后面是 shows 的内容。`, `难度：${translationStageLabel(day)}；结构：S + V + that 宾语从句。that 通常不直接译出。`],
+        [`中译英`, `请翻译：当我在阅读中遇到 "${w[2][0]}" 时，我会先看上下文。`, `提示：When I meet... in reading, I will look at the context first.`, `难度：${translationStageLabel(day)}；结构：When 时间从句 + 主句。context 表“上下文”。`],
+        [`英译中`, `If learners use "${w[3][0]}" in a sentence, they remember it better.`, `今日词：${w[3][0]}。If 引导条件。`, `难度：${translationStageLabel(day)}；结构：If 条件从句 + 主句。they 指 learners。`]
+      ];
+      const advanced = [
+        [`中译英`, `请翻译：经常复习 "${w[4][0]}" 的学生通常记得更久。`, `提示：Students who review... regularly usually remember it longer.`, `难度：${translationStageLabel(day)}；结构：主语 + who 定语从句 + 谓语。who 从句修饰 Students。`],
+        [`英译中`, `Although "${w[5][0]}" looks simple, it may appear in a real exam.`, `今日词：${w[5][0]}。Although 表“虽然”。`, `难度：${translationStageLabel(day)}；结构：Although 从句 + 主句。英文里有 Although 时不要再加 but。`]
+      ];
+      if (day < 15) return simple;
+      if (day < 29) return [simple[0], simple[1], intermediate[0], intermediate[1]];
+      if (day < 43) return [simple[2], intermediate[2], compound[0], compound[1]];
+      if (day < 57) return [intermediate[3], compound[2], clauses[0], clauses[1]];
+      return [compound[3], clauses[2], advanced[0], advanced[1]];
+    }
+
+    function renderTranslation() {
+      const items = translationItems(state.day);
       $("translationList").innerHTML = items.map(([type, text, tip, grammar], i) => `
         <div class="item">
           <span class="tag ${i % 2 ? "green" : ""}">${type}</span>
