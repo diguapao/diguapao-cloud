@@ -3354,8 +3354,21 @@
       if (e.target.id === "showDrillAnswer") {
         const current = state.drillWord;
         if (!$("drillResult") || !current) return;
+        if (e.target.dataset.recorded !== "1") {
+          markWordUnanswered(current);
+          state.drillIndex += 1;
+          saveProgressLocal();
+          renderDrillLedger();
+          updateDrillMetrics();
+          renderStatsDetail();
+          e.target.dataset.recorded = "1";
+        }
         $("drillResult").classList.remove("hidden");
-        $("drillResult").innerHTML = `<strong>${current.word} = ${current.meaning}</strong><span class="muted">${current.example}</span>`;
+        $("drillResult").innerHTML = `<strong>${current.word} = ${current.meaning}</strong><span class="muted">已按未答计入错词。${current.example}</span>`;
+        if ($("drillAnswer")) $("drillAnswer").readOnly = true;
+        if ($("checkDrill")) $("checkDrill").disabled = true;
+        if ($("skipDrill")) $("skipDrill").textContent = "下一个";
+        e.target.disabled = true;
       }
       if (e.target.dataset && e.target.dataset.reviewWord) {
         const entry = findWordEntry(e.target.dataset.reviewWord);
