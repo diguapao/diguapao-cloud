@@ -512,6 +512,13 @@
 
     .secondary { background: #f7fafc; }
 
+    .secondary.active {
+      border-color: #9bb7ff;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-weight: 800;
+    }
+
     .primary.completed {
       border-color: #0d7a52;
       background: var(--green);
@@ -1730,7 +1737,7 @@
       wordStats: JSON.parse(localStorage.getItem("pets3-word-stats") || "{}"),
       activeStat: localStorage.getItem("pets3-active-stat") || "today",
       drillMode: localStorage.getItem("pets3-drill-mode") || "listen-en-cn",
-      drillFocus: localStorage.getItem("pets3-drill-focus") || "all",
+      drillFocus: normalizeDrillFocus(localStorage.getItem("pets3-drill-focus")),
       drillTag: localStorage.getItem("pets3-drill-tag") || "all",
       drillIndex: Number(localStorage.getItem("pets3-drill-index") || 0),
       drillReviewQueue: JSON.parse(localStorage.getItem("pets3-drill-review-queue") || "[]"),
@@ -1739,6 +1746,10 @@
     };
 
     const $ = (id) => document.getElementById(id);
+
+    function normalizeDrillFocus(value) {
+      return ["unanswered", "wrong", "allWords"].includes(value) ? value : "unanswered";
+    }
     const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
     const escapeAttr = (value) => String(value || "")
       .replace(/&/g, "&amp;")
@@ -2122,6 +2133,9 @@
     }
 
     function drillWordPool() {
+      if (state.drillFocus === "allWords") {
+        return allWordEntries().filter(matchesDrillTag);
+      }
       const queued = reviewQueueEntries();
       if (queued.length) return queued;
       const taggedWrong = wrongWordEntries().filter(matchesDrillTag);
@@ -2129,6 +2143,23 @@
       return allWordEntries()
         .filter(matchesDrillTag)
         .filter(entry => !isWordAnsweredCorrectly(entry));
+    }
+
+    function resetDrillScopeProgress() {
+      const scopedWords = new Set(allWordEntries().filter(matchesDrillTag).map(entry => entry.word));
+      Object.entries(state.wordStats).forEach(([word, stat]) => {
+        if (!scopedWords.has(word)) return;
+        const next = { ...stat, correct: 0 };
+        delete next.lastCorrect;
+        delete next.reviewCorrect;
+        delete next.reviewPassed;
+        delete next.lastReviewPassed;
+        state.wordStats[word] = next;
+      });
+      state.drillReviewQueue = state.drillReviewQueue.filter(word => !scopedWords.has(word));
+      state.drillIndex = 0;
+      state.drillWord = null;
+      saveProgressLocal();
     }
 
     function normalizeDrillIndex(pool) {
@@ -2209,7 +2240,7 @@
       state.wordStats = data.wordStats && typeof data.wordStats === "object" ? data.wordStats : {};
       state.activeStat = data.activeStat || "today";
       state.drillMode = data.drillMode || "listen-en-cn";
-      state.drillFocus = data.drillFocus || "all";
+      state.drillFocus = normalizeDrillFocus(data.drillFocus);
       state.drillTag = data.drillTag || "all";
       state.drillIndex = Number(data.drillIndex || 0);
       state.drillReviewQueue = Array.isArray(data.drillReviewQueue) ? [...new Set(data.drillReviewQueue.map(String).filter(Boolean))].slice(0, 80) : [];
@@ -3373,9 +3404,11 @@
       const taggedWrong = wrong.filter(matchesDrillTag);
       const activePoolSize = drillActivePoolSize();
       const tags = ["all", ...new Set(entries.map(item => item.tag).filter(Boolean))].slice(0, 72);
-      const title = queued.length
-        ? `待复习（${queued.length} 个）`
-        : state.drillFocus === "wrong" && taggedWrong.length ? `专攻错词（${taggedWrong.length} 个）` : "练未答对词";
+      const title = state.drillFocus === "allWords"
+        ? `练全部词（${activePoolSize} 个）`
+        : queued.length
+          ? `待复习（${queued.length} 个）`
+          : state.drillFocus === "wrong" && taggedWrong.length ? `专攻错词（${taggedWrong.length} 个）` : "练未答对词";
       if (!current) {
         $("drillBox").innerHTML = `
         <div class="item">
@@ -3394,6 +3427,7 @@
         document.querySelectorAll("[data-drill-mode]").forEach(btn => {
           btn.classList.toggle("active", btn.dataset.drillMode === state.drillMode);
         });
+        updateDrillFocusButtons();
         saveProgressLocal();
         return;
       }
@@ -3433,6 +3467,12 @@
       document.querySelectorAll("[data-drill-mode]").forEach(btn => {
         btn.classList.toggle("active", btn.dataset.drillMode === state.drillMode);
       });
+      updateDrillFocusButtons();
+    }
+
+    function updateDrillFocusButtons() {
+      if ($("drillFocusWrong")) $("drillFocusWrong").classList.toggle("active", state.drillFocus === "wrong");
+      if ($("drillAllWords")) $("drillAllWords").classList.toggle("active", state.drillFocus === "allWords");
     }
 
     function updateDrillMetrics(poolSize = drillActivePoolSize()) {
@@ -3746,20 +3786,22 @@
     });
     $("drillFocusWrong").addEventListener("click", () => {
       state.drillFocus = "wrong";
+      state.drillIndex = 0;
       state.drillWord = null;
       saveProgressLocal();
       renderDrill();
     });
     $("drillAllWords").addEventListener("click", () => {
-      state.drillFocus = "all";
+      state.drillFocus = "allWords";
+      state.drillTag = "all";
+      state.drillIndex = 0;
       state.drillWord = null;
       saveProgressLocal();
       renderDrill();
     });
     $("drillRestart").addEventListener("click", () => {
-      state.drillIndex = 0;
-      state.drillWord = null;
-      saveProgressLocal();
+      resetDrillScopeProgress();
+      renderStatsDetail();
       renderDrill();
     });
     $("drillTagFilter").addEventListener("change", (e) => {
@@ -3949,7 +3991,7 @@
       state.wordStats = {};
       state.activeStat = "today";
       state.drillMode = "listen-en-cn";
-      state.drillFocus = "all";
+      state.drillFocus = "unanswered";
       state.drillReviewQueue = [];
       state.drillWord = null;
       state.day = 1;
