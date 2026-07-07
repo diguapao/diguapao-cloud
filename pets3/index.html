@@ -788,6 +788,11 @@
       width: 55ch;
       min-width: 55ch;
       max-width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--ink);
+      background: white;
       text-align: left;
       font-weight: 700;
       pointer-events: auto;
@@ -2967,7 +2972,7 @@
           <p class="muted small">复习进度：第 ${Math.min(state.drillIndex + 1, Math.max(activePoolSize, 1))}/${Math.max(activePoolSize, 1)} 个；全词库 ${entries.length} 词。切换设备导入进度后会继续从这里练。</p>
           <div class="drill-prompt-row">
             <div class="drill-prompt-main">${prompt}</div>
-            <input id="drillAnswer" class="word-count-input drill-answer-input" type="text" placeholder="${answerPlaceholder}">
+            <input id="drillAnswer" class="drill-answer-input" type="text" placeholder="${answerPlaceholder}">
             <div class="actions drill-actions">
               <button class="primary" id="checkDrill" type="button">✓ 检查</button>
               <button class="secondary" id="skipDrill" type="button">换一个</button>
