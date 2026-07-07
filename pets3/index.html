@@ -714,9 +714,9 @@
 
     .drill-ledger-card {
       display: grid;
-      grid-template-rows: auto 1fr auto;
+      grid-template-rows: auto 1fr auto auto;
       gap: 4px;
-      min-height: 82px;
+      min-height: 96px;
       padding: 8px;
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -744,6 +744,26 @@
       font-style: normal;
       font-size: 11px;
       white-space: nowrap;
+    }
+
+    .drill-mini-action {
+      justify-self: start;
+      min-height: 24px;
+      padding: 3px 7px;
+      border: 1px solid #cdd9e6;
+      border-radius: 6px;
+      background: #eef5ff;
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .drill-mini-action.queued,
+    .drill-mini-action:disabled {
+      background: #e9f8ef;
+      color: var(--ok);
+      cursor: default;
     }
 
     .drill-prompt-row {
@@ -1525,12 +1545,18 @@
       drillFocus: localStorage.getItem("pets3-drill-focus") || "all",
       drillTag: localStorage.getItem("pets3-drill-tag") || "all",
       drillIndex: Number(localStorage.getItem("pets3-drill-index") || 0),
+      drillReviewQueue: JSON.parse(localStorage.getItem("pets3-drill-review-queue") || "[]"),
       libraryPage: Number(localStorage.getItem("pets3-library-page") || 1),
       drillWord: null
     };
 
     const $ = (id) => document.getElementById(id);
     const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+    const escapeAttr = (value) => String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
     const officialWords = [];
     let wordbankStatus = "正在加载 index.html 内置正式词库。";
     const WORD_DB_NAME = "pets3-wordbank-db";
@@ -1679,6 +1705,7 @@
       localStorage.setItem("pets3-drill-focus", state.drillFocus);
       localStorage.setItem("pets3-drill-tag", state.drillTag);
       localStorage.setItem("pets3-drill-index", state.drillIndex);
+      localStorage.setItem("pets3-drill-review-queue", JSON.stringify(state.drillReviewQueue));
       localStorage.setItem("pets3-library-page", state.libraryPage);
       scheduleProgressJsonSave();
     }
@@ -1812,15 +1839,69 @@
         .filter(Boolean);
     }
 
+    function isWordQueuedForReview(entry) {
+      return Boolean(entry && state.drillReviewQueue.includes(entry.word));
+    }
+
+    function reviewQueueEntries() {
+      state.drillReviewQueue = [...new Set(state.drillReviewQueue.map(String).filter(Boolean))].slice(0, 80);
+      const entryMap = new Map(allWordEntries().map(item => [item.word, item]));
+      return state.drillReviewQueue
+        .map(word => entryMap.get(word))
+        .filter(Boolean);
+    }
+
+    function addWordToReviewQueue(entry) {
+      if (!entry) return;
+      const now = new Date().toISOString();
+      const stat = state.wordStats[entry.word] || { correct: 0, wrong: 0 };
+      if (!state.drillReviewQueue.includes(entry.word)) {
+        state.drillReviewQueue.push(entry.word);
+      }
+      state.drillReviewQueue = [...new Set(state.drillReviewQueue)].slice(0, 80);
+      stat.reviewQueued = (stat.reviewQueued || 0) + 1;
+      stat.reviewPending = true;
+      stat.lastReviewQueued = now;
+      state.wordStats[entry.word] = stat;
+      state.drillIndex = 0;
+      state.drillWord = null;
+      saveProgressLocal();
+    }
+
+    function removeWordFromReviewQueue(entry, passed = false) {
+      if (!entry || !state.drillReviewQueue.includes(entry.word)) return;
+      const now = new Date().toISOString();
+      const stat = state.wordStats[entry.word] || { correct: 0, wrong: 0 };
+      state.drillReviewQueue = state.drillReviewQueue.filter(word => word !== entry.word);
+      stat.reviewPending = false;
+      if (passed) {
+        stat.reviewPassed = (stat.reviewPassed || 0) + 1;
+        stat.lastReviewPassed = now;
+      }
+      state.wordStats[entry.word] = stat;
+      saveProgressLocal();
+    }
+
     function markWordResult(entry, correct) {
       if (!entry) return;
       const stat = state.wordStats[entry.word] || { correct: 0, wrong: 0 };
+      const now = new Date().toISOString();
+      const fromReviewQueue = isWordQueuedForReview(entry);
       if (correct) {
         stat.correct += 1;
-        stat.lastCorrect = new Date().toISOString();
+        stat.lastCorrect = now;
       } else {
         stat.wrong += 1;
-        stat.lastWrong = new Date().toISOString();
+        stat.lastWrong = now;
+      }
+      if (fromReviewQueue) {
+        stat.reviewAttempts = (stat.reviewAttempts || 0) + 1;
+        stat.lastReviewAttempt = now;
+        if (correct) {
+          stat.reviewCorrect = (stat.reviewCorrect || 0) + 1;
+        } else {
+          stat.reviewWrong = (stat.reviewWrong || 0) + 1;
+        }
       }
       state.wordStats[entry.word] = stat;
       saveProgressLocal();
@@ -1829,10 +1910,16 @@
     function markWordUnanswered(entry) {
       if (!entry) return;
       const stat = state.wordStats[entry.word] || { correct: 0, wrong: 0 };
+      const fromReviewQueue = isWordQueuedForReview(entry);
       stat.wrong = (stat.wrong || 0) + 1;
       stat.unanswered = (stat.unanswered || 0) + 1;
       stat.lastWrong = new Date().toISOString();
       stat.lastUnanswered = stat.lastWrong;
+      if (fromReviewQueue) {
+        stat.reviewAttempts = (stat.reviewAttempts || 0) + 1;
+        stat.reviewSkipped = (stat.reviewSkipped || 0) + 1;
+        stat.lastReviewAttempt = stat.lastWrong;
+      }
       state.wordStats[entry.word] = stat;
       saveProgressLocal();
     }
@@ -1847,6 +1934,8 @@
     }
 
     function drillWordPool() {
+      const queued = reviewQueueEntries();
+      if (queued.length) return queued;
       const taggedWrong = wrongWordEntries().filter(matchesDrillTag);
       if (state.drillFocus === "wrong" && taggedWrong.length) return taggedWrong;
       return allWordEntries()
@@ -1910,6 +1999,7 @@
         drillFocus: state.drillFocus,
         drillTag: state.drillTag,
         drillIndex: state.drillIndex,
+        drillReviewQueue: state.drillReviewQueue,
         libraryPage: state.libraryPage,
         translationDrafts: translationDraftsFromStorage(),
         writingDrafts: writingDraftsFromStorage()
@@ -1934,6 +2024,7 @@
       state.drillFocus = data.drillFocus || "all";
       state.drillTag = data.drillTag || "all";
       state.drillIndex = Number(data.drillIndex || 0);
+      state.drillReviewQueue = Array.isArray(data.drillReviewQueue) ? [...new Set(data.drillReviewQueue.map(String).filter(Boolean))].slice(0, 80) : [];
       state.libraryPage = Number(data.libraryPage || 1);
       saveProgressLocal();
       Object.keys(localStorage)
@@ -2819,10 +2910,13 @@
       const wrong = wrongWordEntries();
       const correct = correctWordEntries();
       const entries = allWordEntries();
+      const queued = reviewQueueEntries();
       const taggedWrong = wrong.filter(matchesDrillTag);
       const activePoolSize = drillActivePoolSize();
       const tags = ["all", ...new Set(entries.map(item => item.tag).filter(Boolean))].slice(0, 72);
-      const title = state.drillFocus === "wrong" && taggedWrong.length ? `专攻错词（${taggedWrong.length} 个）` : "练未答对词";
+      const title = queued.length
+        ? `待复习（${queued.length} 个）`
+        : state.drillFocus === "wrong" && taggedWrong.length ? `专攻错词（${taggedWrong.length} 个）` : "练未答对词";
       if (!current) {
         $("drillBox").innerHTML = `
         <div class="item">
@@ -2880,7 +2974,7 @@
     function updateDrillMetrics(poolSize = drillActivePoolSize()) {
       if (!$("drillMetrics")) return;
       const remaining = Math.max(poolSize - state.drillIndex, 0);
-      $("drillMetrics").innerHTML = `<span>剩余 ${remaining}</span><span>错 ${wrongWordEntries().length}</span><span>对 ${correctWordEntries().length}</span>`;
+      $("drillMetrics").innerHTML = `<span>剩余 ${remaining}</span><span>待 ${reviewQueueEntries().length}</span><span>错 ${wrongWordEntries().length}</span><span>对 ${correctWordEntries().length}</span>`;
     }
 
     function speakDrillWord(entry, mode = "en") {
@@ -2910,14 +3004,19 @@
       if (!items.length) return `<div class="item"><p class="muted">${emptyText}</p></div>`;
       return items.slice(0, 30).map(item => {
         const stat = state.wordStats[item.word] || {};
+        const queued = isWordQueuedForReview(item);
         const detail = type === "correct"
           ? `正确 ${stat.correct || 0} 次`
           : (stat.unanswered ? `未答 ${stat.unanswered} · 错 ${stat.wrong || 0}` : `错误 ${stat.wrong || 0} 次`);
+        const action = type === "wrong"
+          ? `<button class="drill-mini-action${queued ? " queued" : ""}" data-review-word="${escapeAttr(item.word)}" type="button" ${queued ? "disabled" : ""}>${queued ? "待练中" : "再练"}</button>`
+          : "";
         const meaning = conciseMeaning(item.meaning);
         return `<div class="drill-ledger-card" title="${item.word} = ${item.meaning}">
           <strong>${item.word}</strong>
           <span>${meaning}</span>
           <em>${detail}</em>
+          ${action}
         </div>`;
       }).join("");
     }
@@ -2950,6 +3049,7 @@
       renderDrillLedger();
       renderStatsDetail();
       if (correct) {
+        removeWordFromReviewQueue(current, true);
         state.drillWord = null;
         saveProgressLocal();
         renderDrill();
@@ -3231,6 +3331,17 @@
         $("drillResult").classList.remove("hidden");
         $("drillResult").innerHTML = `<strong>${current.word} = ${current.meaning}</strong><span class="muted">${current.example}</span>`;
       }
+      if (e.target.dataset && e.target.dataset.reviewWord) {
+        const entry = findWordEntry(e.target.dataset.reviewWord);
+        addWordToReviewQueue(entry);
+        state.tab = "drill";
+        saveProgressLocal();
+        renderAll();
+        setTimeout(() => {
+          if ($("drillAnswer")) $("drillAnswer").focus();
+          autoplayCurrentDrillPrompt();
+        }, 120);
+      }
       if (e.target.id === "checkDrill") {
         checkCurrentDrillAnswer();
       }
@@ -3350,6 +3461,7 @@
       state.activeStat = "today";
       state.drillMode = "listen-en-cn";
       state.drillFocus = "all";
+      state.drillReviewQueue = [];
       state.drillWord = null;
       state.day = 1;
       state.tab = "review";
