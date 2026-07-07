@@ -370,7 +370,7 @@
       min-height: 172px;
       padding: 24px;
       display: grid;
-      gap: 22px;
+      gap: 16px;
       align-content: start;
       overflow: hidden;
       position: relative;
@@ -391,11 +391,15 @@
       border: 1px solid rgba(23, 32, 42, .10);
       border-radius: 8px;
       transform: rotate(-2deg);
+      z-index: 0;
+    }
+
+    .hero-panel > * {
+      position: relative;
+      z-index: 1;
     }
 
     .hero-content {
-      position: relative;
-      z-index: 1;
       max-width: 760px;
       padding-right: 156px;
     }
@@ -551,6 +555,25 @@
     .hero-panel .chips {
       margin-top: 0;
       padding-right: 164px;
+    }
+
+    .hero-mentor {
+      grid-template-columns: minmax(220px, .72fr) minmax(300px, 1fr);
+      gap: 10px 14px;
+      margin-top: 0;
+      padding-right: 164px;
+      align-items: start;
+    }
+
+    .hero-mentor h3 {
+      grid-column: 1 / -1;
+      margin: 0;
+    }
+
+    .mentor-progress {
+      display: grid;
+      gap: 8px;
+      align-content: start;
     }
 
     .word-top {
@@ -1005,7 +1028,8 @@
       main { padding: 18px; }
       .hero { grid-template-columns: 1fr; }
       .hero-panel:after { opacity: .55; }
-      .hero-content, .hero-panel .chips { padding-right: 0; }
+      .hero-content, .hero-panel .chips, .hero-mentor { padding-right: 0; }
+      .hero-mentor { grid-template-columns: 1fr; }
       .nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .nav button { justify-content: center; text-align: center; }
       .library-toolbar {
@@ -1027,6 +1051,7 @@
       .hero h2 { font-size: 30px; }
       .hero-panel { padding: 18px; }
       .hero-panel:after { opacity: .18; }
+      .hero-mentor .layer-grid { grid-template-columns: 1fr; }
       .library-toolbar { grid-template-columns: 1fr; }
       .library-pager { justify-content: space-between; }
       .drill-ledger { grid-template-columns: 1fr; }
@@ -1105,18 +1130,7 @@
             <p id="heroText" class="muted">每天完成词汇、句子、翻译、阅读、写作和小测，最后用复习模块把错题和薄弱词拉回来。</p>
           </div>
           <div class="chips" id="chips"></div>
-        </div>
-        <div class="exam-card">
-          <h3>今日训练配比</h3>
-          <div class="exam-meter" aria-hidden="true">
-            <div class="bar"><span id="m1"></span></div>
-            <div class="bar"><span id="m2"></span></div>
-            <div class="bar"><span id="m3"></span></div>
-            <div class="bar"><span id="m4"></span></div>
-          </div>
-          <p class="muted small">题型覆盖：词汇语法、完形倾向、阅读理解、英汉互译、短文写作。内容为原创练习，按近年 PETS3 笔试常见能力点设计。</p>
-          <div id="missionBox"></div>
-          <div class="mentor-plan">
+          <div class="mentor-plan hero-mentor">
             <h3>程序员背词口诀</h3>
             <div class="memory-rule">
               <strong>三看两测一回滚</strong>
@@ -1129,10 +1143,23 @@
                 <li>回滚错词：当天、隔2天、隔7天。</li>
               </ol>
             </div>
-            <div class="progress" aria-label="核心1400词进度"><span id="coreProgressBar"></span></div>
-            <p id="coreProgressText" class="muted small"></p>
-            <div class="layer-grid" id="layerGrid"></div>
+            <div class="mentor-progress">
+              <div class="progress" aria-label="核心1400词进度"><span id="coreProgressBar"></span></div>
+              <p id="coreProgressText" class="muted small"></p>
+              <div class="layer-grid" id="layerGrid"></div>
+            </div>
           </div>
+        </div>
+        <div class="exam-card">
+          <h3>今日训练配比</h3>
+          <div class="exam-meter" aria-hidden="true">
+            <div class="bar"><span id="m1"></span></div>
+            <div class="bar"><span id="m2"></span></div>
+            <div class="bar"><span id="m3"></span></div>
+            <div class="bar"><span id="m4"></span></div>
+          </div>
+          <p class="muted small">题型覆盖：词汇语法、完形倾向、阅读理解、英汉互译、短文写作。内容为原创练习，按近年 PETS3 笔试常见能力点设计。</p>
+          <div id="missionBox"></div>
           <button id="completeDay" class="primary" type="button">✓ 标记今天完成</button>
         </div>
       </section>
