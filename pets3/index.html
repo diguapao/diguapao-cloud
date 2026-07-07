@@ -896,6 +896,33 @@
 
     .resource-card a:hover { text-decoration: underline; }
 
+    .template-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 10px;
+    }
+
+    .template-card {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+    }
+
+    .template-lines {
+      display: grid;
+      gap: 5px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      color: #233245;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
     .compact-list {
       margin: 0;
       padding-left: 18px;
@@ -1544,10 +1571,137 @@
         use: "邮件、通知、邀请、投诉类优先看格式。"
       },
       {
+        group: "写作",
+        title: "15篇写作模版范文",
+        path: "pets3-资料/【资料】公三（PETS3）/【06】作文部分/PETS（第三级）15篇写作模版范文（13页）.pdf",
+        use: "第29天后按同题型拆结构；只背开头、连接和结尾，不全文死背。"
+      },
+      {
+        group: "写作",
+        title: "作文模版通用句型",
+        path: "pets3-资料/【资料】公三（PETS3）/【06】作文部分/PETS（第三级）作文模版通用句型（16页）.pdf",
+        use: "考前回归时只挑自己能写对的句型，避免硬套长难句。"
+      },
+      {
         group: "模拟",
         title: "考前冲刺试卷1",
         path: "pets3-资料/【资料】公三（PETS3）/【09】题库部分/PETS（第三级） 考前冲刺试卷1（题目）.pdf",
         use: "第57天后当回归测试，不在前期消耗。"
+      }
+    ];
+
+    const compositionTemplates = [
+      {
+        type: "应用文总框架",
+        scenario: "邮件、书信、便条都先套这个骨架。",
+        target: "90-120词；先写目的，再写2个要点，最后礼貌收尾。",
+        lines: [
+          "Dear ...,",
+          "I am writing to ... .",
+          "First, ... .",
+          "Second, ... .",
+          "I hope ... .",
+          "Yours,",
+          "Li Hua"
+        ],
+        checks: ["称呼和落款齐", "第一句交代目的", "每个题干要点至少一句"]
+      },
+      {
+        type: "建议信",
+        scenario: "朋友学习、生活、健康、活动选择遇到问题。",
+        target: "语气要友好；建议用 should / can / it is useful to。",
+        lines: [
+          "I am sorry to hear that you have trouble with ... .",
+          "Here are my suggestions.",
+          "First, you should ... because ... .",
+          "Second, it is useful to ... .",
+          "If you do this, you will ... .",
+          "I hope my advice can help you."
+        ],
+        checks: ["先安慰再建议", "至少两条建议", "建议后补一个原因"]
+      },
+      {
+        type: "通知",
+        scenario: "班级活动、讲座、志愿活动、比赛安排。",
+        target: "信息点不能漏：时间、地点、活动内容、参加要求。",
+        lines: [
+          "Notice",
+          "There will be a/an ... at ... on ... .",
+          "The activity is about ... .",
+          "Please bring ... and arrive on time.",
+          "If you want to join us, please ... .",
+          "Students' Union"
+        ],
+        checks: ["Notice标题", "时间地点写清", "参加要求写具体"]
+      },
+      {
+        type: "邀请信",
+        scenario: "邀请老师、朋友参加活动或给讲座。",
+        target: "先说明邀请，再写时间地点和活动价值。",
+        lines: [
+          "I am writing to invite you to ... .",
+          "It will be held at ... on ... .",
+          "During the activity, we will ... .",
+          "I believe you will enjoy it because ... .",
+          "Please let me know if you can come.",
+          "I am looking forward to your reply."
+        ],
+        checks: ["邀请对象明确", "活动安排完整", "结尾要求回复"]
+      },
+      {
+        type: "投诉信",
+        scenario: "商品、服务、课程、设施不满意。",
+        target: "事实清楚，语气克制；提出一个可执行解决办法。",
+        lines: [
+          "I am writing to complain about ... .",
+          "The main problem is that ... .",
+          "This has caused much trouble to me.",
+          "I hope you can ... as soon as possible.",
+          "Thank you for your attention.",
+          "I am looking forward to your reply."
+        ],
+        checks: ["问题具体", "影响具体", "解决请求明确"]
+      },
+      {
+        type: "感谢信",
+        scenario: "感谢帮助、邀请、照顾、建议或礼物。",
+        target: "感谢原因和帮助结果都要写出来。",
+        lines: [
+          "I am writing to thank you for ... .",
+          "Your help was very important to me.",
+          "Because of your help, I could ... .",
+          "I will always remember your kindness.",
+          "Thanks again for what you have done.",
+          "Best wishes."
+        ],
+        checks: ["感谢对象明确", "感谢原因明确", "写出帮助后的结果"]
+      },
+      {
+        type: "申请/自荐信",
+        scenario: "申请志愿活动、兼职、课程或加入社团。",
+        target: "写清申请目的、个人优势、可提供的帮助。",
+        lines: [
+          "I am writing to apply for ... .",
+          "I am interested in it because ... .",
+          "I am good at ... and I can ... .",
+          "If I get this chance, I will ... .",
+          "I hope you can consider my application.",
+          "I am looking forward to your reply."
+        ],
+        checks: ["申请目标明确", "优势不空泛", "承诺和岗位相关"]
+      },
+      {
+        type: "观点短文",
+        scenario: "是否应该做某事、某现象的利弊、学习方法看法。",
+        target: "三段式：观点、两个理由、结论；基础弱也能稳住结构。",
+        lines: [
+          "In my opinion, ... is important/useful.",
+          "First, it can help us ... .",
+          "Second, it can make us ... .",
+          "For example, ... .",
+          "Therefore, we should ... in our daily life."
+        ],
+        checks: ["观点第一句出现", "两个理由分开写", "结尾回到题目"]
       }
     ];
 
@@ -2316,6 +2470,23 @@
           <div class="item"><h3>优先原则</h3><p class="muted">真题和解析用于校准考试；词汇短语用于每日输入；语法和写作用于查错。重复词表、打印广告、过厚泛资料不进入主线。</p></div>
           <div class="item"><h3>60+策略</h3><p class="muted">基础薄弱时先保可拿分项：高频词义、阅读定位、应用文格式、常见语法、听力关键词。低频词只查漏。</p></div>
           <div class="item"><h3>使用节奏</h3><p class="muted">1-35天少做套卷，多拆题；36天后开始限时；57天后只回归错因和模板。</p></div>
+        </div>
+        <div class="toolbox">
+          <strong>按大纲写作模板</strong>
+          <span class="muted">拿分顺序：审题要点完整 → 格式正确 → 结构清楚 → 语言少错。先套短句，再替换今日词。</span>
+        </div>
+        <div class="template-grid">
+          ${compositionTemplates.map(item => `
+            <article class="template-card">
+              <div>
+                <span class="tag amber">${item.type}</span>
+                <h3>${item.scenario}</h3>
+                <p class="small muted">${item.target}</p>
+              </div>
+              <div class="template-lines">${item.lines.map(line => `<div>${line}</div>`).join("")}</div>
+              <ul class="compact-list">${item.checks.map(check => `<li>${check}</li>`).join("")}</ul>
+            </article>
+          `).join("")}
         </div>
         ${groups.map(group => `
           <div class="toolbox"><strong>${group}</strong><span class="muted">${curatedResources.filter(item => item.group === group).length} 个精选入口</span></div>
