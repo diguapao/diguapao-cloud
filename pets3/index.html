@@ -2230,6 +2230,15 @@
       return Boolean(entry && drillScopeWordSet().has(entry.word));
     }
 
+    function wrongWordEntriesForScope(entries = drillScopeEntries()) {
+      const scopedWords = new Set(entries.map(entry => entry.word));
+      return wrongWordEntries().filter(entry => scopedWords.has(entry.word));
+    }
+
+    function wrongWordEntriesForDay(day = state.day) {
+      return wrongWordEntriesForScope(dailyWordEntries(day));
+    }
+
     function isWordAnsweredCorrectly(entry) {
       const stat = entry && state.wordStats[entry.word];
       return Boolean(stat && (stat.correct || 0) > 0);
@@ -2244,7 +2253,25 @@
       if (queued.length) return queued;
       const taggedWrong = wrongWordEntries().filter(matchesDrillTag);
       if (state.drillFocus === "wrong" && taggedWrong.length) return taggedWrong;
-      return scopedEntries.filter(entry => !isWordAnsweredCorrectly(entry));
+      if (state.drillFocus === "wrong") return [];
+      const unanswered = scopedEntries.filter(entry => !isWordAnsweredCorrectly(entry));
+      return unanswered.length ? unanswered : taggedWrong;
+    }
+
+    function advanceDrillAfterCorrect(current) {
+      const nextPool = drillWordPool();
+      if (!nextPool.length) {
+        state.drillIndex = 0;
+        state.drillWord = null;
+        return;
+      }
+      const currentStillHere = current && nextPool.some(entry => entry.word === current.word);
+      if (state.drillFocus === "allWords" || currentStillHere) {
+        state.drillIndex = (state.drillIndex + 1) % nextPool.length;
+      } else {
+        normalizeDrillIndex(nextPool);
+      }
+      state.drillWord = null;
     }
 
     function drillProgressKey(day = state.day, scope = state.drillScope) {
@@ -2859,9 +2886,15 @@
       $("daySummary").textContent = `第${state.day}/70天 · ${count}词${state.wordCounts[state.day] ? " · 已自定义" : ""} · ${modeText} · ${theme}`;
       const isDone = state.completed.includes(state.day);
       const isRelearning = state.relearning.includes(state.day);
+      const dayDrillWrongTotal = wrongWordEntriesForDay(state.day).length;
       $("completeDay").classList.toggle("completed", isDone);
       $("completeDay").classList.toggle("relearn", isRelearning && !isDone);
-      $("completeDay").textContent = isDone ? "✓ 已完成 · 重学当天" : isRelearning ? "↻ 重学中 · 标记完成" : "✓ 标记今天完成";
+      $("completeDay").textContent = isDone
+        ? "✓ 已完成 · 重学当天"
+        : dayDrillWrongTotal
+          ? `先清错词 ${dayDrillWrongTotal}`
+          : isRelearning ? "↻ 重学中 · 标记完成" : "✓ 标记今天完成";
+      $("completeDay").title = !isDone && dayDrillWrongTotal ? "当天快复习没有错词后才能标记完成" : "";
       $("heroTitle").textContent = `第${state.day}天：${level}阶段`;
       $("heroText").textContent = `${focus}。今日主题：${theme}。`;
       $("coreProgressBar").style.width = `${Math.min(coreDone / 1400 * 100, 100)}%`;
@@ -3580,6 +3613,7 @@
       const wrong = wrongWordEntries().filter(matchesDrillTag);
       const correct = correctWordEntries().filter(matchesDrillTag);
       const taggedWrong = wrong;
+      const unansweredCount = scopeEntries.filter(entry => !isWordAnsweredCorrectly(entry)).length;
       const activePoolSize = drillActivePoolSize();
       const tags = Array.from({ length: 70 }, (_, index) => `day-${index + 1}`);
       const scopes = [
@@ -3591,12 +3625,16 @@
         ? `练全部词：${scopeLabel}（${activePoolSize} 个）`
         : queued.length
           ? `待复习（${queued.length} 个）`
-          : state.drillFocus === "wrong" && taggedWrong.length ? `专攻错词：${scopeLabel}（${taggedWrong.length} 个）` : `练未答对词：${scopeLabel}`;
+          : state.drillFocus === "wrong" && taggedWrong.length
+            ? `专攻错词：${scopeLabel}（${taggedWrong.length} 个）`
+            : !unansweredCount && taggedWrong.length
+              ? `继续清错词：${scopeLabel}（${taggedWrong.length} 个）`
+              : `练未答对词：${scopeLabel}`;
       if (!current) {
         $("drillBox").innerHTML = `
         <div class="item">
           <span class="tag">${title}</span>
-          <p class="muted small">当前范围已没有待做词；可切换词层，或选择专攻错词继续补弱。</p>
+          <p class="muted small">当前范围已没有待做词，也没有错词；可切换范围继续巩固。</p>
           <div class="toolbox">
             <strong>本范围已完成</strong>
             <span class="muted">答对过的词不会再进入普通快复习池，刷新后会停在当前待做状态。</span>
@@ -3743,7 +3781,7 @@
       renderStatsDetail();
       if (correct) {
         removeWordFromReviewQueue(current, true);
-        state.drillWord = null;
+        advanceDrillAfterCorrect(current);
         saveProgressLocal();
         renderDrill();
         setTimeout(() => {
@@ -4115,6 +4153,20 @@
         if (!state.relearning.includes(state.day)) state.relearning.push(state.day);
         resetDayModuleProgress(state.day);
       } else {
+        const blockingWrong = wrongWordEntriesForDay(state.day);
+        if (blockingWrong.length) {
+          state.tab = "drill";
+          state.drillFocus = "wrong";
+          state.drillScope = "day";
+          state.drillTag = drillDayTag(state.day);
+          state.drillIndex = 0;
+          state.drillWord = null;
+          restoreDrillDayProgress(state.day);
+          saveProgressLocal();
+          renderAll();
+          alert(`当天快复习还有 ${blockingWrong.length} 个错词，清完错词后才能标记完成。`);
+          return;
+        }
         if (!state.completed.includes(state.day)) state.completed.push(state.day);
         state.relearning = state.relearning.filter(day => day !== state.day);
       }
