@@ -1237,6 +1237,7 @@
           <button class="secondary" data-drill-mode="en-cn" type="button">看英文 → 答中文</button>
           <button class="secondary" data-drill-mode="zh-en" type="button">听中文 → 答英文</button>
           <select id="drillTagFilter" class="wide-select" aria-label="复习标签"></select>
+          <select id="drillScopeFilter" class="wide-select" aria-label="练词范围"></select>
         </div>
         <div id="drillBox"></div>
         <div id="wrongWordBox"></div>
@@ -1765,6 +1766,7 @@
       activeStat: localStorage.getItem("pets3-active-stat") || "today",
       drillMode: localStorage.getItem("pets3-drill-mode") || "listen-en-cn",
       drillFocus: normalizeDrillFocus(localStorage.getItem("pets3-drill-focus")),
+      drillScope: normalizeDrillScope(localStorage.getItem("pets3-drill-scope")),
       drillTag: localStorage.getItem("pets3-drill-tag") || "all",
       drillIndex: Number(localStorage.getItem("pets3-drill-index") || 0),
       drillReviewQueue: JSON.parse(localStorage.getItem("pets3-drill-review-queue") || "[]"),
@@ -1777,6 +1779,10 @@
 
     function normalizeDrillFocus(value) {
       return ["unanswered", "wrong", "allWords"].includes(value) ? value : "unanswered";
+    }
+
+    function normalizeDrillScope(value) {
+      return ["day", "core", "all"].includes(value) ? value : "day";
     }
     const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 
@@ -1942,6 +1948,7 @@
       localStorage.setItem("pets3-active-stat", state.activeStat);
       localStorage.setItem("pets3-drill-mode", state.drillMode);
       localStorage.setItem("pets3-drill-focus", state.drillFocus);
+      localStorage.setItem("pets3-drill-scope", state.drillScope);
       localStorage.setItem("pets3-drill-tag", state.drillTag);
       localStorage.setItem("pets3-drill-index", state.drillIndex);
       localStorage.setItem("pets3-drill-review-queue", JSON.stringify(state.drillReviewQueue));
@@ -2168,6 +2175,15 @@
       return clamp(Number(state.day || 1), 1, 70);
     }
 
+    function drillScopeLabel(scope = state.drillScope) {
+      const labels = {
+        day: "当天学习词",
+        core: "核心词库",
+        all: "总词库"
+      };
+      return labels[normalizeDrillScope(scope)] || labels.day;
+    }
+
     function dailyWordEntries(day = state.day) {
       const safeDay = clamp(Number(day || state.day), 1, 70);
       const entryMap = new Map(allWordEntries().map(item => [item.word, item]));
@@ -2195,7 +2211,14 @@
         .filter(Boolean);
     }
 
-    function drillScopeEntries() {
+    function coreWordEntries() {
+      return learningWordEntries().filter(item => item.layer <= 2).slice(0, 1400);
+    }
+
+    function drillScopeEntries(scope = state.drillScope) {
+      const safeScope = normalizeDrillScope(scope);
+      if (safeScope === "core") return coreWordEntries();
+      if (safeScope === "all") return learningWordEntries();
       return dailyWordEntries(drillScopeDay());
     }
 
@@ -2224,13 +2247,15 @@
       return scopedEntries.filter(entry => !isWordAnsweredCorrectly(entry));
     }
 
-    function drillProgressKey(day = state.day) {
+    function drillProgressKey(day = state.day, scope = state.drillScope) {
+      const safeScope = normalizeDrillScope(scope);
+      if (safeScope !== "day") return safeScope;
       return String(clamp(Number(day || 1), 1, 70));
     }
 
-    function rememberDrillDayProgress(day = state.day) {
+    function rememberDrillDayProgress(day = state.day, scope = state.drillScope) {
       if (!state.drillDayProgress || typeof state.drillDayProgress !== "object") state.drillDayProgress = {};
-      const key = drillProgressKey(day);
+      const key = drillProgressKey(day, scope);
       state.drillDayProgress[key] = {
         index: Math.max(0, Number(state.drillIndex || 0)),
         word: state.drillWord && state.drillWord.word ? state.drillWord.word : "",
@@ -2241,7 +2266,8 @@
     function restoreDrillDayProgress(day = state.day) {
       if (!state.drillDayProgress || typeof state.drillDayProgress !== "object") state.drillDayProgress = {};
       const safeDay = clamp(Number(day || state.day), 1, 70);
-      const key = drillProgressKey(safeDay);
+      state.drillScope = normalizeDrillScope(state.drillScope);
+      const key = drillProgressKey(safeDay, state.drillScope);
       const saved = state.drillDayProgress[key] || {};
       state.drillTag = drillDayTag(safeDay);
       const pool = drillWordPool();
@@ -2252,7 +2278,8 @@
       rememberDrillDayProgress(safeDay);
     }
 
-    function resetDrillScopeProgress() {
+    function resetDrillScopeProgress(scope = state.drillScope) {
+      state.drillScope = normalizeDrillScope(scope);
       const scopedWords = drillScopeWordSet();
       Object.entries(state.wordStats).forEach(([word, stat]) => {
         if (!scopedWords.has(word)) return;
@@ -2267,7 +2294,7 @@
       state.drillIndex = 0;
       state.drillWord = null;
       if (state.drillDayProgress && typeof state.drillDayProgress === "object") {
-        delete state.drillDayProgress[drillProgressKey(state.day)];
+        delete state.drillDayProgress[drillProgressKey(state.day, state.drillScope)];
       }
       saveProgressLocal();
     }
@@ -2296,6 +2323,7 @@
       delete state.quizHistory[safeDay];
       state.wrong = state.wrong.filter(item => Number(item && item.day) !== safeDay);
       state.drillFocus = "unanswered";
+      state.drillScope = "day";
       state.drillTag = drillDayTag(safeDay);
       state.drillIndex = 0;
       state.drillWord = null;
@@ -2358,6 +2386,7 @@
         activeStat: state.activeStat,
         drillMode: state.drillMode,
         drillFocus: state.drillFocus,
+        drillScope: state.drillScope,
         drillTag: state.drillTag,
         drillIndex: state.drillIndex,
         drillReviewQueue: state.drillReviewQueue,
@@ -2384,6 +2413,7 @@
       state.activeStat = data.activeStat || "today";
       state.drillMode = data.drillMode || "listen-en-cn";
       state.drillFocus = normalizeDrillFocus(data.drillFocus);
+      state.drillScope = normalizeDrillScope(data.drillScope);
       state.drillTag = drillDayTag(state.day);
       state.drillIndex = Number(data.drillIndex || 0);
       state.drillReviewQueue = Array.isArray(data.drillReviewQueue) ? [...new Set(data.drillReviewQueue.map(String).filter(Boolean))].slice(0, 80) : [];
@@ -3544,19 +3574,24 @@
       const current = state.drillWord || pickDrillWord();
       state.drillWord = current;
       const entries = allWordEntries();
-      const scopeDay = drillScopeDay();
-      const dailyEntries = drillScopeEntries();
+      const scopeEntries = drillScopeEntries();
+      const scopeLabel = drillScopeLabel();
       const queued = reviewQueueEntries().filter(matchesDrillTag);
       const wrong = wrongWordEntries().filter(matchesDrillTag);
       const correct = correctWordEntries().filter(matchesDrillTag);
       const taggedWrong = wrong;
       const activePoolSize = drillActivePoolSize();
       const tags = Array.from({ length: 70 }, (_, index) => `day-${index + 1}`);
+      const scopes = [
+        { value: "day", label: "当天学习词" },
+        { value: "core", label: "核心词库" },
+        { value: "all", label: "总词库" }
+      ];
       const title = state.drillFocus === "allWords"
-        ? `练全部词（${activePoolSize} 个）`
+        ? `练全部词：${scopeLabel}（${activePoolSize} 个）`
         : queued.length
           ? `待复习（${queued.length} 个）`
-          : state.drillFocus === "wrong" && taggedWrong.length ? `专攻错词（${taggedWrong.length} 个）` : "练未答对词";
+          : state.drillFocus === "wrong" && taggedWrong.length ? `专攻错词：${scopeLabel}（${taggedWrong.length} 个）` : `练未答对词：${scopeLabel}`;
       if (!current) {
         $("drillBox").innerHTML = `
         <div class="item">
@@ -3570,6 +3605,9 @@
       `;
         if ($("drillTagFilter")) {
           $("drillTagFilter").innerHTML = tags.map(tag => `<option value="${tag}" ${tag === state.drillTag ? "selected" : ""}>${dayTagLabel(tag)}</option>`).join("");
+        }
+        if ($("drillScopeFilter")) {
+          $("drillScopeFilter").innerHTML = scopes.map(scope => `<option value="${scope.value}" ${scope.value === state.drillScope ? "selected" : ""}>${scope.label}</option>`).join("");
         }
         renderDrillLedger(wrong, correct);
         document.querySelectorAll("[data-drill-mode]").forEach(btn => {
@@ -3589,7 +3627,7 @@
         <div class="item">
           <span class="tag">${title}</span>
           <span class="tag green">${dayTagLabel(current.tag)}</span>
-          <p class="muted small">复习进度：第 ${Math.min(state.drillIndex + 1, Math.max(activePoolSize, 1))}/${Math.max(activePoolSize, 1)} 个；第${scopeDay}天学习词 ${dailyEntries.length} 个；全词库 ${entries.length} 词。切换设备导入进度后会继续从这里练。</p>
+          <p class="muted small">复习进度：第 ${Math.min(state.drillIndex + 1, Math.max(activePoolSize, 1))}/${Math.max(activePoolSize, 1)} 个；范围：${scopeLabel} ${scopeEntries.length} 个；全词库 ${entries.length} 词。切换设备导入进度后会继续从这里练。</p>
           <div class="drill-prompt-row">
             <div class="drill-prompt-main">${prompt}</div>
             <input id="drillAnswer" class="drill-answer-input" type="text" placeholder="${answerPlaceholder}">
@@ -3609,6 +3647,9 @@
       }
       if ($("drillTagFilter")) {
         $("drillTagFilter").innerHTML = tags.map(tag => `<option value="${tag}" ${tag === state.drillTag ? "selected" : ""}>${dayTagLabel(tag)}</option>`).join("");
+      }
+      if ($("drillScopeFilter")) {
+        $("drillScopeFilter").innerHTML = scopes.map(scope => `<option value="${scope.value}" ${scope.value === state.drillScope ? "selected" : ""}>${scope.label}</option>`).join("");
       }
       renderDrillLedger(wrong, correct);
       updateDrillMetrics(activePoolSize);
@@ -3946,6 +3987,7 @@
     });
     $("drillAllWords").addEventListener("click", () => {
       state.drillFocus = "allWords";
+      state.drillScope = normalizeDrillScope($("drillScopeFilter") && $("drillScopeFilter").value || state.drillScope);
       state.drillTag = drillDayTag(state.day);
       state.drillIndex = 0;
       state.drillWord = null;
@@ -3953,8 +3995,18 @@
       renderDrill();
     });
     $("drillRestart").addEventListener("click", () => {
-      resetDrillScopeProgress();
+      state.drillFocus = "unanswered";
+      resetDrillScopeProgress("day");
       renderStatsDetail();
+      renderDrill();
+    });
+    $("drillScopeFilter").addEventListener("change", (e) => {
+      rememberDrillDayProgress(state.day);
+      state.drillScope = normalizeDrillScope(e.target.value);
+      state.drillIndex = 0;
+      state.drillWord = null;
+      restoreDrillDayProgress(state.day);
+      saveProgressLocal();
       renderDrill();
     });
     $("drillTagFilter").addEventListener("change", (e) => {
@@ -4144,6 +4196,7 @@
       state.activeStat = "today";
       state.drillMode = "listen-en-cn";
       state.drillFocus = "unanswered";
+      state.drillScope = "day";
       state.drillTag = "day-1";
       state.drillIndex = 0;
       state.drillReviewQueue = [];
