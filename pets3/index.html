@@ -739,17 +739,24 @@
 
     .drill-ledger-panel {
       min-width: 0;
+      min-height: clamp(300px, 38vh, 520px);
       padding: 10px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #f8fafc;
+      display: flex;
+      flex-direction: column;
     }
 
     .drill-ledger-list {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+      grid-auto-rows: minmax(96px, auto);
       gap: 7px;
-      max-height: 210px;
+      flex: 1;
+      min-height: 250px;
+      align-content: start;
+      align-items: stretch;
       overflow: auto;
     }
 
@@ -1055,6 +1062,8 @@
       .library-toolbar { grid-template-columns: 1fr; }
       .library-pager { justify-content: space-between; }
       .drill-ledger { grid-template-columns: 1fr; }
+      .drill-ledger-panel { min-height: 260px; }
+      .drill-ledger-list { min-height: 210px; }
       .drill-prompt-row { gap: 6px; flex-wrap: wrap; }
       .drill-answer-input {
         flex-basis: min(55ch, 100%);
@@ -3709,7 +3718,7 @@
 
     function drillLedgerCards(items, emptyText, type) {
       if (!items.length) return `<div class="item"><p class="muted">${emptyText}</p></div>`;
-      return items.slice(0, 30).map(item => {
+      return items.map(item => {
         const stat = state.wordStats[item.word] || {};
         const queued = isWordQueuedForReview(item);
         const detail = type === "correct"
@@ -3733,12 +3742,12 @@
       $("wrongWordBox").innerHTML = `
         <div class="drill-ledger">
           <section class="drill-ledger-panel">
-            <h3>错误词（${wrong.length}）</h3>
-            <div class="drill-ledger-list">${drillLedgerCards(wrong, "还没有错误词。答错后会显示在这里。", "wrong")}</div>
-          </section>
-          <section class="drill-ledger-panel">
             <h3>答对词（${correct.length}）</h3>
             <div class="drill-ledger-list">${drillLedgerCards(correct, "还没有答对词。答对后会显示在这里。", "correct")}</div>
+          </section>
+          <section class="drill-ledger-panel">
+            <h3>错误词（${wrong.length}）</h3>
+            <div class="drill-ledger-list">${drillLedgerCards(wrong, "还没有错误词。答错后会显示在这里。", "wrong")}</div>
           </section>
         </div>
       `;
@@ -3771,7 +3780,7 @@
       updateDrillMetrics();
       $("drillResult").innerHTML = `
         <strong>答错：${current.word} = ${current.meaning}</strong>
-        <span class="muted">已加入左侧错误词。可继续听这个词，再点“下一个”。</span>
+        <span class="muted">已加入错误词。可继续听这个词，再点“下一个”。</span>
         <div class="actions" style="margin-top:8px">
           <button class="secondary" id="drillSpeakEnglish" data-speak-drill="en" type="button">▶ 英文</button>
           <button class="secondary" id="drillSpeakChinese" data-speak-drill="zh" type="button">▶ 中文</button>
@@ -3799,7 +3808,7 @@
       markWordUnanswered(current);
       if ($("drillResult")) {
         $("drillResult").classList.remove("hidden");
-        $("drillResult").innerHTML = `<strong>未答：${current.word} = ${current.meaning}</strong><span class="muted">已计入左侧错误词。正在切换下一个。</span>`;
+        $("drillResult").innerHTML = `<strong>未答：${current.word} = ${current.meaning}</strong><span class="muted">已计入错误词。正在切换下一个。</span>`;
       }
       state.drillWord = null;
       state.drillIndex += 1;
