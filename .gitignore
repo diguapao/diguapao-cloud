@@ -38,6 +38,9 @@ hs_err_pid*
 /examples-collection/examples-python/examples-collection-python/examples-collection-python.iml
 /non-echnology-doc/Jinan-University/000-C_Programming/C5_source_program(17.9)/**/*.exe
 /non-echnology-doc/Jinan-University/000-C_Programming/C5_source_program(17.9)/*/*/*.exe
+# PETS3资料默认保留本地；远端只跟踪 pets3/index.html 资料模块引用的精选文件。
+/pets3/pets3-资料/**
+
 # PETS3资料中听力/音频资源体积过大，保留本地，不提交到仓库。
 /pets3/pets3-资料/**/*.mp3
 /pets3/pets3-资料/**/*.wav

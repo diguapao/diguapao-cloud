@@ -1305,7 +1305,7 @@
         <div class="module-head">
           <div>
             <h2>资料精选</h2>
-            <p class="muted">只保留 70 天冲 60+ 最值得打开的资料：先真题和评分标准，再词汇、短语、语法和听力。</p>
+            <p class="muted">只保留 70 天冲 60+ 最值得打开的资料：先真题和评分标准，再词汇、短语、语法和写作。</p>
           </div>
         </div>
         <div id="resourceBox"></div>
@@ -1555,12 +1555,6 @@
         use: "第1天读目录和题型，后面只在不清楚考试要求时回看。"
       },
       {
-        group: "先读规则",
-        title: "考试样卷及解析",
-        path: "pets3-资料/【资料】公三（PETS3）/【02】备考资料/PETS（第三级）考试样卷及解析（39页）.pdf",
-        use: "第1周拆一遍，确认笔试长什么样，不用一次做完。"
-      },
-      {
         group: "真题主线",
         title: "2024年3月真题卷",
         path: "pets3-资料/【资料】公三（PETS3）/【01】真题及答案/【01】真题部分/2024年3月公共英语三级（PETS3）真题卷.pdf",
@@ -1571,18 +1565,6 @@
         title: "2024年3月答案解析",
         path: "pets3-资料/【资料】公三（PETS3）/【01】真题及答案/【02】答案部分/2024年3月公共英语三级（PETS3）答案解析.pdf",
         use: "只记录错因：词不认识、定位错、语法错、审题错。"
-      },
-      {
-        group: "听力",
-        title: "2024年3月听力材料",
-        path: "pets3-资料/【资料】公三（PETS3）/【01】真题及答案/【03】听力材料/2024年3月（PETS3）听力材料.mp3",
-        use: "第36天后配真题使用；听两遍后再看解析。"
-      },
-      {
-        group: "听力",
-        title: "场所地点题字幕",
-        path: "pets3-资料/【资料】公三（PETS3）/【07】听力练习/考点梳理及自我检测/1.场所地点题/（一）场所地点题.lrc",
-        use: "前两周练定位词：airport、drawer、company、upstairs。"
       },
       {
         group: "词汇短语",
@@ -1626,12 +1608,6 @@
         path: "pets3-资料/【资料】公三（PETS3）/【06】作文部分/PETS（第三级）作文模版通用句型（16页）.pdf",
         use: "考前回归时只挑自己能写对的句型，避免硬套长难句。"
       },
-      {
-        group: "模拟",
-        title: "考前冲刺试卷1",
-        path: "pets3-资料/【资料】公三（PETS3）/【09】题库部分/PETS（第三级） 考前冲刺试卷1（题目）.pdf",
-        use: "第57天后当回归测试，不在前期消耗。"
-      }
     ];
 
     const compositionTemplates = [
@@ -2643,10 +2619,10 @@
     }
 
     function resourcesForDay(day) {
-      if (day <= 7) return curatedResources.filter(item => ["考试大纲", "考试样卷及解析", "语法汇总"].includes(item.title));
-      if (day <= 35) return curatedResources.filter(item => ["500个考过10次的高频词", "600条重点短语搭配", "应用文写作格式指导", "场所地点题字幕"].includes(item.title));
-      if (day <= 56) return curatedResources.filter(item => ["2024年3月真题卷", "2024年3月答案解析", "2024年3月听力材料", "写作评分方法与标准"].includes(item.title));
-      return curatedResources.filter(item => ["考前冲刺试卷1", "2024年3月真题卷", "2024年3月答案解析", "写作评分方法与标准"].includes(item.title));
+      if (day <= 7) return curatedResources.filter(item => ["考试大纲", "语法汇总"].includes(item.title));
+      if (day <= 35) return curatedResources.filter(item => ["500个考过10次的高频词", "600条重点短语搭配", "应用文写作格式指导"].includes(item.title));
+      if (day <= 56) return curatedResources.filter(item => ["2024年3月真题卷", "2024年3月答案解析", "写作评分方法与标准"].includes(item.title));
+      return curatedResources.filter(item => ["2024年3月真题卷", "2024年3月答案解析", "写作评分方法与标准"].includes(item.title));
     }
 
     function renderMission() {
@@ -2710,7 +2686,7 @@
       $("resourceBox").innerHTML = `
         <div class="review-grid">
           <div class="item"><h3>优先原则</h3><p class="muted">真题和解析用于校准考试；词汇短语用于每日输入；语法和写作用于查错。重复词表、打印广告、过厚泛资料不进入主线。</p></div>
-          <div class="item"><h3>60+策略</h3><p class="muted">基础薄弱时先保可拿分项：高频词义、阅读定位、应用文格式、常见语法、听力关键词。低频词只查漏。</p></div>
+          <div class="item"><h3>60+策略</h3><p class="muted">基础薄弱时先保可拿分项：高频词义、阅读定位、应用文格式、常见语法、写作评分点。低频词只查漏。</p></div>
           <div class="item"><h3>使用节奏</h3><p class="muted">1-35天少做套卷，多拆题；36天后开始限时；57天后只回归错因和模板。</p></div>
         </div>
         <div class="toolbox">
