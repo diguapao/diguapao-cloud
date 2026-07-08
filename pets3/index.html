@@ -1768,6 +1768,7 @@
       drillTag: localStorage.getItem("pets3-drill-tag") || "all",
       drillIndex: Number(localStorage.getItem("pets3-drill-index") || 0),
       drillReviewQueue: JSON.parse(localStorage.getItem("pets3-drill-review-queue") || "[]"),
+      drillDayProgress: JSON.parse(localStorage.getItem("pets3-drill-day-progress") || "{}"),
       libraryPage: Number(localStorage.getItem("pets3-library-page") || 1),
       drillWord: null
     };
@@ -1929,6 +1930,7 @@
     }
 
     function saveProgressLocal() {
+      rememberDrillDayProgress();
       localStorage.setItem("pets3-day", state.day);
       localStorage.setItem("pets3-tab", state.tab);
       localStorage.setItem("pets3-completed", JSON.stringify(state.completed));
@@ -1943,6 +1945,7 @@
       localStorage.setItem("pets3-drill-tag", state.drillTag);
       localStorage.setItem("pets3-drill-index", state.drillIndex);
       localStorage.setItem("pets3-drill-review-queue", JSON.stringify(state.drillReviewQueue));
+      localStorage.setItem("pets3-drill-day-progress", JSON.stringify(state.drillDayProgress));
       localStorage.setItem("pets3-library-page", state.libraryPage);
       scheduleProgressJsonSave();
     }
@@ -2221,6 +2224,34 @@
       return scopedEntries.filter(entry => !isWordAnsweredCorrectly(entry));
     }
 
+    function drillProgressKey(day = state.day) {
+      return String(clamp(Number(day || 1), 1, 70));
+    }
+
+    function rememberDrillDayProgress(day = state.day) {
+      if (!state.drillDayProgress || typeof state.drillDayProgress !== "object") state.drillDayProgress = {};
+      const key = drillProgressKey(day);
+      state.drillDayProgress[key] = {
+        index: Math.max(0, Number(state.drillIndex || 0)),
+        word: state.drillWord && state.drillWord.word ? state.drillWord.word : "",
+        savedAt: new Date().toISOString()
+      };
+    }
+
+    function restoreDrillDayProgress(day = state.day) {
+      if (!state.drillDayProgress || typeof state.drillDayProgress !== "object") state.drillDayProgress = {};
+      const safeDay = clamp(Number(day || state.day), 1, 70);
+      const key = drillProgressKey(safeDay);
+      const saved = state.drillDayProgress[key] || {};
+      state.drillTag = drillDayTag(safeDay);
+      const pool = drillWordPool();
+      const fallbackIndex = key in state.drillDayProgress ? saved.index : state.drillIndex;
+      state.drillIndex = pool.length ? clamp(Number(fallbackIndex || 0), 0, pool.length - 1) : 0;
+      const savedWord = String(saved.word || "");
+      state.drillWord = savedWord ? pool.find(entry => entry.word === savedWord) || null : null;
+      rememberDrillDayProgress(safeDay);
+    }
+
     function resetDrillScopeProgress() {
       const scopedWords = drillScopeWordSet();
       Object.entries(state.wordStats).forEach(([word, stat]) => {
@@ -2235,6 +2266,9 @@
       state.drillReviewQueue = state.drillReviewQueue.filter(word => !scopedWords.has(word));
       state.drillIndex = 0;
       state.drillWord = null;
+      if (state.drillDayProgress && typeof state.drillDayProgress === "object") {
+        delete state.drillDayProgress[drillProgressKey(state.day)];
+      }
       saveProgressLocal();
     }
 
@@ -2265,6 +2299,9 @@
       state.drillTag = drillDayTag(safeDay);
       state.drillIndex = 0;
       state.drillWord = null;
+      if (state.drillDayProgress && typeof state.drillDayProgress === "object") {
+        delete state.drillDayProgress[drillProgressKey(safeDay)];
+      }
     }
 
     function normalizeDrillIndex(pool) {
@@ -2324,6 +2361,7 @@
         drillTag: state.drillTag,
         drillIndex: state.drillIndex,
         drillReviewQueue: state.drillReviewQueue,
+        drillDayProgress: state.drillDayProgress,
         libraryPage: state.libraryPage,
         translationDrafts: translationDraftsFromStorage(),
         writingDrafts: writingDraftsFromStorage()
@@ -2349,6 +2387,8 @@
       state.drillTag = drillDayTag(state.day);
       state.drillIndex = Number(data.drillIndex || 0);
       state.drillReviewQueue = Array.isArray(data.drillReviewQueue) ? [...new Set(data.drillReviewQueue.map(String).filter(Boolean))].slice(0, 80) : [];
+      state.drillDayProgress = data.drillDayProgress && typeof data.drillDayProgress === "object" ? data.drillDayProgress : {};
+      restoreDrillDayProgress(state.day);
       state.libraryPage = Number(data.libraryPage || 1);
       saveProgressLocal();
       Object.keys(localStorage)
@@ -3500,7 +3540,7 @@
     }
 
     function renderDrill() {
-      state.drillTag = drillDayTag(state.day);
+      restoreDrillDayProgress(state.day);
       const current = state.drillWord || pickDrillWord();
       state.drillWord = current;
       const entries = allWordEntries();
@@ -3758,10 +3798,12 @@
     function switchDay(day) {
       if ("speechSynthesis" in window) speechSynthesis.cancel();
       resetSpeechButton();
+      rememberDrillDayProgress(state.day);
       state.day = clamp(Number(day || 1), 1, 70);
       state.drillTag = drillDayTag(state.day);
       state.drillIndex = 0;
       state.drillWord = null;
+      restoreDrillDayProgress(state.day);
       saveProgressLocal();
       renderAll();
     }
@@ -4105,6 +4147,7 @@
       state.drillTag = "day-1";
       state.drillIndex = 0;
       state.drillReviewQueue = [];
+      state.drillDayProgress = {};
       state.drillWord = null;
       state.day = 1;
       state.tab = "review";
