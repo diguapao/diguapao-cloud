@@ -986,6 +986,59 @@
       align-items: center;
     }
 
+    .learning-chain {
+      display: grid;
+      grid-template-columns: minmax(220px, .75fr) minmax(280px, 1fr);
+      gap: 12px;
+      align-items: start;
+      width: 100%;
+    }
+
+    .chain-block {
+      display: grid;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .chain-block strong {
+      font-size: 14px;
+    }
+
+    .chain-flow {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .source-links {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .source-links a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    .source-links a:hover { text-decoration: underline; }
+
+    .analysis-note {
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfe;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .analysis-note summary {
+      color: var(--ink);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
     .library-toolbar {
       display: grid;
       grid-template-columns: minmax(260px, 1.1fr) 132px minmax(220px, .8fr) auto;
@@ -1048,6 +1101,7 @@
       .library-pager {
         justify-self: stretch;
       }
+      .learning-chain { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 560px) {
@@ -1136,7 +1190,7 @@
         <div class="hero-panel">
           <div class="hero-content">
             <h2 id="heroTitle">第1天：建立笔试基本盘</h2>
-            <p id="heroText" class="muted">每天完成词汇、句子、翻译、阅读、写作和小测，最后用复习模块把错题和薄弱词拉回来。</p>
+            <p id="heroText" class="muted">每天完成今日词汇、真题化句子、阅读短文、写作仿写和小测回收，最后用复习模块把错题和薄弱词拉回来。</p>
           </div>
           <div class="chips" id="chips"></div>
           <div class="mentor-plan hero-mentor">
@@ -1167,7 +1221,7 @@
             <div class="bar"><span id="m3"></span></div>
             <div class="bar"><span id="m4"></span></div>
           </div>
-          <p class="muted small">题型覆盖：词汇语法、完形倾向、阅读理解、英汉互译、短文写作。内容为原创练习，按近年 PETS3 笔试常见能力点设计。</p>
+          <p class="muted small">题型覆盖：词汇语法、阅读理解、顺译回译、短文写作。训练句和短文由今日词汇接入资料依据，不冒充真题原文。</p>
           <div id="missionBox"></div>
           <button id="completeDay" class="primary" type="button">✓ 标记今天完成</button>
         </div>
@@ -1255,8 +1309,8 @@
       <section id="sentences" class="module">
         <div class="module-head">
           <div>
-            <h2>句子听读</h2>
-            <p class="muted">由短句、复合句到议论文表达，练笔试语感和翻译切分。</p>
+            <h2>真题化句子精读</h2>
+            <p class="muted">用今日词连接样卷、真题解析和语法资料中的常见句式，从单词、成分、结构和翻译顺序拆清楚。</p>
           </div>
           <button class="secondary" id="speakSentences" type="button">▶ 连读句子</button>
         </div>
@@ -1266,8 +1320,8 @@
       <section id="translation" class="module">
         <div class="module-head">
           <div>
-            <h2>翻译训练</h2>
-            <p class="muted">每天中英互译各有侧重，逐步加入从句、让步、因果、观点表达。</p>
+            <h2>顺译回译</h2>
+            <p class="muted">PETS3 笔试主线不是独立翻译大题，这里把翻译作为句子理解、阅读定位和写作仿写的过渡训练。</p>
           </div>
         </div>
         <div id="translationList"></div>
@@ -1277,7 +1331,7 @@
         <div class="module-head">
           <div>
             <h2>阅读理解</h2>
-            <p class="muted">短文长度和抽象程度随天数上升，训练主旨、细节、推断和态度题。</p>
+            <p class="muted">短文从简单句逐步过渡到真题题型，用今日词练主旨、细节、推断和干扰项排除。</p>
           </div>
           <button class="secondary" id="speakPassage" type="button">▶ 朗读短文</button>
         </div>
@@ -1288,7 +1342,7 @@
         <div class="module-head">
           <div>
             <h2>写作</h2>
-            <p class="muted">从通知、邮件、说明文到观点短文，贴近 PETS3 笔试写作要求。</p>
+            <p class="muted">从今日词造句到仿写短文，再套用资料模块里的写作评分标准和应用文模板。</p>
           </div>
           <button class="secondary" id="saveWriting" type="button">▣ 保存草稿</button>
         </div>
@@ -1299,7 +1353,7 @@
         <div class="module-head">
           <div>
             <h2>每日小测</h2>
-            <p class="muted">原创题，参考近十年笔试常见题型和考点分布，不复制真题原文。</p>
+            <p class="muted">围绕今日词、句子、阅读和写作路径出题，附解题思路；不复制真题原文。</p>
           </div>
           <div class="actions">
             <button class="primary" id="checkQuiz" type="button">✓ 交卷</button>
@@ -1314,7 +1368,7 @@
         <div class="module-head">
           <div>
             <h2>资料精选</h2>
-            <p class="muted">只保留 70 天冲 60+ 最值得打开的资料：先真题和评分标准，再词汇、短语、语法和写作。</p>
+            <p class="muted">只保留 70 天冲 60+ 最值得打开的资料：先真题和评分标准，再词汇、短语、语法和听力。</p>
           </div>
         </div>
         <div id="resourceBox"></div>
@@ -1564,6 +1618,12 @@
         use: "第1天读目录和题型，后面只在不清楚考试要求时回看。"
       },
       {
+        group: "先读规则",
+        title: "考试样卷及解析",
+        path: "pets3-资料/【资料】公三（PETS3）/【02】备考资料/PETS（第三级）考试样卷及解析（39页）.pdf",
+        use: "第1周拆一遍，确认笔试长什么样，不用一次做完。"
+      },
+      {
         group: "真题主线",
         title: "2024年3月真题卷",
         path: "pets3-资料/【资料】公三（PETS3）/【01】真题及答案/【01】真题部分/2024年3月公共英语三级（PETS3）真题卷.pdf",
@@ -1574,6 +1634,18 @@
         title: "2024年3月答案解析",
         path: "pets3-资料/【资料】公三（PETS3）/【01】真题及答案/【02】答案部分/2024年3月公共英语三级（PETS3）答案解析.pdf",
         use: "只记录错因：词不认识、定位错、语法错、审题错。"
+      },
+      {
+        group: "听力",
+        title: "2024年3月听力材料",
+        path: "pets3-资料/【资料】公三（PETS3）/【01】真题及答案/【03】听力材料/2024年3月（PETS3）听力材料.mp3",
+        use: "第36天后配真题使用；听两遍后再看解析。"
+      },
+      {
+        group: "听力",
+        title: "场所地点题字幕",
+        path: "pets3-资料/【资料】公三（PETS3）/【07】听力练习/考点梳理及自我检测/1.场所地点题/（一）场所地点题.lrc",
+        use: "前两周练定位词：airport、drawer、company、upstairs。"
       },
       {
         group: "词汇短语",
@@ -1617,6 +1689,12 @@
         path: "pets3-资料/【资料】公三（PETS3）/【06】作文部分/PETS（第三级）作文模版通用句型（16页）.pdf",
         use: "考前回归时只挑自己能写对的句型，避免硬套长难句。"
       },
+      {
+        group: "模拟",
+        title: "考前冲刺试卷1",
+        path: "pets3-资料/【资料】公三（PETS3）/【09】题库部分/PETS（第三级） 考前冲刺试卷1（题目）.pdf",
+        use: "第57天后当回归测试，不在前期消耗。"
+      }
     ];
 
     const compositionTemplates = [
@@ -2610,9 +2688,9 @@
       const count = wordTarget(day);
       const stageIndex = sprintStageIndex(day);
       const missions = [
-        ["25m", `${count}个词：先遮中文回忆，再看例句，只把不会的加入快复习。`],
-        ["20m", "句子/翻译：像调试代码一样先找主干，再处理从句、并列和固定搭配。"],
-        ["25m", day < 15 ? "阅读短文：只练主旨题和定位词，不追速度。" : day < 36 ? "阅读+小测：做完必须写错因标签。" : "真题/模拟：限时做一组，错因进复习中心。"],
+        ["25m", `${count}个词：先遮中文回忆，再听发音，只把不会的加入快复习。`],
+        ["20m", "真题化句子/顺译回译：像调试代码一样先找主干，再处理从句、并列和固定搭配。"],
+        ["25m", day < 15 ? "阅读短文：用今日词练主旨题和定位词，不追速度。" : day < 36 ? "阅读+小测：做完必须写错因标签。" : "真题/模拟：限时做一组，错因进复习中心。"],
         ["15m", day < 36 ? "写作：套用开头、主体、结尾三段式，保证信息点完整。" : "写作：按评分标准检查字数、格式、时态、单复数。"]
       ];
       if (day >= 36) missions.splice(2, 0, ["20m", "听力：先不看文本听两遍，再用字幕核对关键词。"]);
@@ -2628,10 +2706,10 @@
     }
 
     function resourcesForDay(day) {
-      if (day <= 7) return curatedResources.filter(item => ["考试大纲", "语法汇总"].includes(item.title));
-      if (day <= 35) return curatedResources.filter(item => ["500个考过10次的高频词", "600条重点短语搭配", "应用文写作格式指导"].includes(item.title));
-      if (day <= 56) return curatedResources.filter(item => ["2024年3月真题卷", "2024年3月答案解析", "写作评分方法与标准"].includes(item.title));
-      return curatedResources.filter(item => ["2024年3月真题卷", "2024年3月答案解析", "写作评分方法与标准"].includes(item.title));
+      if (day <= 7) return curatedResources.filter(item => ["考试大纲", "考试样卷及解析", "语法汇总"].includes(item.title));
+      if (day <= 35) return curatedResources.filter(item => ["500个考过10次的高频词", "600条重点短语搭配", "应用文写作格式指导", "场所地点题字幕"].includes(item.title));
+      if (day <= 56) return curatedResources.filter(item => ["2024年3月真题卷", "2024年3月答案解析", "2024年3月听力材料", "写作评分方法与标准"].includes(item.title));
+      return curatedResources.filter(item => ["考前冲刺试卷1", "2024年3月真题卷", "2024年3月答案解析", "写作评分方法与标准"].includes(item.title));
     }
 
     function renderMission() {
@@ -2669,7 +2747,7 @@
         <div class="item" style="margin-top:12px">
           <h3>程序员友好做法</h3>
           <ul class="compact-list">
-            <li>把每天当一次小迭代：输入词汇和句型，输出翻译、阅读选择、作文草稿。</li>
+            <li>把每天当一次小迭代：输入今日词，输出句子解析、阅读定位、作文仿写和小测错因。</li>
             <li>错题只记根因：unknown-word、grammar、positioning、careless、writing-format。</li>
             <li>不要追求一次懂完；同一知识点至少经过“见过、做错、改对、复现”四次才算稳定。</li>
           </ul>
@@ -2695,7 +2773,7 @@
       $("resourceBox").innerHTML = `
         <div class="review-grid">
           <div class="item"><h3>优先原则</h3><p class="muted">真题和解析用于校准考试；词汇短语用于每日输入；语法和写作用于查错。重复词表、打印广告、过厚泛资料不进入主线。</p></div>
-          <div class="item"><h3>60+策略</h3><p class="muted">基础薄弱时先保可拿分项：高频词义、阅读定位、应用文格式、常见语法、写作评分点。低频词只查漏。</p></div>
+          <div class="item"><h3>60+策略</h3><p class="muted">基础薄弱时先保可拿分项：高频词义、阅读定位、应用文格式、常见语法、听力关键词。低频词只查漏。</p></div>
           <div class="item"><h3>使用节奏</h3><p class="muted">1-35天少做套卷，多拆题；36天后开始限时；57天后只回归错因和模板。</p></div>
         </div>
         <div class="toolbox">
@@ -2783,6 +2861,91 @@
         .map(item => [item[0], conciseMeaning(item[1]), item[3], item[4]]);
       const fallback = dailyWords(day).map(item => [item[0], conciseMeaning(item[1]), item[3], item[4]]);
       return (picked.length ? picked : fallback).slice(0, count);
+    }
+
+    const moduleSourceTitles = {
+      sentence: ["考试样卷及解析", "2024年3月真题卷", "2024年3月答案解析", "语法汇总"],
+      translation: ["考试样卷及解析", "语法汇总", "600条重点短语搭配", "写作评分方法与标准"],
+      reading: ["考试大纲", "考试样卷及解析", "2024年3月真题卷", "2024年3月答案解析"],
+      writing: ["写作评分方法与标准", "应用文写作格式指导", "15篇写作模版范文", "作文模版通用句型"],
+      quiz: ["考试大纲", "2024年3月答案解析", "500个考过10次的高频词", "600条重点短语搭配", "语法汇总"]
+    };
+
+    const moduleGuideText = {
+      sentence: "训练句使用今日词，并按资料模块中的样卷、真题解析和语法资料校准常见句式，用来练拆主干、翻译顺序和易错点；不标称为真题原句。",
+      translation: "这里不把翻译当独立押题，而是把它作为句子理解、阅读定位和写作仿写的桥梁。",
+      reading: "短文围绕今日词和样卷/真题解析里的题型训练展开，先练定位和排除干扰项，再逐步接近完整短文。",
+      writing: "写作按评分标准先保信息完整和格式正确，再把今日词自然放进短句、短段和应用文模板。",
+      quiz: "小测只回收当天链路：今日词义、句子结构、阅读定位、写作审题和常见语法错点。"
+    };
+
+    function resourceByTitle(title) {
+      return curatedResources.find(item => item.title === title);
+    }
+
+    function moduleSources(kind, day = state.day) {
+      const seen = new Set();
+      return [
+        ...(moduleSourceTitles[kind] || []).map(resourceByTitle),
+        ...resourcesForDay(day)
+      ].filter(Boolean).filter(item => {
+        if (seen.has(item.title)) return false;
+        seen.add(item.title);
+        return true;
+      }).slice(0, 5);
+    }
+
+    function wordSourcesForDay(day) {
+      return [...new Set(dailyWordEntries(day).map(item => item.source).filter(Boolean))].slice(0, 2);
+    }
+
+    function sourceLinksHtml(kind, day = state.day) {
+      return moduleSources(kind, day).map(item => `
+        <a class="tag amber" href="${resourceHref(item.path)}" target="_blank" rel="noopener" title="${item.use}">${item.title}</a>
+      `).join("");
+    }
+
+    function learningChainBox(kind, day = state.day) {
+      const words = dailyFocusWords(day, 6);
+      const wordSources = wordSourcesForDay(day);
+      return `
+        <div class="toolbox learning-chain">
+          <div class="chain-block">
+            <strong>今日词贯穿</strong>
+            <div class="chain-flow">
+              <span class="tag">今日词</span>
+              <span class="chip">真题化句子</span>
+              <span class="chip">阅读短文</span>
+              <span class="chip">写作仿写</span>
+              <span class="chip">小测回收</span>
+            </div>
+            <div class="chips" style="margin-top:0">${words.map(w => `<span class="chip">${w[0]} · ${w[1]}</span>`).join("")}</div>
+          </div>
+          <div class="chain-block">
+            <strong>资料依据</strong>
+            <p class="muted small">${moduleGuideText[kind] || "训练内容按资料模块和今日词库组织。"}</p>
+            <p class="muted small">词库依据：${wordSources.length ? wordSources.join("、") : "内置正式词库/本机导入词库"}</p>
+            <div class="source-links">${sourceLinksHtml(kind, day)}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function sentenceStrategy(item) {
+      return `先按 ${item.pattern} 找主干，再把今日词放回成分位置；翻译时按“主干先行、修饰后补”的顺序合并，避免逐词硬翻。`;
+    }
+
+    function translationStrategy(grammar) {
+      return `先找主语和谓语，再按 ${grammar.split("；")[1] || "句子主干"} 检查词序；最后用今日词回译一次，确认中文和英文表达的是同一件事。`;
+    }
+
+    function readingQuestionStrategy(question) {
+      const answer = question[1][question[2]];
+      return question[3] || `正确答案：${answer}。先圈题干关键词，再回到短文找同词、同义词或前后句依据；没有原文依据的选项直接排除。`;
+    }
+
+    function writingStrategy(task) {
+      return `先按资料里的评分标准保住信息点和格式，再套 ${task.stage} 难度的短句骨架；今日词只选自己能写对的，不为了高级词牺牲准确。`;
     }
 
     const speechState = {
@@ -2881,7 +3044,7 @@
           : isRelearning ? "↻ 重学中 · 标记完成" : "✓ 标记今天完成";
       $("completeDay").title = !isDone && dayDrillWrongTotal ? "当天快复习没有错词后才能标记完成" : "";
       $("heroTitle").textContent = `第${state.day}天：${level}阶段`;
-      $("heroText").textContent = `${focus}。今日主题：${theme}。`;
+      $("heroText").textContent = `${focus}。今日主题：${theme}；今日词会进入句子、阅读、写作和小测。`;
       $("coreProgressBar").style.width = `${Math.min(coreDone / 1400 * 100, 100)}%`;
       $("coreProgressText").textContent = `核心1400词进度：${coreDone}/1400 · 全词库 ${libraryTotal} 词 · 当前：${currentLayer.name} · ${modeText}`;
       $("vocabTotalHint").textContent = `核心目标 1400 词；当前正式词库共 ${libraryTotal} 词。基础薄弱先不看例句：认词形、听发音、记常考义、做快测。`;
@@ -3240,7 +3403,8 @@
     }
 
     function renderSentences() {
-      $("sentenceList").innerHTML = dailySentences(state.day).map((item, i) => `
+      const items = dailySentences(state.day);
+      $("sentenceList").innerHTML = learningChainBox("sentence") + items.map((item, i) => `
         <div class="item">
           <div class="sentence">
             <button class="icon-btn" id="speakSentence-${i}" data-sentence-index="${i}" type="button" title="朗读第${i + 1}句">▶</button>
@@ -3267,6 +3431,10 @@
                 <ol class="step-list">${item.steps.map(step => `<li>${step}</li>`).join("")}</ol>
               </div>
               <p><strong>易错点：</strong>${item.trap}</p>
+              <details class="analysis-note" open>
+                <summary>解题思路</summary>
+                <p>${sentenceStrategy(item)}</p>
+              </details>
             </div>
           </div>
         </div>
@@ -3320,12 +3488,19 @@
 
     function renderTranslation() {
       const items = translationItems(state.day);
-      $("translationList").innerHTML = items.map(([type, text, tip, grammar], i) => `
+      $("translationList").innerHTML = learningChainBox("translation") + items.map(([type, text, tip, grammar], i) => `
         <div class="item">
           <span class="tag ${i % 2 ? "green" : ""}">${type}</span>
           <p class="en" style="margin-top:8px">${text}</p>
           <p class="muted small">${tip}</p>
-          <div class="grammar-box"><strong>语法拆解</strong><p>${grammar}</p></div>
+          <div class="grammar-box">
+            <strong>语法拆解</strong>
+            <p>${grammar}</p>
+            <details class="analysis-note" open>
+              <summary>解题思路</summary>
+              <p>${translationStrategy(grammar)}</p>
+            </details>
+          </div>
           <textarea data-translation-key="${state.day}-${i}" placeholder="在这里写你的译文...">${localStorage.getItem(`pets3-translation-${state.day}-${i}`) || ""}</textarea>
         </div>
       `).join("");
@@ -3385,10 +3560,14 @@
 
     function renderReading() {
       const r = reading(state.day);
-      $("readingBox").innerHTML = `
+      $("readingBox").innerHTML = learningChainBox("reading") + `
         <div class="chips" style="margin-top:0">
           <span class="tag amber">难度：${r.stage}</span>
           <span class="chip">先读短句，再圈今日词，最后定位答案</span>
+        </div>
+        <div class="grammar-box">
+          <strong>解题路线</strong>
+          <p>先看题干找关键词，再回短文定位同词、同义词或前后句；选项必须有原文依据，主旨题最后做。</p>
         </div>
         <div class="passage">${r.passage}</div>
         <div class="chips">${r.words.map(w => `<span class="chip">${w[0]} · ${w[1]}</span>`).join("")}</div>
@@ -3396,6 +3575,10 @@
           ${r.questions.map((q, i) => `<div class="question">
             <strong>${i + 1}. ${q[0]}</strong>
             <div class="options">${q[1].map((op, j) => `<label class="option"><input type="radio" name="read${i}" value="${j}"> ${op}</label>`).join("")}</div>
+            <details class="analysis-note">
+              <summary>解题思路</summary>
+              <p>${readingQuestionStrategy(q)}</p>
+            </details>
           </div>`).join("")}
         </div>
       `;
@@ -3488,7 +3671,7 @@
       const key = `pets3-writing-${state.day}`;
       const words = dailyFocusWords(state.day, 8);
       const task = writingTask(state.day, words);
-      $("writingBox").innerHTML = `
+      $("writingBox").innerHTML = learningChainBox("writing") + `
         <div class="prompt-box">
           <span class="tag amber">今日题目</span>
           <span class="tag green">难度：${task.stage}</span>
@@ -3498,6 +3681,10 @@
           <div class="grammar-box">
             <strong>今日词写作骨架</strong>
             ${task.skeleton.map(line => `<p>${line}</p>`).join("")}
+            <details class="analysis-note" open>
+              <summary>仿写路径</summary>
+              <p>${writingStrategy(task)}</p>
+            </details>
           </div>
           <textarea id="writingDraft" placeholder="写下你的作文草稿...">${localStorage.getItem(key) || ""}</textarea>
         </div>
@@ -3535,12 +3722,16 @@
 
     function renderQuiz() {
       $("quizResult").classList.add("hidden");
-      $("quizBox").innerHTML = quiz(state.day).map((q, i) => `
+      $("quizBox").innerHTML = learningChainBox("quiz") + quiz(state.day).map((q, i) => `
         <div class="question" data-answer="${q[2]}" data-explain="${q[3]}">
           <strong>${i + 1}. ${q[0]}</strong>
           <div class="options">
             ${q[1].map((op, j) => `<label class="option"><input type="radio" name="q${i}" value="${j}"> ${String.fromCharCode(65 + j)}. ${op}</label>`).join("")}
           </div>
+          <details class="analysis-note">
+            <summary>解题思路</summary>
+            <p>${q[3]}</p>
+          </details>
         </div>
       `).join("");
       if (state.quizHistory[state.day]) {
