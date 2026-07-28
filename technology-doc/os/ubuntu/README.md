@@ -6,13 +6,9 @@ sudo ufw default allow incoming && sudo ufw default allow outgoing && sudo ufw a
 
 ```
 
-
-
 # VMware NAT 网络配置
 
 ![image-20260728111131438](assets/image-20260728111131438.png)
-
-
 
 # pg 库
 
@@ -82,4 +78,63 @@ sudo clickhouse restart
 sudo clickhouse start
 
 本地测试连接：
+
 clickhouse-client --user default
+
+clickhouse-client -h 192.168.11.100 --port 9000 -u default --password
+
+测试服务 curl "http://192.168.11.100:8123"
+会返回：Ok.
+
+### 安装服务设置开机自启
+
+路径是标准的 /usr/bin/clickhouse。
+
+直接复制并运行以下命令，一步到位完成开机自启配置：
+
+1. 写入服务配置文件
+   运行以下命令（自动写入 systemd 配置）：
+
+```shell
+
+sudo bash -c 'cat <<EOF > /etc/systemd/system/clickhouse-server.service
+[Unit]
+Description=ClickHouse Server (DBMS)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStart=/usr/bin/clickhouse server --config-file=/etc/clickhouse-server/config.xml
+Restart=always
+RestartSec=3
+LimitNOFILE=262144
+
+[Install]
+WantedBy=multi-user.target
+EOF'
+
+```
+
+2. 加载配置并开启自启
+
+#### 重新加载系统服务
+
+sudo systemctl daemon-reload
+
+#### 设置开机自启
+
+sudo systemctl enable clickhouse-server
+
+#### 启动服务
+
+sudo systemctl start clickhouse-server
+
+3. 验证结果
+   执行：
+
+sudo systemctl status clickhouse-server
+
+只要看到绿色的 active (running)，且第一行显示 loaded (...; enabled; ...)，就说明开机自启已经彻底配置好了。
