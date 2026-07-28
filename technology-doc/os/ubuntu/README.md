@@ -1,3 +1,19 @@
+# 防火墙
+
+```shell
+#Ubuntu 如果使用的是 ufw（Ubuntu 默认防火墙），允许所有端口（入站+出站）一行命令
+sudo ufw default allow incoming && sudo ufw default allow outgoing && sudo ufw allow from any && sudo ufw reload
+
+```
+
+
+
+# VMware NAT 网络配置
+
+![image-20260728111131438](assets/image-20260728111131438.png)
+
+
+
 # pg 库
 
 ## 安装
