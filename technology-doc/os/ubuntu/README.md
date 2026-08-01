@@ -39,6 +39,13 @@ host all all 0.0.0.0/0 scram-sha-256
 重启pg
 sudo systemctl restart postgresql
 
+关闭自启
+sudo systemctl disable postgresql && sudo systemctl daemon-reload
+
+开启自启
+sudo systemctl enable  postgresql && sudo systemctl daemon-reload
+
+
 ### 本地连接
 
 psql -U postgres -h 127.0.0.1 -p 5432
