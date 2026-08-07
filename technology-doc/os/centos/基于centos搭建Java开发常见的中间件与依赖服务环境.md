@@ -1427,13 +1427,13 @@ systemctl stop rocketmq_dashboard
 
 #如果无法自动启动，则可手动启动
 #打开一个新的ssh窗口执行
-/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqnamesrv > /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log 2>&1 &
+nohup /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqnamesrv > /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log 2>&1 &
 #打开一个新的ssh窗口执行
-/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqbroker -c /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/conf/broker.conf -n 192.168.11.66:9876 > /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log 2>&1 &
+nohup /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqbroker -c /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/conf/broker.conf -n 192.168.11.66:9876 > /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log 2>&1 &
 #打开一个新的ssh窗口执行
-/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/runserver.sh org.apache.rocketmq.proxy.ProxyStartup -pc /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/conf/proxy.json > /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/proxy/output.log 2>&1 &
+nohup /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/runserver.sh org.apache.rocketmq.proxy.ProxyStartup -pc /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/conf/proxy.json > /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/proxy/output.log 2>&1 &
 #打开一个新的ssh窗口执行
-cd /usr/local/rocketmq/rocketmq-dashboard && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run > /usr/local/rocketmq/rocketmq-dashboard/logs/output.log 2>&1 &
+nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run > /usr/local/rocketmq/rocketmq-dashboard/logs/output.log 2>&1 &
 
 #查看 rocketmq 相关进程
 ps -ef | grep rocketmq
@@ -1446,6 +1446,9 @@ sudo lsof -i :8181
 ps -p 21941 -o pid,comm,user
 # 杀死进程
 kill -9 21941
+
+#看端口是否都在监听
+ss -tuln | grep -E ':(9876|10909|10911|10912|18080|18180|18081)\b'
 
 #杀死进程的脚本 start，创建 stop_rocketmq.sh 写入 在 bin 目录下
 
