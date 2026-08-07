@@ -1299,7 +1299,7 @@ tail /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-s
 ## 部署 RocketMQ 5.x
 
 ```shell
-sudo mkdir -p /root/soft/rocketmq && cd /root/soft/rocketmq
+sudo mkdir -p /usr/local/rocketmq && cd /usr/local/rocketmq
 
 curl -o rocketmq-all-5.3.1-bin-release.zip https://dist.apache.org/repos/dist/release/rocketmq/5.3.1/rocketmq-all-5.3.1-bin-release.zip
 
@@ -1310,14 +1310,14 @@ unzip rocketmq-all-5.3.1-bin-release.zip
 cd rocketmq-all-5.3.1-bin-release
 
 #权限设置
-chmod a+x /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqnamesrv
-chmod a+x /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqbroker
+chmod a+x /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqnamesrv
+chmod a+x /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqbroker
 
 #仪表盘部署
 yum install -y git
 git clone https://github.com/apache/rocketmq-dashboard.git
-cd /root/soft/rocketmq/rocketmq-dashboard
-vi /root/soft/rocketmq/rocketmq-dashboard/src/main/resources/application.yml
+cd /usr/local/rocketmq/rocketmq-dashboard
+vi /usr/local/rocketmq/rocketmq-dashboard/src/main/resources/application.yml
 #端口改为 8080
 #nameser 地址改为自己的IP地址
 rocketmq:
@@ -1337,17 +1337,17 @@ After=network.target remote-fs.target nss-lookup.target
 Type=forking
 #Type=simple
 User=root
-WorkingDirectory=/root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/
+WorkingDirectory=/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/
 Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
-ExecStart=/root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqnamesrv
+ExecStart=/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqnamesrv
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s QUIT $MAINPID
 #Restart=on-failure
 StartLimitInterval=60
 StartLimitBurst=5
 TimeoutStartSec=0
-StandardOutput=file:/root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log
-StandardError=file:/root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/error.log
+StandardOutput=file:/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log
+StandardError=file:/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/error.log
 LimitNOFILE=65536
 
 [Install]
@@ -1363,9 +1363,9 @@ After=network.target rocketmq_namesrv
 [Service]
 Type=forking
 User=root
-WorkingDirectory=/root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/
+WorkingDirectory=/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/
 Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
-ExecStart=/root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqbroker -c /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/conf/broker.conf -n 192.168.11.66:9876
+ExecStart=/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqbroker -c /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/conf/broker.conf -n 192.168.11.66:9876
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s QUIT $MAINPID
 #Restart=on-failure
@@ -1373,8 +1373,8 @@ StartLimitInterval=60
 StartLimitBurst=5
 TimeoutStartSec=0
 ExecStartPre=/bin/sleep 10
-StandardOutput=file:/root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log
-StandardError=file:/root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/error.log
+StandardOutput=file:/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log
+StandardError=file:/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/error.log
 LimitNOFILE=65536
 
 [Install]
@@ -1390,7 +1390,7 @@ After=network.target rocketmq_namesrv rocketmq_broker
 [Service]
 Type=forking
 User=root
-WorkingDirectory=/root/soft/rocketmq/rocketmq-dashboard
+WorkingDirectory=/usr/local/rocketmq/rocketmq-dashboard
 Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
 ExecStart=/root/soft/maven/apache-maven-3.9.9/bin/mvn spring-boot:run
 ExecStop=/bin/kill -s TERM $MAINPID
@@ -1399,18 +1399,18 @@ StartLimitInterval=60
 StartLimitBurst=5
 TimeoutStartSec=0
 ExecStartPre=/bin/sleep 30
-StandardOutput=file:/root/soft/rocketmq/rocketmq-dashboard/logs/output.log
-StandardError=file:/root/soft/rocketmq/rocketmq-dashboard/logs/error.log
+StandardOutput=file:/usr/local/rocketmq/rocketmq-dashboard/logs/output.log
+StandardError=file:/usr/local/rocketmq/rocketmq-dashboard/logs/error.log
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
 #创建好日志文件
-sudo chmod -R 755 /root/soft/rocketmq
-touch /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log && touch /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/error.log
-touch /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log && touch /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/error.log
-touch /root/soft/rocketmq/rocketmq-dashboard/logs/output.log && touch /root/soft/rocketmq/rocketmq-dashboard/logs/error.log
+sudo chmod -R 755 /usr/local/rocketmq
+touch /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log && touch /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/error.log
+touch /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log && touch /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/error.log
+touch /usr/local/rocketmq/rocketmq-dashboard/logs/output.log && touch /usr/local/rocketmq/rocketmq-dashboard/logs/error.log
 
 #重新加载服务的配置文件
 sudo systemctl daemon-reload
@@ -1427,11 +1427,13 @@ systemctl stop rocketmq_dashboard
 
 #如果无法自动启动，则可手动启动
 #打开一个新的ssh窗口执行
-nohup /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqnamesrv > /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log 2>&1 &
+/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqnamesrv > /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log 2>&1 &
 #打开一个新的ssh窗口执行
-nohup /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqbroker -c /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/conf/broker.conf -n 192.168.11.66:9876 > /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log 2>&1 &
+/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqbroker -c /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/conf/broker.conf -n 192.168.11.66:9876 > /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log 2>&1 &
 #打开一个新的ssh窗口执行
-cd /root/soft/rocketmq/rocketmq-dashboard && nohup /root/soft/maven/apache-maven-3.9.9/bin/mvn spring-boot:run > /root/soft/rocketmq/rocketmq-dashboard/logs/output.log 2>&1 &
+/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/runserver.sh org.apache.rocketmq.proxy.ProxyStartup -pc /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/conf/proxy.json > /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/proxy/output.log 2>&1 &
+#打开一个新的ssh窗口执行
+cd /usr/local/rocketmq/rocketmq-dashboard && nohup /root/soft/maven/apache-maven-3.9.9/bin/mvn spring-boot:run > /usr/local/rocketmq/rocketmq-dashboard/logs/output.log 2>&1 &
 
 #查看 rocketmq 相关进程
 ps -ef | grep rocketmq
@@ -1446,14 +1448,14 @@ ps -p 21941 -o pid,comm,user
 kill -9 21941
 
 #查看 rocketmq 相关日志
-tail /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log -f -n 500
-tail /root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log -f -n 500
-tail /root/soft/rocketmq/rocketmq-dashboard/logs/output.log -f -n 500
+tail /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log -f -n 500
+tail /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log -f -n 500
+tail /usr/local/rocketmq/rocketmq-dashboard/logs/output.log -f -n 500
 
 # 停止 mqnamesrv
-/root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqshutdown mqnamesrv
+/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqshutdown mqnamesrv
 # 停止 broker
-/root/soft/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqshutdown broker
+/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqshutdown broker
 
 #卸载服务(如果需要的话)
 sudo systemctl disable rocketmq_broker
