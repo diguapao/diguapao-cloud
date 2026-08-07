@@ -1433,7 +1433,7 @@ systemctl stop rocketmq_dashboard
 #打开一个新的ssh窗口执行
 /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/runserver.sh org.apache.rocketmq.proxy.ProxyStartup -pc /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/conf/proxy.json > /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/proxy/output.log 2>&1 &
 #打开一个新的ssh窗口执行
-cd /usr/local/rocketmq/rocketmq-dashboard && nohup /root/soft/maven/apache-maven-3.9.9/bin/mvn spring-boot:run > /usr/local/rocketmq/rocketmq-dashboard/logs/output.log 2>&1 &
+cd /usr/local/rocketmq/rocketmq-dashboard && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run > /usr/local/rocketmq/rocketmq-dashboard/logs/output.log 2>&1 &
 
 #查看 rocketmq 相关进程
 ps -ef | grep rocketmq
@@ -1447,14 +1447,58 @@ ps -p 21941 -o pid,comm,user
 # 杀死进程
 kill -9 21941
 
+#杀死进程的脚本 start，创建 stop_rocketmq.sh 写入 在 bin 目录下
+
+#!/bin/bash
+
+echo "Force killing local RocketMQ cluster..."
+
+# 1. 杀掉指定端口占用的进程 (9876 10909 10911 10912 18080 18180 18081)
+PORTS=(9876 10909 10911 10912 18080 18081)
+
+for PORT in "${PORTS[@]}"; do
+  # 使用 fuser 或 lsof 获取占用端口的 PID
+  PIDS=$(lsof -t -i :"$PORT" 2>/dev/null)
+  if [ -n "$PIDS" ]; then
+    for PID in $PIDS; do
+      echo "Killing PID $PID on port $PORT"
+      kill -9 "$PID" 2>/dev/null
+    done
+  fi
+done
+
+# 2. 杀掉名称匹配 NamesrvStartup, BrokerStartup, ProxyStartup 的 Java 进程
+if command -v jps >/dev/null 2>&1; then
+  JPS_PIDS=$(jps -m 2>/dev/null | grep -iE "NamesrvStartup|BrokerStartup|ProxyStartup" | awk '{print $1}')
+  for PID in $JPS_PIDS; do
+    echo "Killing RocketMQ java PID $PID"
+    kill -9 "$PID" 2>/dev/null
+  done
+fi
+
+# 3. 杀掉命令行中包含 rocketmq-all-5.3.3-bin-release 的 java 进程
+MATCHED_PIDS=$(ps -ef | grep "java" | grep "rocketmq-all-5.3.3-bin-release" | grep -v grep | awk '{print $2}')
+for PID in $MATCHED_PIDS; do
+  echo "Killing RocketMQ matched java PID $PID"
+  kill -9 "$PID" 2>/dev/null
+done
+
+echo "Done."
+#杀死进程的脚本 end
+
+chmod +x stop_rocketmq.sh && ./stop_rocketmq.sh
+
 #查看 rocketmq 相关日志
 tail /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log -f -n 500
 tail /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/broker/output.log -f -n 500
 tail /usr/local/rocketmq/rocketmq-dashboard/logs/output.log -f -n 500
 
 # 停止 mqnamesrv
+
 /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqshutdown mqnamesrv
+
 # 停止 broker
+
 /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/mqshutdown broker
 
 #卸载服务(如果需要的话)
@@ -1958,6 +2002,7 @@ sudo rm -rf /etc/socat/
 ### 部署GitLab(CentOS7)
 
 下载安装包：https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el7/gitlab-ce-17.1.1-ce.0.el7.x86_64.rpm
+
 ```shell
 #git bash 上传安装包到服务器
 scp -P 22 -p -r -v -C /d/soft/Program/GitLab/ root@192.168.11.66:/opt/apps
