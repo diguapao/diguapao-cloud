@@ -1085,7 +1085,7 @@ java -version
 
 ```shell
 # ！！！ 不宜部署在 root 目录下
-sudo mkdir -p /root/soft/maven && cd /root/soft/maven
+sudo mkdir -p /usr/local/maven && cd /usr/local/maven
 
 curl -o apache-maven-3.9.9-bin.tar.gz https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz
 
@@ -1094,14 +1094,14 @@ cd apache-maven-3.9.9
 
 sudo vi /etc/profile
 #在文件末尾添加：
-export M2_HOME=/root/soft/maven/apache-maven-3.9.9
+export M2_HOME=/usr/local/maven/apache-maven-3.9.9
 export PATH=$M2_HOME/bin:$PATH
 #使配置生效
 source /etc/profile
 
 vi ~/.bashrc
 #在文件末尾添加：
-export M2_HOME=/root/soft/maven/apache-maven-3.9.9
+export M2_HOME=/usr/local/maven/apache-maven-3.9.9
 export PATH=$M2_HOME/bin:$PATH
 #使配置生效
 source ~/.bashrc
@@ -1110,9 +1110,9 @@ source ~/.bashrc
 mvn -version
 
 #设置 localRepository 
-vi /root/soft/maven/apache-maven-3.9.9/conf/settings.xml
+vi /usr/local/maven/apache-maven-3.9.9/conf/settings.xml
 #调整为如下内容
-<localRepository>/root/soft/maven/apache-maven-3.9.9/.m2/repository</localRepository>
+<localRepository>/usr/local/maven/apache-maven-3.9.9/.m2/repository</localRepository>
 ```
 
 ## 部署 Nacos 2.4.3
@@ -1248,7 +1248,7 @@ Type=forking
 User=root
 WorkingDirectory=/usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin
 Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
-ExecStart=/root/soft/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
+ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
 ExecStop=/bin/kill -s TERM $MAINPID
 # Restart=on-failure
 StandardOutput=file:/usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log
@@ -1267,7 +1267,7 @@ Type=forking
 User=root
 WorkingDirectory=/usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot
 Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
-ExecStart=/root/soft/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
+ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod
 ExecStop=/bin/kill -s TERM $MAINPID
 # Restart=on-failure
 ExecStartPre=/bin/sleep 30
@@ -1287,9 +1287,11 @@ sudo systemctl enable xxl_job_admin     && sudo systemctl restart xxl_job_admin 
 sudo systemctl enable xxl_job_executor  && sudo systemctl restart xxl_job_executor  && sudo systemctl status xxl_job_executor
 
 #如果启不来，则可手动启动
-cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin                                                && nohup /root/soft/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log 2>&1 &
+cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin                                                && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log 2>&1 &
 # xxl-job-admin 启动成功后在启动 xxl-job-executor
-cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot  && nohup /root/soft/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log 2>&1 &
+cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot  && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log 2>&1 &
+# 检查端口是否监听
+ss -tuln | grep -E ':(9876|10909|10911|10912|18080|18180|18081 9997 9998)\b'
 
 #查看日志
 tail /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log -f -n 500
@@ -1392,7 +1394,7 @@ Type=forking
 User=root
 WorkingDirectory=/usr/local/rocketmq/rocketmq-dashboard
 Environment="JAVA_HOME=/usr/local/jdk/openjdk8/jdk8u422-b05"
-ExecStart=/root/soft/maven/apache-maven-3.9.9/bin/mvn spring-boot:run
+ExecStart=/usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run
 ExecStop=/bin/kill -s TERM $MAINPID
 #Restart=on-failure
 StartLimitInterval=60
