@@ -43,8 +43,7 @@ sudo systemctl restart postgresql
 sudo systemctl disable postgresql && sudo systemctl daemon-reload
 
 开启自启
-sudo systemctl enable  postgresql && sudo systemctl daemon-reload
-
+sudo systemctl enable postgresql && sudo systemctl daemon-reload
 
 ### 本地连接
 
@@ -145,3 +144,28 @@ sudo systemctl start clickhouse-server
 sudo systemctl status clickhouse-server
 
 只要看到绿色的 active (running)，且第一行显示 loaded (...; enabled; ...)，就说明开机自启已经彻底配置好了。
+
+# 系统操作
+
+## idea-U 创建快捷方式
+
+```shell
+# 在 Ubuntu 终端执行这一条，创建 idea-U 的桌面和应用列表快捷方式
+sudo tee /home/diguapao/桌面/idea-community.desktop >/dev/null <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=IntelliJ IDEA Community 2025
+Exec=/home/diguapao/下载/ideaIC-2025.2.6.3/idea-IC-252.28539.97/bin/idea.sh
+Icon=/home/diguapao/下载/ideaIC-2025.2.6.3/idea-IC-252.28539.97/bin/idea.svg
+Terminal=false
+Categories=Development;IDE;
+EOF
+sudo chmod +x /home/diguapao/桌面/idea-community.desktop
+sudo chown diguapao:diguapao /home/diguapao/桌面/idea-community.desktop
+#然后在桌面上：
+#1. 右键 IntelliJ IDEA Community 2025
+#2. 点 允许启动 / Allow Launching
+#如果想顺便加入应用菜单，用这一条：
+mkdir -p ~/.local/share/applications && cp /home/diguapao/桌面/idea-community.desktop ~/.local/share/applications/
+
+```
