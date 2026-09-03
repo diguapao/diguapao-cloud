@@ -145,6 +145,55 @@ sudo systemctl status clickhouse-server
 
 只要看到绿色的 active (running)，且第一行显示 loaded (...; enabled; ...)，就说明开机自启已经彻底配置好了。
 
+**ClickHouse 的数据目录属于 `clickhouse` 用户，但你现在用 `root` 用户启动了 `clickhouse-server`**，ClickHouse 为了防止误操作直接拒绝启动。
+
+**不要用 root 直接启动 ClickHouse，用 `systemctl` 或 `sudo -u clickhouse` 启动。**
+
+正确启动方式是用 `clickhouse` 用户，或者用 systemd 服务启动。
+
+先不要直接执行：
+
+```bash
+sudo clickhouse-server
+```
+
+改用：
+
+```bash
+sudo systemctl restart clickhouse-server
+```
+
+查看状态：
+
+```bash
+sudo systemctl status clickhouse-server --no-pager
+```
+
+如果你必须手动前台启动，用：
+
+```bash
+sudo -u clickhouse clickhouse-server --config-file=/etc/clickhouse-server/config.xml
+```
+
+同时确认目录属主正确：
+
+```bash
+sudo chown -R clickhouse:clickhouse /var/lib/clickhouse /var/log/clickhouse-server
+```
+
+然后再重启：
+
+```bash
+sudo systemctl restart clickhouse-server
+```
+
+常用排查命令：
+
+```bash
+sudo journalctl -u clickhouse-server -n 100 --no-pager
+sudo tail -n 100 /var/log/clickhouse-server/clickhouse-server.err.log
+```
+
 # 系统操作
 
 ## idea-U 创建快捷方式

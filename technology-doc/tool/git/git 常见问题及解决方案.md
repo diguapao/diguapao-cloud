@@ -170,3 +170,14 @@ git config --global core.longpaths true
 # 验证配置
 git config --global --get core.longpaths
 ```
+
+# 获取/设置远程仓库地址
+
+```shell
+# 获取
+git remote get-url origin
+
+#设置(有则改无则加)
+git remote get-url origin >/dev/null 2>&1 && git remote set-url origin <仓库地址> || git remote add origin <仓库地址>
+
+```
