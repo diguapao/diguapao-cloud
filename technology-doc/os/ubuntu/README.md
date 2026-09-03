@@ -102,7 +102,7 @@ clickhouse-client -h 192.168.11.100 --port 9000 -u default --password
    运行以下命令（自动写入 systemd 配置）：
 
 ```shell
-
+# User不能为root，不能用root启动
 sudo bash -c 'cat <<EOF > /etc/systemd/system/clickhouse-server.service
 [Unit]
 Description=ClickHouse Server (DBMS)
@@ -111,8 +111,8 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-User=root
-Group=root
+User=clickhouse
+Group=clickhouse
 ExecStart=/usr/bin/clickhouse server --config-file=/etc/clickhouse-server/config.xml
 Restart=always
 RestartSec=3
@@ -192,6 +192,12 @@ sudo systemctl restart clickhouse-server
 ```bash
 sudo journalctl -u clickhouse-server -n 100 --no-pager
 sudo tail -n 100 /var/log/clickhouse-server/clickhouse-server.err.log
+```
+
+验证：
+
+```shell
+clickhouse-client -q "SELECT version()"
 ```
 
 # 系统操作
