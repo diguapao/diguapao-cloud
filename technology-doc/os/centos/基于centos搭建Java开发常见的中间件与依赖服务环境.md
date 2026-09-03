@@ -1408,6 +1408,12 @@ StandardError=file:/usr/local/rocketmq/rocketmq-dashboard/logs/error.log
 WantedBy=multi-user.target
 EOF
 
+```
+
+### 创建好日志文件做成服务(不好使)
+
+```shell
+
 #创建好日志文件
 sudo chmod -R 755 /usr/local/rocketmq
 touch /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/output.log && touch /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/namesrv/error.log
@@ -1426,6 +1432,14 @@ sudo systemctl enable rocketmq_dashboard && sudo systemctl restart rocketmq_dash
 systemctl stop rocketmq_broker
 systemctl stop rocketmq_namesrv
 systemctl stop rocketmq_dashboard
+
+```
+
+### 如果无法自动启动，则可手动启动
+
+```shell
+
+
 
 #如果无法自动启动，则可手动启动
 #打开一个新的ssh窗口执行
@@ -1510,6 +1524,228 @@ tail /usr/local/rocketmq/rocketmq-dashboard/logs/output.log -f -n 500
 sudo systemctl disable rocketmq_broker
 sudo systemctl disable rocketmq_namesrv
 sudo systemctl disable rocketmq_dashboard
+
+```
+
+### 系统服务不好使，sh脚本操作rockemq服务
+
+```shell
+
+cat > /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/rocketmqManager.sh <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROCKETMQ_HOME="/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release"
+NAMESRV_ADDR="192.168.11.66:9876"
+BROKER_CONF="${ROCKETMQ_HOME}/conf/broker.conf"
+PROXY_CONF="${ROCKETMQ_HOME}/conf/proxy.json"
+
+BIN_DIR="${ROCKETMQ_HOME}/bin"
+LOG_DIR="${ROCKETMQ_HOME}/logs"
+
+NAMESRV_LOG="${LOG_DIR}/namesrv/output.log"
+BROKER_LOG="${LOG_DIR}/broker/output.log"
+PROXY_LOG="${LOG_DIR}/proxy/output.log"
+
+NAMESRV_PATTERN="org.apache.rocketmq.namesrv.NamesrvStartup"
+BROKER_PATTERN="org.apache.rocketmq.broker.BrokerStartup"
+PROXY_PATTERN="org.apache.rocketmq.proxy.ProxyStartup"
+
+check_file() {
+  if [ ! -e "$1" ]; then
+    echo "Missing: $1" >&2
+    exit 1
+  fi
+}
+
+prepare() {
+  check_file "${BIN_DIR}/mqnamesrv"
+  check_file "${BIN_DIR}/mqbroker"
+  check_file "${BIN_DIR}/runserver.sh"
+  check_file "${BROKER_CONF}"
+  check_file "${PROXY_CONF}"
+  mkdir -p "${LOG_DIR}/namesrv" "${LOG_DIR}/broker" "${LOG_DIR}/proxy"
+}
+
+pid_of() {
+  pgrep -f "$1" || true
+}
+
+is_running() {
+  [ -n "$(pid_of "$1")" ]
+}
+
+start_one() {
+  local name="$1"
+  local pattern="$2"
+  local logfile="$3"
+  shift 3
+
+  if is_running "${pattern}"; then
+    echo "${name} already running, pid: $(pid_of "${pattern}" | tr '\n' ' ')"
+    return
+  fi
+
+  echo "Starting ${name}..."
+  nohup "$@" > "${logfile}" 2>&1 &
+  sleep 3
+
+  if is_running "${pattern}"; then
+    echo "${name} started, pid: $(pid_of "${pattern}" | tr '\n' ' ')"
+  else
+    echo "${name} failed to start. Log: ${logfile}" >&2
+    tail -n 80 "${logfile}" >&2 || true
+    exit 1
+  fi
+}
+
+start_all() {
+  prepare
+  start_one "namesrv" "${NAMESRV_PATTERN}" "${NAMESRV_LOG}" "${BIN_DIR}/mqnamesrv"
+  start_one "broker" "${BROKER_PATTERN}" "${BROKER_LOG}" "${BIN_DIR}/mqbroker" -c "${BROKER_CONF}" -n "${NAMESRV_ADDR}"
+  start_one "proxy" "${PROXY_PATTERN}" "${PROXY_LOG}" "${BIN_DIR}/runserver.sh" org.apache.rocketmq.proxy.ProxyStartup -pc "${PROXY_CONF}"
+  echo
+  status_all
+  echo
+  show_ports
+}
+
+stop_one() {
+  local name="$1"
+  local pattern="$2"
+  local pids
+  pids="$(pid_of "${pattern}")"
+
+  if [ -z "${pids}" ]; then
+    echo "${name} not running"
+    return
+  fi
+
+  echo "Stopping ${name}, pid: $(echo "${pids}" | tr '\n' ' ')"
+  while IFS= read -r pid; do
+    [ -z "${pid}" ] && continue
+    kill "${pid}" 2>/dev/null || true
+  done <<< "${pids}"
+
+  for i in {1..20}; do
+    if ! is_running "${pattern}"; then
+      echo "${name} stopped"
+      return
+    fi
+    sleep 1
+  done
+
+  echo "${name} still running, force killing..."
+  pids="$(pid_of "${pattern}")"
+  while IFS= read -r pid; do
+    [ -z "${pid}" ] && continue
+    kill -9 "${pid}" 2>/dev/null || true
+  done <<< "${pids}"
+}
+
+stop_all() {
+  stop_one "proxy" "${PROXY_PATTERN}"
+  stop_one "broker" "${BROKER_PATTERN}"
+  stop_one "namesrv" "${NAMESRV_PATTERN}"
+}
+
+status_one() {
+  local name="$1"
+  local pattern="$2"
+  local pids
+  pids="$(pid_of "${pattern}")"
+
+  if [ -n "${pids}" ]; then
+    echo "${name}: RUNNING, pid: $(echo "${pids}" | tr '\n' ' ')"
+  else
+    echo "${name}: STOPPED"
+  fi
+}
+
+status_all() {
+  echo "=== RocketMQ status ==="
+  status_one "namesrv" "${NAMESRV_PATTERN}"
+  status_one "broker" "${BROKER_PATTERN}"
+  status_one "proxy" "${PROXY_PATTERN}"
+}
+
+show_ports() {
+  local pids
+  local pid_regex
+
+  echo "=== RocketMQ listening ports ==="
+  pids="$(
+    {
+      pid_of "${NAMESRV_PATTERN}"
+      pid_of "${BROKER_PATTERN}"
+      pid_of "${PROXY_PATTERN}"
+    } | sort -u
+  )"
+
+  if [ -z "${pids}" ]; then
+    echo "No RocketMQ process is running."
+    return
+  fi
+
+  pid_regex="$(echo "${pids}" | paste -sd'|' -)"
+
+  if command -v ss >/dev/null 2>&1; then
+    ss -lntp 2>/dev/null | grep -E "pid=(${pid_regex})," || true
+  elif command -v netstat >/dev/null 2>&1; then
+    netstat -lntp 2>/dev/null | grep -E "(${pid_regex})/" || true
+  else
+    echo "Neither ss nor netstat was found."
+  fi
+}
+
+show_logs() {
+  echo "=== namesrv log: ${NAMESRV_LOG} ==="
+  tail -n 80 "${NAMESRV_LOG}" 2>/dev/null || true
+  echo
+  echo "=== broker log: ${BROKER_LOG} ==="
+  tail -n 80 "${BROKER_LOG}" 2>/dev/null || true
+  echo
+  echo "=== proxy log: ${PROXY_LOG} ==="
+  tail -n 80 "${PROXY_LOG}" 2>/dev/null || true
+}
+
+case "${1:-status}" in
+  start)
+    start_all
+    ;;
+  stop)
+    stop_all
+    ;;
+  restart)
+    stop_all
+    start_all
+    ;;
+  status)
+    status_all
+    ;;
+  ports)
+    show_ports
+    ;;
+  logs)
+    show_logs
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|status|ports|logs}" >&2
+    exit 1
+    ;;
+esac
+EOF
+
+chmod +x /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/rocketmqManager.sh
+
+# 操作
+/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/rocketmqManager.sh start    # 启动 namesrv、broker、proxy
+/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/rocketmqManager.sh status   # 查看组件进程状态
+/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/rocketmqManager.sh ports    # 查看所有组件监听端口
+/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/rocketmqManager.sh logs     # 查看三类组件最近日志
+/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/rocketmqManager.sh stop     # 停止 proxy、broker、namesrv
+/usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/bin/rocketmqManager.sh restart  # 重启全部
+tail -n 100 /usr/local/rocketmq/rocketmq-all-5.3.1-bin-release/logs/proxy/output.log #只看 proxy 日志
 
 ```
 
