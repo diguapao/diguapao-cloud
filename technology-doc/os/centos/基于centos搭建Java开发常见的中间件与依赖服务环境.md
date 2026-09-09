@@ -2464,3 +2464,23 @@ ss -lntp | grep -E ':(8123|9000)\b'
 ```
 
 用户名：default 默认无密码
+
+## 迁移(ck to ck)
+
+```shell
+
+#在 192.168.11.66 目标机器 上执行这一条，把 192.168.11.100 的 dws_hgyyzt_ty 库迁过来，库名不变：
+DB=dws_hgyyzt_ty; SRC=192.168.11.100; DST=192.168.11.66; SRC_USER=default; SRC_PASS=root; DST_USER=default; clickhouse-client --host "$DST" --user "$DST_USER" -q "CREATE DATABASE IF NOT EXISTS ${DB}"; clickhouse-client --host "$SRC" --user "$SRC_USER" --password "$SRC_PASS" -q "SHOW TABLES FROM ${DB}" | while read -r T; do echo "迁移表：${DB}.${T}"; clickhouse-client --host "$SRC" --user "$SRC_USER" --password "$SRC_PASS" -q "SHOW CREATE TABLE ${DB}.\`${T}\`" | clickhouse-client --host "$DST" --user "$DST_USER"; clickhouse-client --host "$DST" --user "$DST_USER" -q "INSERT INTO ${DB}.\`${T}\` SELECT * FROM remote('${SRC}:9000', '${DB}', '${T}', '${SRC_USER}', '${SRC_PASS}')"; done
+#报错执行下面这条：
+DB=dws_hgyyzt_ty; SRC=192.168.11.100; DST=192.168.11.66; SRC_USER=default; SRC_PASS=root; DST_USER=default; clickhouse-client --host "$DST" --user "$DST_USER" -q "CREATE DATABASE IF NOT EXISTS ${DB}"; clickhouse-client --host "$SRC" --user "$SRC_USER" --password "$SRC_PASS" -q "SHOW TABLES FROM ${DB}" | while read -r T; do echo "迁移表：${DB}.${T}"; clickhouse-client --host "$SRC" --user "$SRC_USER" --password "$SRC_PASS" -q "SHOW CREATE TABLE ${DB}.\`${T}\` FORMAT TSVRaw" | clickhouse-client --host "$DST" --user "$DST_USER"; clickhouse-client --host "$DST" --user "$DST_USER" -q "INSERT INTO ${DB}.\`${T}\` SELECT * FROM remote('${SRC}:9000', '${DB}', '${T}', '${SRC_USER}', '${SRC_PASS}')"; done
+#一条命令“普通表迁数据，视图只建结构”
+DB=dws_hgyyzt_ty; SRC=192.168.11.100; DST=192.168.11.66; SRC_USER=default; SRC_PASS=root; DST_USER=default; clickhouse-client --host "$DST" --user "$DST_USER" -q "CREATE DATABASE IF NOT EXISTS ${DB}"; clickhouse-client --host "$SRC" --user "$SRC_USER" --password "$SRC_PASS" -q "SELECT name, engine FROM system.tables WHERE database='${DB}' ORDER BY name FORMAT TSV" | while IFS=$'\t' read -r T E; do echo "迁移对象：${DB}.${T} engine=${E}"; clickhouse-client --host "$SRC" --user "$SRC_USER" --password "$SRC_PASS" -q "SHOW CREATE TABLE ${DB}.\`${T}\` FORMAT TSVRaw" | clickhouse-client --host "$DST" --user "$DST_USER"; case "$E" in View|MaterializedView|Distributed) echo "跳过数据迁移：${T} engine=${E}" ;; *) clickhouse-client --host "$DST" --user "$DST_USER" -q "INSERT INTO ${DB}.\`${T}\` SELECT * FROM remote('${SRC}:9000', '${DB}', '${T}', '${SRC_USER}', '${SRC_PASS}')" ;; esac; done
+
+#迁移后校验表数量：
+clickhouse-client --host 192.168.11.100 --user default --password root -q "SELECT table, total_rows FROM system.tables WHERE database='dws_hgyyzt_ty' ORDER BY table"
+
+clickhouse-client --host 192.168.11.66 --user default -q "SELECT table, total_rows FROM system.tables WHERE database='dws_hgyyzt_ty' ORDER BY table"
+
+# 删除重来
+clickhouse-client --host 192.168.11.66 --user default -q "DROP DATABASE IF EXISTS dws_hgyyzt_ty"
+```
