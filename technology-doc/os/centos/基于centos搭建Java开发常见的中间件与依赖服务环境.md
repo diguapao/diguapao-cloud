@@ -2309,3 +2309,158 @@ sudo gitlab-rake gitlab:check
 #rm -rf /etc/gitlab
 
 ```
+
+# 部署 ClickHose
+
+## 一键部署脚本
+
+```shell
+
+# 将此脚本保存为：mkdir -p /usr/local/clickhouse && vi /usr/local/clickhouse/deploy_22.3.10.22.sh
+# 然后赋予执行权限：
+# chmod +x /usr/local/clickhouse/deploy_22.3.10.22.sh
+# sudo /usr/local/clickhouse/deploy_22.3.10.22.sh
+
+
+#!/usr/bin/env bash
+set -euo pipefail
+
+VERSION="22.3.10.22"
+REPO_URL="https://packages.clickhouse.com/rpm/clickhouse.repo"
+
+ENABLE_REMOTE_ACCESS="${ENABLE_REMOTE_ACCESS:-1}"
+OPEN_FIREWALL="${OPEN_FIREWALL:-1}"
+
+need_root() {
+  if [ "$(id -u)" -ne 0 ]; then
+    echo "请使用 root 执行：sudo bash $0"
+    exit 1
+  fi
+}
+
+install_repo() {
+  yum install -y yum-utils curl ca-certificates iproute
+
+  yum-config-manager --add-repo "${REPO_URL}"
+  sed -i 's/^gpgcheck=.*/gpgcheck=0/' /etc/yum.repos.d/clickhouse.repo
+
+  yum clean all
+  yum makecache -y
+}
+
+check_existing_version() {
+  if rpm -q clickhouse-server >/dev/null 2>&1; then
+    local installed
+    installed="$(rpm -q --qf '%{VERSION}\n' clickhouse-server)"
+    if [ "${installed}" != "${VERSION}" ]; then
+      echo "检测到已安装 ClickHouse 版本：${installed}"
+      echo "目标版本是：${VERSION}"
+      echo "如需替换版本，请先确认数据兼容性，然后执行："
+      echo "  yum remove -y clickhouse-server clickhouse-client clickhouse-common-static"
+      exit 1
+    fi
+  fi
+}
+
+install_clickhouse() {
+  yum install -y \
+    "clickhouse-common-static-${VERSION}" \
+    "clickhouse-server-${VERSION}" \
+    "clickhouse-client-${VERSION}"
+}
+
+configure_remote_access() {
+  if [ "${ENABLE_REMOTE_ACCESS}" != "1" ]; then
+    return
+  fi
+
+  mkdir -p /etc/clickhouse-server/config.d
+
+cat >/etc/clickhouse-server/config.d/listen_host.xml <<'EOF'
+<clickhouse>
+    <listen_host>0.0.0.0</listen_host>
+</clickhouse>
+EOF
+}
+
+fix_permissions_and_systemd() {
+  id clickhouse >/dev/null 2>&1 || useradd -r -s /sbin/nologin clickhouse
+
+  mkdir -p /var/lib/clickhouse /var/log/clickhouse-server
+  chown -R clickhouse:clickhouse /var/lib/clickhouse /var/log/clickhouse-server
+
+  mkdir -p /etc/systemd/system/clickhouse-server.service.d
+
+cat >/etc/systemd/system/clickhouse-server.service.d/override.conf <<'EOF'
+[Service]
+User=clickhouse
+Group=clickhouse
+LimitNOFILE=262144
+EOF
+
+  systemctl daemon-reload
+}
+
+open_firewall() {
+  if [ "${OPEN_FIREWALL}" != "1" ]; then
+    return
+  fi
+
+  if systemctl is-active --quiet firewalld; then
+    firewall-cmd --permanent --add-port=8123/tcp
+    firewall-cmd --permanent --add-port=9000/tcp
+    firewall-cmd --reload
+  fi
+}
+
+start_and_verify() {
+  systemctl enable clickhouse-server
+  systemctl restart clickhouse-server
+
+  sleep 5
+
+  if ! systemctl is-active --quiet clickhouse-server; then
+    echo "ClickHouse 启动失败，最近日志如下："
+    journalctl -u clickhouse-server -n 120 --no-pager || true
+    exit 1
+  fi
+
+  echo "ClickHouse 服务已启动并设置开机自启。"
+  echo
+
+  clickhouse-client -q "SELECT version()"
+
+  echo
+  systemctl is-enabled clickhouse-server
+
+  echo
+  ss -lntp | grep -E ':(8123|9000)\b' || true
+}
+
+main() {
+  need_root
+  install_repo
+  check_existing_version
+  install_clickhouse
+  configure_remote_access
+  fix_permissions_and_systemd
+  open_firewall
+  start_and_verify
+}
+
+main "$@"
+
+
+```
+
+## 安装完成后验证
+
+```shell
+
+systemctl status clickhouse-server --no-pager
+clickhouse-client -q "SELECT version()"
+ss -lntp | grep -E ':(8123|9000)\b'
+
+```
+
+用户名：default 默认无密码
