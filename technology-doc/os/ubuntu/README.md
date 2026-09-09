@@ -10,7 +10,7 @@ sudo ufw default allow incoming && sudo ufw default allow outgoing && sudo ufw a
 
 ![image-20260728111131438](assets/image-20260728111131438.png)
 
-# pg 库
+# pg 库(已经卸载)
 
 ## 安装
 
@@ -49,7 +49,7 @@ sudo systemctl enable postgresql && sudo systemctl daemon-reload
 
 psql -U postgres -h 127.0.0.1 -p 5432
 
-# ck库
+# ck库(已经卸载，部署到.66的centos上去了)
 
 ## 安装
 

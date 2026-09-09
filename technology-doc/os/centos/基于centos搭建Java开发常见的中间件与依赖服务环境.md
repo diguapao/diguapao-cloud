@@ -1288,8 +1288,8 @@ sudo systemctl enable xxl_job_executor  && sudo systemctl restart xxl_job_execut
 
 #如果启不来，则可手动启动
 cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin                                                && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-admin/output.log 2>&1 &
-# xxl-job-admin 启动成功后在启动 xxl-job-executor
-cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot  && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log 2>&1 &
+# xxl-job-admin 启动成功后在启动 xxl-job-executor 示例服务，可忽略
+#cd /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot  && nohup /usr/local/maven/apache-maven-3.9.9/bin/mvn spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=prod > /usr/local/xxljob/xxl-job-2.4.1/xxl-job-executor-samples/xxl-job-executor-sample-springboot/output.log 2>&1 &
 # 检查端口是否监听
 ss -tuln | grep -E ':(9876|10909|10911|10912|18080|18180|18081 9997 9998)\b'
 
@@ -2485,4 +2485,25 @@ clickhouse-client --host 192.168.11.66 --user default -q "SELECT table, total_ro
 
 # 删除重来
 clickhouse-client --host 192.168.11.66 --user default -q "DROP DATABASE IF EXISTS dws_hgyyzt_ty"
+```
+
+## 设置密码
+
+```shell
+
+sudo mkdir -p /etc/clickhouse-server/users.d
+sudo tee /etc/clickhouse-server/users.d/default-password.xml >/dev/null <<'EOF'
+<clickhouse>
+    <users>
+        <default>
+            <password>root</password>
+        </default>
+    </users>
+</clickhouse>
+EOF
+sudo systemctl restart clickhouse-server
+
+# 验证
+clickhouse-client --user default --password root -q "SELECT version()"
+
 ```
